@@ -1,8 +1,17 @@
 # Firmware
 
-VGACorne runs [libhmk](https://github.com/peppapighs/libhmk) (GPL-3.0) unmodified.
-This directory holds only the keyboard definition, laid out the way libhmk
-expects:
+Two firmware families, chosen by the MCU module:
+
+| Module | Firmware | Where |
+|---|---|---|
+| AT32F405 | [libhmk](https://github.com/peppapighs/libhmk), 8 kHz | `libhmk/keyboards/vgacorne_at32` |
+| STM32F446 | libhmk, 1 kHz | `libhmk/keyboards/vgacorne_f446` |
+| STM32F446 | QMK, 1 kHz | `qmk/keyboards/vgacorne` |
+
+## libhmk
+
+libhmk (GPL-3.0) runs unmodified; these directories hold only the keyboard
+definitions, laid out the way libhmk expects:
 
 ```
 libhmk/keyboards/vgacorne_at32/   AT32F405 module: USB high speed, 8 kHz
@@ -26,12 +35,58 @@ pio run                             # -> .pio/build/<keyboard>/firmware.bin (DFU
 Checked against libhmk `main` in September 2026: AT32 33 KB flash / 13 KB RAM,
 F446 37 KB flash / 13 KB RAM.
 
-## QMK
+## QMK (STM32F446 module)
 
-QMK runs on the STM32F446 module only; QMK has no AT32F405 support. A QMK
-keyboard needs a hall-effect custom matrix, which isn't written yet. The
-best starting point is Keychron's `analog_matrix` module (GPL-2+, in their QMK
-fork), whose scan matches this hardware.
+QMK has no hall-effect support, so the keyboard brings its own analog matrix
+(QMK "custom matrix lite"):
+
+```
+qmk/keyboards/vgacorne/
+  he_matrix.c/.h     scan, calibration, travel curve, fixed actuation + rapid trigger
+  vgacorne.c         HE settings in EEPROM, HE_* keycodes, bring-up console output
+  keyboard.json      generated: layout with matrix positions traced from the schematics
+  he_wiring.h        generated: pins, ADC channels, right-half rows, cable detect, curve table
+  config.h, halconf.h, mcuconf.h, rules.mk, keymaps/default
+qmk/tests/           host test of he_matrix.c against simulated sensors (./run.sh)
+```
+
+Matrix row = ADC input, column = mux channel. One scan steps all eight mux
+channels and converts the six ADC inputs in a single sequence, taking about
+0.23 ms. It uses `DET` (PC4) to hold the right half released while the VGA
+cable is out and to recalibrate it when the cable comes back, which libhmk
+can't do yet.
+
+Build:
+
+```sh
+git clone --recurse-submodules https://github.com/qmk/qmk_firmware
+ln -s "$PWD/qmk/keyboards/vgacorne" qmk_firmware/keyboards/vgacorne
+cd qmk_firmware && make vgacorne:default        # needs arm-none-eabi-gcc >= 10 and dfu-suffix
+make vgacorne:default:flash                     # hold BOOT while plugging in first
+```
+
+Built against QMK 0.34.5 (September 2026) with GCC 15: 31.6 KB, no warnings.
+GCC 7 is too old for current QMK's USB code.
+
+| Keycode | Action |
+|---|---|
+| `HE_ACTU` / `HE_ACTD` | actuation point 0.1 mm deeper / shallower (default 1.5 mm) |
+| `HE_RTTG` | rapid trigger on/off |
+| `HE_RTSU` / `HE_RTSD` | rapid trigger less / more sensitive (default 0.3 mm) |
+| `HE_CALB` | recalibrate every key (hands off for half a second) |
+| `HE_DBG` | print raw/rest/bottom/distance per key (`CONSOLE_ENABLE = yes`, `qmk console`) |
+
+Settings persist in flash sector 1 through QMK's legacy wear-levelling
+driver. ChibiOS's embedded-flash driver doesn't support the F446, and the
+legacy driver only has presets for the F401/F411, which share its sector
+layout; `config.h` supplies the F446 values.
+
+**Not done yet:**
+- VIA / Vial configuration. Settings are keycode-driven for now.
+- Per-key actuation, DKS and SOCD. Keychron's GPL-2+ `analog_matrix` module
+  has these and could be merged in.
+- Fitting the travel curve (`travel_curve` in `SENSOR`) to our sensor and
+  magnet. The default was fitted for GEON Raw HE switches with OH49E sensors.
 
 ## Key indices
 

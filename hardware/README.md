@@ -23,7 +23,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `lib` | `lib/vgacorne.kicad_sym`, `lib/vgacorne.pretty/` | yes (generated library) |
 | `schematics` | `kicad/*/…kicad_sch`, project files | **only with `--force`** |
 | `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`** |
-| `firmware` | `../firmware/libhmk/keyboards/vgacorne_{at32,f446}/keyboard.json` | yes: traced from the schematics |
+| `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json` + `he_wiring.h` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
 | `check` | nothing | — |
@@ -41,7 +41,8 @@ because they're read back from the schematics.
 - a comparison of each netlist against `circuits.py` (informational once you've
   edited)
 - a check that each MCU module's header meets the main board's socket pin-for-pin
-- a check that each `keyboard.json` is current
+- a check that each generated firmware file is current, and the QMK matrix host
+  test (needs a host C compiler)
 
 Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
 
@@ -54,6 +55,7 @@ Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
 | `vgacorne/schematic.py` | label-based `.kicad_sch` writer (library symbols embedded and flattened) |
 | `vgacorne/pcb.py` | pcbnew placement: per-key clusters, muxes, MCU, connectors, collision-aware auto-placer |
 | `vgacorne/firmware.py` | netlist tracer → libhmk `keyboard.json`, default keymap |
+| `vgacorne/qmk.py` | QMK `keyboard.json` layout and `he_wiring.h` from the same trace |
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |

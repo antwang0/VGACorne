@@ -22,7 +22,7 @@ from collections import defaultdict
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from .circuits import SENSOR, mating_pin
+from .circuits import LINK_PINS, SENSOR, mating_pin
 
 HARDWARE = Path(__file__).resolve().parent.parent
 REPO = HARDWARE.parent
@@ -179,7 +179,17 @@ class Boards:
         return _gpio(next(f for r, p, f in nl.net_pins[net] if r == self.mcu and p == pin))
 
 
-def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> tuple[list[str], list[str], list[list[int]]]:
+@dataclass
+class Wiring:
+    """Everything the firmware needs to know about how the MCU sees the keys."""
+    select_pins: list[str]          # GPIO per select bit (S0 first)
+    inputs: list[str]               # GPIO per ADC input
+    matrix: list[list[int]]         # [input][mux channel] -> 1-based key index, 0 = unused
+    input_sides: list[str]          # "L" (main half) or "R" (satellite, via the cable)
+    det_pin: str | None             # GPIO that reads the cable-detect line
+
+
+def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     g = Boards(module, main, sat)
     order = key_order()
     index = {k: i + 1 for i, k in enumerate(order)}  # libhmk matrix is 1-based, 0 = none
@@ -202,7 +212,7 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> tuple[list[str
     select_pins = [select[b] for b in range(3)]
 
     # --- ADC inputs: each MCU pin that reaches exactly one mux common ------------------
-    inputs, matrix = [], []
+    inputs, matrix, sides = [], [], []
     mnl = g.nl["module"]
     pins = sorted(((p, mnl.pin_net[(g.mcu, p)]) for r, p in mnl.pin_net if r == g.mcu),
                   key=lambda t: g.mcu_gpio(t[0]) or "")
@@ -220,12 +230,21 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> tuple[list[str
             row.append(index[(side_of[board], cnet[3:])] if cnet.startswith("HE_") else 0)
         inputs.append(g.mcu_gpio(pin))
         matrix.append(row)
+        sides.append(side_of[board])
 
     used = sorted(i for row in matrix for i in row if i)
     if used != list(range(1, len(order) + 1)):
         missing = set(range(1, len(order) + 1)) - set(used)
         raise ValueError(f"keys not reachable from any ADC input: {[order[i - 1] for i in missing]}")
-    return select_pins, inputs, matrix
+
+    # --- cable detect: the MCU pin wired to LINK_DET on the link connector -------------
+    det_pin_no = next(p for p, n in LINK_PINS.items() if n == "LINK_DET")
+    det = {g.mcu_gpio(pin) for pin, net in pins
+           if g.reach("module", net, lambda b, r, p: b == "main" and r == LINK_CONN and p == det_pin_no)}
+    det.discard(None)
+    if len(det) > 1:
+        raise ValueError(f"several MCU pins reach LINK_DET: {det}")
+    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None)
 
 
 # ---------------------------------------------------------------------------
@@ -276,7 +295,7 @@ def layout() -> dict:
     return {"keymap": rows}
 
 
-def keyboard_json(module: str, select_pins, inputs, matrix) -> dict:
+def keyboard_json(module: str, w: Wiring) -> dict:
     m = MODULES[module]
     return {
         "name": m["name"],
@@ -288,7 +307,7 @@ def keyboard_json(module: str, select_pins, inputs, matrix) -> dict:
         "hardware": {"hse_value": m["hse_value"], "driver": m["driver"]},
         "analog": {
             "invert_adc": SENSOR.invert_adc,
-            "mux": {"select": select_pins, "input": inputs, "matrix": matrix},
+            "mux": {"select": w.select_pins, "input": w.inputs, "matrix": w.matrix},
         },
         "calibration": {
             "initial_rest_value": SENSOR.initial_rest_value,
@@ -299,16 +318,21 @@ def keyboard_json(module: str, select_pins, inputs, matrix) -> dict:
     }
 
 
-def generate() -> dict[str, dict]:
-    """module key -> keyboard.json contents."""
+def wirings() -> dict[str, Wiring]:
     kicad = HARDWARE / "kicad"
     main = Netlist.load(kicad / "main" / "vgacorne-main.kicad_sch")
     sat = Netlist.load(kicad / "satellite" / "vgacorne-satellite.kicad_sch")
     out = {}
     for module in MODULES:
         mod = Netlist.load(kicad / module / f"vgacorne-{module.replace('_', '-')}.kicad_sch")
-        out[module] = keyboard_json(module, *build_matrix(mod, main, sat))
+        out[module] = build_matrix(mod, main, sat)
     return out
+
+
+def generate(ws: dict[str, Wiring] | None = None) -> dict[str, dict]:
+    """module key -> libhmk keyboard.json contents."""
+    ws = ws or wirings()
+    return {module: keyboard_json(module, w) for module, w in ws.items()}
 
 
 def _dump(obj, indent: int = 0) -> str:
@@ -334,10 +358,17 @@ def _dump(obj, indent: int = 0) -> str:
 
 
 def write() -> list[Path]:
+    from . import qmk
+
+    ws = wirings()
     paths = []
-    for module, data in generate().items():
+    for module, data in generate(ws).items():
         path = out_path(module)
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(_dump(data) + "\n")
+        paths.append(path)
+    for path, text in qmk.generate(ws[qmk.MODULE]).items():
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text(text)
         paths.append(path)
     return paths

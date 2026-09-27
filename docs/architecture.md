@@ -213,12 +213,15 @@ actuation depths are configured at runtime in hmkconf.
 Both definitions build against libhmk with PlatformIO. See
 [firmware/README.md](../firmware/README.md).
 
-**QMK** (F446 module only) needs a keyboard-level custom matrix: QMK mainline
-has no hall-effect feature. Two starting points exist. Keychron's
-`analog_matrix` module (GPL-2+, in their QMK fork) has rapid trigger,
-per-key actuation, SOCD, DKS-style keys and profiles on the STM32F401, and its
-scan has the same shape as ours. Mainline's cipulot EC boards read 74HC4051
-muxes with VIA-configurable thresholds. That port isn't written yet.
+**QMK** (F446 module only) runs with a keyboard-level analog matrix
+(`firmware/qmk/keyboards/vgacorne`), since QMK mainline has no hall-effect
+feature. Its `keyboard.json` layout and `he_wiring.h` are generated from the
+same trace as the libhmk configs. It supports fixed actuation and rapid
+trigger, adjustable with keycodes and saved to flash. It uses the cable-detect
+line to pause and recalibrate the right half when the VGA cable is unplugged
+and replugged. A host test runs the real matrix code against simulated
+sensors. VIA support and per-key features are still to do. See
+[firmware/README.md](../firmware/README.md#qmk-stm32f446-module).
 
 ## Alternatives considered
 
@@ -250,6 +253,7 @@ muxes with VIA-configurable thresholds. That port isn't written yet.
    GH39FKSW.
 5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes
    test IDs. Request real PIDs before sharing boards.
-6. **QMK keyboard** for the F446 module (see [Firmware](#firmware)).
+6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real
+   sensor data (see [firmware/README.md](../firmware/README.md#qmk-stm32f446-module)).
 7. **Module retention.** The case roof holds the module in its socket with
    0.5 mm clearance. Add a thin foam pad on the roof if it rattles.

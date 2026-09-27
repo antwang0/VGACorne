@@ -1,0 +1,412 @@
+{
+  "manufacturer": "VGACorne",
+  "keyboard_name": "VGACorne",
+  "maintainer": "antwang0",
+  "processor": "STM32F446",
+  "bootloader": "stm32-dfu",
+  "usb": {
+    "vid": "0x1209",
+    "pid": "0x0003",
+    "device_version": "0.1.0",
+    "polling_interval": 1
+  },
+  "features": {
+    "bootmagic": false,
+    "extrakey": true,
+    "mousekey": true,
+    "nkro": true
+  },
+  "matrix_size": {
+    "rows": 6,
+    "cols": 8
+  },
+  "matrix_pins": {
+    "custom_lite": true
+  },
+  "debounce": 0,
+  "eeprom": {
+    "driver": "wear_leveling",
+    "wear_leveling": {
+      "driver": "legacy",
+      "backing_size": 16384,
+      "logical_size": 2048
+    }
+  },
+  "keycodes": [
+    {
+      "key": "HE_ACTU",
+      "label": "HE: actuation point deeper"
+    },
+    {
+      "key": "HE_ACTD",
+      "label": "HE: actuation point shallower"
+    },
+    {
+      "key": "HE_RTTG",
+      "label": "HE: rapid trigger on/off"
+    },
+    {
+      "key": "HE_RTSU",
+      "label": "HE: rapid trigger less sensitive"
+    },
+    {
+      "key": "HE_RTSD",
+      "label": "HE: rapid trigger more sensitive"
+    },
+    {
+      "key": "HE_CALB",
+      "label": "HE: recalibrate (hands off the keys)"
+    },
+    {
+      "key": "HE_DBG",
+      "label": "HE: toggle raw-value console output"
+    }
+  ],
+  "community_layouts": [
+    "split_3x6_3"
+  ],
+  "layouts": {
+    "LAYOUT_split_3x6_3": {
+      "layout": [
+        {
+          "matrix": [
+            0,
+            0
+          ],
+          "x": 0,
+          "y": 0.3
+        },
+        {
+          "matrix": [
+            0,
+            3
+          ],
+          "x": 1,
+          "y": 0.3
+        },
+        {
+          "matrix": [
+            1,
+            0
+          ],
+          "x": 2,
+          "y": 0.1
+        },
+        {
+          "matrix": [
+            1,
+            3
+          ],
+          "x": 3,
+          "y": 0.0
+        },
+        {
+          "matrix": [
+            2,
+            0
+          ],
+          "x": 4,
+          "y": 0.1
+        },
+        {
+          "matrix": [
+            2,
+            3
+          ],
+          "x": 5,
+          "y": 0.2
+        },
+        {
+          "matrix": [
+            5,
+            3
+          ],
+          "x": 9,
+          "y": 0.2
+        },
+        {
+          "matrix": [
+            5,
+            0
+          ],
+          "x": 10,
+          "y": 0.1
+        },
+        {
+          "matrix": [
+            4,
+            3
+          ],
+          "x": 11,
+          "y": 0.0
+        },
+        {
+          "matrix": [
+            4,
+            0
+          ],
+          "x": 12,
+          "y": 0.1
+        },
+        {
+          "matrix": [
+            3,
+            3
+          ],
+          "x": 13,
+          "y": 0.3
+        },
+        {
+          "matrix": [
+            3,
+            0
+          ],
+          "x": 14,
+          "y": 0.3
+        },
+        {
+          "matrix": [
+            0,
+            1
+          ],
+          "x": 0,
+          "y": 1.3
+        },
+        {
+          "matrix": [
+            0,
+            4
+          ],
+          "x": 1,
+          "y": 1.3
+        },
+        {
+          "matrix": [
+            1,
+            1
+          ],
+          "x": 2,
+          "y": 1.1
+        },
+        {
+          "matrix": [
+            1,
+            4
+          ],
+          "x": 3,
+          "y": 1.0
+        },
+        {
+          "matrix": [
+            2,
+            1
+          ],
+          "x": 4,
+          "y": 1.1
+        },
+        {
+          "matrix": [
+            2,
+            4
+          ],
+          "x": 5,
+          "y": 1.2
+        },
+        {
+          "matrix": [
+            5,
+            4
+          ],
+          "x": 9,
+          "y": 1.2
+        },
+        {
+          "matrix": [
+            5,
+            1
+          ],
+          "x": 10,
+          "y": 1.1
+        },
+        {
+          "matrix": [
+            4,
+            4
+          ],
+          "x": 11,
+          "y": 1.0
+        },
+        {
+          "matrix": [
+            4,
+            1
+          ],
+          "x": 12,
+          "y": 1.1
+        },
+        {
+          "matrix": [
+            3,
+            4
+          ],
+          "x": 13,
+          "y": 1.3
+        },
+        {
+          "matrix": [
+            3,
+            1
+          ],
+          "x": 14,
+          "y": 1.3
+        },
+        {
+          "matrix": [
+            0,
+            2
+          ],
+          "x": 0,
+          "y": 2.3
+        },
+        {
+          "matrix": [
+            0,
+            5
+          ],
+          "x": 1,
+          "y": 2.3
+        },
+        {
+          "matrix": [
+            1,
+            2
+          ],
+          "x": 2,
+          "y": 2.1
+        },
+        {
+          "matrix": [
+            1,
+            5
+          ],
+          "x": 3,
+          "y": 2.0
+        },
+        {
+          "matrix": [
+            2,
+            2
+          ],
+          "x": 4,
+          "y": 2.1
+        },
+        {
+          "matrix": [
+            2,
+            5
+          ],
+          "x": 5,
+          "y": 2.2
+        },
+        {
+          "matrix": [
+            5,
+            5
+          ],
+          "x": 9,
+          "y": 2.2
+        },
+        {
+          "matrix": [
+            5,
+            2
+          ],
+          "x": 10,
+          "y": 2.1
+        },
+        {
+          "matrix": [
+            4,
+            5
+          ],
+          "x": 11,
+          "y": 2.0
+        },
+        {
+          "matrix": [
+            4,
+            2
+          ],
+          "x": 12,
+          "y": 2.1
+        },
+        {
+          "matrix": [
+            3,
+            5
+          ],
+          "x": 13,
+          "y": 2.3
+        },
+        {
+          "matrix": [
+            3,
+            2
+          ],
+          "x": 14,
+          "y": 2.3
+        },
+        {
+          "matrix": [
+            1,
+            6
+          ],
+          "x": 4,
+          "y": 3.7
+        },
+        {
+          "matrix": [
+            2,
+            6
+          ],
+          "x": 5,
+          "y": 3.7
+        },
+        {
+          "matrix": [
+            2,
+            7
+          ],
+          "x": 6,
+          "y": 3.2,
+          "h": 1.5
+        },
+        {
+          "matrix": [
+            5,
+            7
+          ],
+          "x": 8,
+          "y": 3.2,
+          "h": 1.5
+        },
+        {
+          "matrix": [
+            5,
+            6
+          ],
+          "x": 9,
+          "y": 3.7
+        },
+        {
+          "matrix": [
+            4,
+            6
+          ],
+          "x": 10,
+          "y": 3.7
+        }
+      ]
+    }
+  }
+}

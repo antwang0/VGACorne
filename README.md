@@ -32,7 +32,7 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
 | PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module headers verified pin-for-pin against the socket. **Routing is still to do.** |
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB) |
-| QMK | Possible on the F446 module; the hall-effect matrix port is not written yet |
+| QMK | F446 module: hall-effect matrix with actuation + rapid trigger. **Builds** (31.6 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
 | 3D case model | Not started. The 2D case plan and stack-up define its envelope. |
 
@@ -51,6 +51,7 @@ hardware/
   mechanical/         plate, foam and case-plan DXFs (+ SVG previews), FR4 plate boards
   bom/                grouped BOM CSVs
 firmware/libhmk/keyboards/vgacorne_{at32,f446}/   drop-in libhmk keyboards, one per MCU module
+firmware/qmk/keyboards/vgacorne/                  QMK keyboard (STM32F446 module) + host tests
 ```
 
 ## Quick start

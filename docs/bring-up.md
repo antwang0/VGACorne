@@ -61,6 +61,12 @@ python setup.py -k vgacorne_at32 && pio run       # or -k vgacorne_f446 for the 
 Build the keyboard that matches the fitted module: the two differ in driver,
 crystal and USB speed.
 
+**QMK (STM32F446 module):** `make vgacorne:default:flash` from a QMK checkout
+with `firmware/qmk/keyboards/vgacorne` linked in (see
+[firmware/README.md](../firmware/README.md#qmk-stm32f446-module)). For bring-up,
+build with `CONSOLE_ENABLE = yes`, run `qmk console`, press `HE_DBG`, and watch
+each key's value, rest, bottom-out and distance as you press it.
+
 Flash over DFU (`pio run -t upload`, or WebUSB DFU as the libhmk README
 suggests). After that, the `SP_BOOT` key (adjust layer: hold both
 thumb-layer keys, then the top-left key) or hmkconf can re-enter the

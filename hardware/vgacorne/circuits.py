@@ -37,6 +37,9 @@ class SensorChoice:
     invert_adc: bool
     initial_rest_value: int
     initial_bottom_out_threshold: int
+    # Travel curve for the QMK port: distance ~ log(1 + a x). 0.0082 reproduces
+    # libhmk's table (fitted to GEON Raw HE + OH49E-S); re-fit for your sensor.
+    travel_curve: float = 0.0082
 
 
 SENSOR = SensorChoice(

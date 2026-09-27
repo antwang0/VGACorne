@@ -85,8 +85,15 @@ def intent(board: str, sch: Path) -> bool:
 
 
 def firmware_config() -> bool:
+    from . import qmk
+
     ok = True
-    for module, fresh in firmware.generate().items():
+    ws = firmware.wirings()
+    for path, text in qmk.generate(ws[qmk.MODULE]).items():
+        same = path.exists() and path.read_text() == text
+        ok &= same
+        print(f"  qmk/{path.name} {'up to date' if same else 'STALE - run generate.py firmware'}")
+    for module, fresh in firmware.generate(ws).items():
         path = firmware.out_path(module)
         on_disk = json.loads(path.read_text()) if path.exists() else None
         same = fresh == on_disk
@@ -100,6 +107,22 @@ def firmware_config() -> bool:
             Keyboard.model_validate(fresh)
             print(f"  {path.parent.name}/keyboard.json validates against libhmk's schema")
     return ok
+
+
+def qmk_host_test() -> bool:
+    """Run the QMK hall-effect matrix against simulated sensors (needs a host C compiler)."""
+    import shutil
+
+    script = HARDWARE.parent / "firmware" / "qmk" / "tests" / "run.sh"
+    if not shutil.which("cc"):
+        print("  qmk host test skipped (no C compiler)")
+        return True
+    r = subprocess.run(["sh", str(script)], capture_output=True, text=True)
+    lines = r.stdout.strip().splitlines()
+    print(f"  qmk host test: {lines[-1] if lines else r.stderr.strip()[-200:]}")
+    if r.returncode:
+        print("    " + "\n    ".join(l for l in lines if l.startswith("FAIL")))
+    return r.returncode == 0
 
 
 def module_connector(module: str) -> bool:
@@ -140,5 +163,6 @@ def run_all() -> bool:
     for module in firmware.MODULES:
         ok &= module_connector(module)
     ok &= firmware_config()
+    ok &= qmk_host_test()
     print("  PASS" if ok else "  FAIL")
     return ok
