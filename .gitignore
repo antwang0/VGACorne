@@ -1,0 +1,14 @@
+.venv/
+__pycache__/
+*.pyc
+
+# KiCad per-user and cache files
+*.kicad_prl
+*-backups/
+fp-info-cache
+*.lck
+_autosave-*
+~*.lck
+
+# KiCad MCP server DRC dumps
+*_drc_violations.json

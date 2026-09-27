@@ -1,0 +1,200 @@
+(footprint "SW_HE_MX_1.5u"
+	(version 20241229)
+	(generator "vgacorne")
+	(generator_version "1.0")
+	(layer "F.Cu")
+	(descr "Hall-effect MX-style switch, 1.5u keycap. Two 1.75 mm NPTH pegs at +/-5.08 mm, no centre post. Linear Hall sensor goes on B.Cu at (0,0).")
+	(tags "keyboard switch hall effect magnetic HE MX")
+	(property "Reference" "REF**"
+		(at 0 -8.5 0)
+		(layer "F.SilkS")
+		(uuid "f41a45b7-55bd-5216-89db-1aada5a730ad")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Value" "SW_HE_MX_1.5u"
+		(at 0 8.5 0)
+		(layer "F.Fab")
+		(uuid "a812eeeb-7496-5cf0-92df-667e2d291b15")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "ee88b15d-ab06-57e6-93e2-a0de298898f9")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "3d4a3dc3-0f83-505e-8913-f72f0b173418")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "91964971-669a-5c1b-906d-268df3bf39d0")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(attr through_hole exclude_from_pos_files exclude_from_bom)
+	(fp_rect
+		(start -7 -7)
+		(end 7 7)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "859b4d71-357a-5af5-bf00-942099658665")
+	)
+	(fp_rect
+		(start -14.2875 -9.525)
+		(end 14.2875 9.525)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "Dwgs.User")
+		(uuid "ac81c5b1-cfff-5323-b13b-d70911b998b9")
+	)
+	(fp_rect
+		(start -7.25 -7.25)
+		(end 7.25 7.25)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "ff240a27-e12f-527d-b8a5-722cde563f3e")
+	)
+	(fp_line
+		(start -7 -7)
+		(end -5 -7)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "b0ba4b61-6e85-5e13-9729-07250b78fca5")
+	)
+	(fp_line
+		(start -7 -7)
+		(end -7 -5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f02830a6-29c8-5a31-b2f7-feff8811e4f3")
+	)
+	(fp_line
+		(start -7 7)
+		(end -5 7)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "f5988452-b553-5982-a46c-f2c30bf99088")
+	)
+	(fp_line
+		(start -7 7)
+		(end -7 5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "ffb94124-ba1e-509f-b181-1ef12177084f")
+	)
+	(fp_line
+		(start 7 -7)
+		(end 5 -7)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "58c51e1f-a544-5a16-bb2b-49c9f7650320")
+	)
+	(fp_line
+		(start 7 -7)
+		(end 7 -5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "78bf0d10-61de-53b6-b36c-2ef3379b4f96")
+	)
+	(fp_line
+		(start 7 7)
+		(end 5 7)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "e9a6c9e5-6b62-55d9-bef8-a6811488a848")
+	)
+	(fp_line
+		(start 7 7)
+		(end 7 5)
+		(stroke
+			(width 0.12)
+			(type solid)
+		)
+		(layer "F.SilkS")
+		(uuid "9527d034-966e-5d21-87a8-48da5f8a3e27")
+	)
+	(fp_line
+		(start -1.6 0)
+		(end 1.6 0)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "32a12be2-c55f-532c-a747-23714607383c")
+	)
+	(fp_line
+		(start 0 -1.6)
+		(end 0 1.6)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(layer "B.Fab")
+		(uuid "2fc601f9-3fb2-551a-ac29-c1c936af28b4")
+	)
+	(pad "" np_thru_hole circle
+		(at -5.08 0)
+		(size 1.75 1.75)
+		(drill 1.75)
+		(layers "*.Cu" "*.Mask")
+		(uuid "67b2bdd9-c719-5fcf-a604-8a0fc5a312e5")
+	)
+	(pad "" np_thru_hole circle
+		(at 5.08 0)
+		(size 1.75 1.75)
+		(drill 1.75)
+		(layers "*.Cu" "*.Mask")
+		(uuid "80f2009f-c11f-5f2c-8693-aaf9b1148d74")
+	)
+	(embedded_fonts no)
+)
