@@ -34,7 +34,7 @@ pio run                             # -> .pio/build/<keyboard>/firmware.bin (DFU
 
 Checked against libhmk `main` (July 2026) in September 2026: AT32 33 KB flash /
 13 KB RAM, F446 37 KB flash / 13 KB RAM. The left half's two mouse-column keys
-are `MS_BTN1`/`MS_BTN2`; libhmk has no encoder support, so its scroll wheel
+are `MS_BTN1`/`MS_BTN2`; libhmk has no encoder support, so its rotary encoder
 does nothing there.
 
 ## QMK (STM32F446 module)
@@ -44,11 +44,11 @@ QMK has no hall-effect support, so the keyboard brings its own analog matrix
 
 ```
 qmk/keyboards/vgacorne/
-  he_matrix.c/.h     scan, calibration, travel curve, fixed actuation + rapid trigger, scroll wheel
+  he_matrix.c/.h     scan, calibration, travel curve, fixed actuation + rapid trigger, rotary encoder
   vgacorne.c         HE settings in EEPROM, HE_* keycodes, bring-up console output
   keyboard.json      generated: layout with matrix positions traced from the schematics
   he_wiring.h        generated: pins, ADC channels, remote rows, cable detect, curve table,
-                     scroll-wheel channel and levels, trackpad settings
+                     rotary encoder channel and levels, trackpad settings
   rules.mk           generated: matrix source + the trackpad's QMK driver
   config.h, halconf.h, mcuconf.h, keymaps/default (keymap.c, rules.mk)
 qmk/tests/           host test of he_matrix.c against simulated sensors (./run.sh)
@@ -67,14 +67,14 @@ into `rules.mk` and `he_wiring.h`, and it runs on I2C1 (PB6/PB7) at 400 kHz.
   right-clicks, and two fingers scroll.
 - **Cirque TM040040:** `cirque_pinnacle_i2c`, with tap-to-click and circular
   scroll.
-- **Buttons:** the left half's mouse column has the scroll wheel with left
-  and right click below it (beside G and B); the lower layer's left home row
-  has all three buttons too.
+- **Buttons:** the left half's mouse column has right click beside T and
+  left click beside G, with the rotary encoder below; the lower layer's left
+  home row has all three buttons too.
 - **Without a pad:** the driver's one failed init costs about 0.1–0.3 s at
   boot.
 
-**Scroll wheel.** Its two encoder contacts are summed into one of four
-voltages on the left half's last spare mux channel (see
+**Rotary encoder.** Its two contacts are summed into one of four voltages on
+the left half's last spare mux channel (see
 [architecture](../docs/architecture.md#mouse-column-left-half)). `he_matrix.c`
 keeps that reading each scan and answers QMK's quadrature driver through
 `encoder_quadrature_read_pin()`, so `ENCODER_ENABLE` and an encoder map are all
@@ -91,7 +91,7 @@ make vgacorne:default:flash                     # hold BOOT while plugging in fi
 ```
 
 Built against QMK master (September 2026) with GCC 15: 36.8 KB with the
-TPS65 driver and the scroll wheel, no warnings.
+TPS65 driver and the rotary encoder, no warnings.
 GCC 7 is too old for current QMK's USB code.
 
 | Keycode | Action |
@@ -113,7 +113,7 @@ layout; `config.h` supplies the F446 values.
 **Not done yet:**
 - Trackpad reads in their own thread, so they can't hold up the key scan, and
   the fix for QMK's Azoteq tap bug. Planned in
-  [pointing-devices.md](pointing-devices.md), along with scroll-wheel and
+  [pointing-devices.md](pointing-devices.md), along with rotary-encoder and
   trackpad support for libhmk.
 - VIA / Vial configuration. Settings are keycode-driven for now.
 - Per-key actuation, DKS and SOCD. Keychron's GPL-2+ `analog_matrix` module
@@ -124,13 +124,13 @@ layout; `config.h` supplies the F446 values.
 ## Key indices
 
 ```
- 0  1  2  3  4  5 ()      6  7  8  9 10 11
+ 0  1  2  3  4  5 43      6  7  8  9 10 11
 12 13 14 15 16 17 42     18 19 20 21 22 23
-24 25 26 27 28 29 43     30 31 32 33 34 35
+24 25 26 27 28 29 ()     30 31 32 33 34 35
           36 37 38      39 40 41
 ```
 
-`()` is the scroll wheel.
+42 is left click, 43 right click, `()` the rotary encoder.
 
 The default keymap is base / lower (`MO(1)`) / raise (`MO(2)`) / adjust (hold
 both). Adjust has `SP_BOOT` on key 0 and profile switching `PF(0..3)`. Change

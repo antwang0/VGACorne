@@ -17,7 +17,7 @@
    └─► PTC ─► Schottky ─► +5V_LINK ──────────────────────────────►  │                 ▲
                                     pigtail ─► VGA daughterboard ═══ VGA cable ═══ VGA daughterboard
 
- I2C1 (PB6/PB7) ─► 4.7 kΩ pull-ups ─► J5 ─ FFC ─► trackpad          scroll wheel ─► R ladder ─► mux C ch 7
+ I2C1 (PB6/PB7) ─► 4.7 kΩ pull-ups ─► J5 ─ FFC ─► trackpad          rotary encoder ─► R ladder ─► mux C ch 7
                                                       (optional: Azoteq TPS65 or Cirque)
 ```
 
@@ -26,14 +26,14 @@ microcontroller lives on a small plug-in module (see [below](#mcu-modules)).
 Each scan step, the MCU sets the three
 select lines. All six muxes, local and remote, switch to the same channel.
 After a settling delay the ADC converts six inputs, so 8 steps read all 48 mux
-channels: 44 keys and the scroll wheel. The satellite's 23 sensors are the
-Corne's 21 plus two mouse-button keys, and with the wheel they fill all 24 of
+channels: 44 keys and a rotary encoder. The satellite's 23 sensors are the
+Corne's 21 plus two mouse-button keys, and with the encoder they fill all 24 of
 its channels (see [mouse column](#mouse-column-left-half)).
 
 ## Why an analog link
 
 A split HE board has to move one half's analog readings (here 23 keys and the
-scroll wheel), or their digital results, across the cable. The options:
+rotary encoder), or their digital results, across the cable. The options:
 
 | Approach | Cable | Cost |
 |---|---|---|
@@ -187,19 +187,19 @@ fitted, QMK's init fails once at boot and it stops polling.
 
 ## Mouse column (left half)
 
-The satellite's inner column, beside T/G/B, holds a scroll wheel at the top
-and two extra hall-effect keys below it, beside G and B, for the hand that
-isn't on the trackpad. The keys are ordinary matrix keys (42 and 43 in the key
-order); the default keymaps make them the left and right mouse buttons.
+The satellite's inner column, beside T/G/B, holds two extra hall-effect keys
+and a rotary encoder with a knob, for the hand that isn't on the trackpad:
+right click beside T, left click beside G, and the knob beside B. The keys are
+ordinary matrix keys (42 = left click, 43 = right click in the key order).
 
-The wheel is a Bourns PEC12R-2217F-N0024 encoder (24 detents) with an 18 mm
-rubber wheel on its shaft. It needs no extra pins or cable conductors: it
-takes the satellite's last spare mux channel (mux C, channel 7). Its A and B
-contacts switch to ground; each has a 10 kΩ pull-up (R21/R22) and feeds the
-`WHEEL` node through its own resistor, 47 kΩ for A and 100 kΩ for B (R23/R24,
-1 %), with 1 nF (C5) to ground. The four contact states give four levels:
+The encoder is a Bourns PEC12R-4220F-N0024 (24 detents, no push switch). It
+needs no extra pins or cable conductors: it takes the satellite's last spare
+mux channel (mux C, channel 7). Its A and B contacts switch to ground; each
+has a 10 kΩ pull-up (R21/R22) and feeds the `ENC` node through its own
+resistor, 47 kΩ for A and 100 kΩ for B (R23/R24, 1 %), with 1 nF (C5) to
+ground. The four contact states give four levels:
 
-| A | B | `WHEEL` | ADC counts |
+| A | B | `ENC` | ADC counts |
 |---|---|---|---|
 | closed | closed | 0 V | 0 |
 | open | closed | 2.10 V | 2608 |
@@ -210,9 +210,9 @@ contacts switch to ground; each has a 10 kΩ pull-up (R21/R22) and feeds the
 them to `he_wiring.h`. QMK's matrix scan keeps the reading, picks the nearest
 level, and hands the two contact states to QMK's own quadrature encoder driver.
 The levels are at least 1 V apart, so a few percent of supply difference
-between the halves doesn't matter. With the cable out, the wheel reads as
+between the halves doesn't matter. With the cable out, the encoder reads as
 resting. libhmk has no encoder support: under libhmk the two keys still work,
-the wheel doesn't.
+the knob doesn't.
 
 ## MCU modules
 
@@ -311,7 +311,7 @@ same trace as the libhmk configs. It supports fixed actuation and rapid
 trigger, adjustable with keycodes and saved to flash. It uses the cable-detect
 line to pause and recalibrate the satellite half when the VGA cable is
 unplugged and replugged. It also drives the optional trackpad (see [above](#trackpad-optional))
-and the scroll wheel (see [mouse column](#mouse-column-left-half)).
+and the rotary encoder (see [mouse column](#mouse-column-left-half)).
 A host test runs the real matrix code against simulated sensors. VIA support and per-key features are still to do. See
 [firmware/README.md](../firmware/README.md#qmk-stm32f446-module).
 
@@ -335,7 +335,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    across the top of column 5 and the tab: route them as a tight 90 Ω pair
    over unbroken ground, which matters for the AT32's high-speed USB (2-layer is
    what the HE60 uses; 4-layer would give cleaner USB and analog ground). Route analog
-   nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `WHEEL`) away from the select lines.
+   nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the select lines.
 2. **Hot-plugging.** libhmk calibrates each key's rest value only during the
    first 500 ms after boot. Connect the VGA cable *before* USB, or recalibrate
    from hmkconf. A small libhmk patch could use `DET` (PC4) to ignore remote
@@ -351,7 +351,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real
    sensor data (see [firmware/README.md](../firmware/README.md#qmk-stm32f446-module)).
-   Move the trackpad reads to their own thread, and give libhmk the scroll wheel
+   Move the trackpad reads to their own thread, and give libhmk the rotary encoder
    and trackpad: see [firmware/pointing-devices.md](../firmware/pointing-devices.md).
 7. **Module retention.** The case roof holds the module in its socket with
    0.5 mm clearance. Add a thin foam pad on the roof if it rattles.

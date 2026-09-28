@@ -1,6 +1,6 @@
 # Pointing devices: status and plans
 
-Where the trackpad, the scroll wheel and the mouse-button keys stand in each
+Where the trackpad, the rotary encoder and the mouse-button keys stand in each
 firmware, what is known to be wrong, and the planned fixes. Nothing here is
 implemented yet unless it says so. Checked against QMK master `b1aea255`
 (September 2026) and libhmk `main` `ad426f0` (July 2026).
@@ -8,7 +8,7 @@ implemented yet unless it says so. Checked against QMK master `b1aea255`
 | | QMK, STM32F446 module (1 kHz) | libhmk, AT32F405 module (8 kHz) |
 |---|---|---|
 | Mouse-button keys (42, 43) | works | works (`MS_BTN1`/`MS_BTN2`) |
-| Scroll wheel | works | not supported: [plan](#libhmk-scroll-wheel) |
+| Rotary encoder | works | not supported: [plan](#libhmk-rotary-encoder) |
 | Trackpad | works, blocking reads: [plan](#qmk-trackpad-in-its-own-thread) | not supported: [plan](#libhmk-trackpad) |
 
 The hardware is the same for both modules; every gap below is firmware.
@@ -83,24 +83,24 @@ Test on hardware: tap-to-click presses and releases, two-finger scroll, and
 key timing with the pad busy (console or logic analyser). Compare against the
 blocking build.
 
-## libhmk: scroll wheel
+## libhmk: rotary encoder
 
 libhmk only stores ADC samples for mux channels that are keys (`adc_values[key]`
-in `src/hardware/<mcu>/analog.c`). The wheel's channel is 0 in the matrix, so
+in `src/hardware/<mcu>/analog.c`). The encoder's channel is 0 in the matrix, so
 it is scanned and thrown away, and libhmk has no encoder code. Plan, about
 60–100 lines:
 
-1. In the ADC interrupt, keep the wheel channel's raw sample next to
-   `adc_values`. The wheel's input and channel come from the traced wiring:
-   `firmware.Wiring.wheel`, already written to QMK's `he_wiring.h` as
-   `HE_WHEEL_INPUT` / `HE_WHEEL_CHANNEL`.
-2. Decode the nearest of the four levels (`HE_WHEEL_LEVELS`, from
-   `qmk.wheel_levels()`) into the A/B contact states, as `he_matrix.c` does.
+1. In the ADC interrupt, keep the encoder channel's raw sample next to
+   `adc_values`. The encoder's input and channel come from the traced wiring:
+   `firmware.Wiring.encoder`, already written to QMK's `he_wiring.h` as
+   `HE_ENCODER_INPUT` / `HE_ENCODER_CHANNEL`.
+2. Decode the nearest of the four levels (`HE_ENCODER_LEVELS`, from
+   `qmk.encoder_levels()`) into the A/B contact states, as `he_matrix.c` does.
 3. Count steps with the usual quadrature table (4 transitions per detent).
    Put the count in `mouse_report.wheel`: libhmk's mouse report is TinyUSB's
    `hid_mouse_report_t`, which already has `wheel` and `pan`. Only `buttons`
    is filled today.
-4. The wheel settings need a place in libhmk's `keyboard.json` schema and code
+4. The encoder settings need a place in libhmk's `keyboard.json` schema and code
    generator for an upstream PR, or `#define`s in the board header for a fork.
 
 It doesn't slow the key scan: the decode is a few comparisons per scan.
@@ -124,5 +124,5 @@ A blocking port would be simpler but costs the 8 kHz key rate: ~0.45 ms per
 poll is 3–4 report slots, and a clock stretch up to 80.
 
 Whether libhmk's maintainer wants pointing devices upstream is an open
-question; otherwise this lives in a fork. Do the scroll wheel first: it is
+question; otherwise this lives in a fork. Do the rotary encoder first: it is
 small and independent.

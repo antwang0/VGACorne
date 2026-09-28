@@ -52,7 +52,7 @@ def drc(board: str, pcb: Path) -> bool:
 
 
 NET_CLASS_EXPECT = [(r"/HE_", "Analog"), (r"/ADC_", "Analog"), (r"/LINK_[ABC]$", "Analog"),
-                    (r"/OPA_", "Analog"), (r"/MUX_[ABC]$", "Analog"), (r"/WHEEL$", "Analog"), (r"/USB_", "USB"),
+                    (r"/OPA_", "Analog"), (r"/MUX_[ABC]$", "Analog"), (r"/ENC$", "Analog"), (r"/USB_", "USB"),
                     (r"/\+5V_LINK$", "Power"), (r"^(GND|VBUS|\+)", "Power")]
 
 

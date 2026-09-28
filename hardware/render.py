@@ -13,7 +13,7 @@ KiCad one:
 
 The case, plate, switch positions and ports come from vgacorne.geometry and
 vgacorne.mechanical, so the renders follow layout changes. Keycaps, switches,
-plugs, cables and the scroll wheel's encoder are stand-in models.
+plugs, cables and the encoder knob are stand-in models.
 """
 
 from __future__ import annotations
@@ -66,7 +66,6 @@ COLOURS = {  # sRGB
     "plug": "#1b1c1e",
     "cable": "#1d1e20",     # black jackets and ferrites, even on blue-hooded cables
     "trackpad": "#232427",
-    "wheel": "#2b2c2f",     # rubber tyre on the scroll wheel
     "desk": "#d4d0c8",
 }
 
@@ -123,7 +122,6 @@ def materials() -> dict[str, bpy.types.Material]:
         "trackpad": material("trackpad", c["trackpad"], rough=0.7, grain=0.4),
         "trackpad_glass": material("trackpad-glass", "#161719", rough=0.38),  # etched (anti-glare) glass
         "plug": material("plug", c["plug"], rough=0.45),
-        "wheel": material("wheel", c["wheel"], rough=0.85, grain=0.35),
         "cable": material("cable", c["cable"], rough=0.55),
         "desk": material("desk", c["desk"], rough=0.75),
     }
@@ -390,7 +388,7 @@ class Half:
 
         if self.side == geo.SATELLITE_SIDE:
             self._logo()
-            self._wheel()
+            self._knob()
         self._vga_plug()
         if self.side == geo.MAIN_SIDE:
             self._usb_plug()
@@ -422,28 +420,20 @@ class Half:
         obj.location = (*self.xy(x, y), ST.case_height * MM + 1e-5)
         obj.active_material = self.mats["etch"]
 
-    def _wheel(self) -> None:
-        """Scroll wheel on its encoder's shaft (PEC12R-2xxxF: shaft 10 mm above the PCB)."""
-        m, root = self.mats, self.root
-        axis = ST.pcb_bottom + ST.pcb + geo.ENCODER_AXIS
-        ax = geo.ENCODER_PIN_A[0]
-        _, cy = geo.corne(0.0, geo.WHEEL_Y)
+    def _knob(self) -> None:
+        """Aluminium knob on the rotary encoder's shaft (PEC12R-4220F: shaft top 20 mm above the PCB)."""
+        x, y = geo.corne(*geo.ENCODER)
+        if self.side == "right":
+            x, y = geo.mirror_point(x, y)
+        top = ST.pcb_bottom + ST.pcb + geo.ENCODER_SHAFT + 2.0
+        r, h = geo.KNOB_D / 2, geo.KNOB_H
 
-        def frame(u, v, w):  # w: along the shaft in Corne X; u: across (board Y); v: up
-            bx = geo.place(self.side, *geo.corne(w, 0.0))[0]
-            return (*self.xy(bx, cy + u), (axis + v) * MM)
+        def frame(u, v, w):  # w: up from the knob's top face, downwards negative
+            return (*self.xy(x + u, y + v), (top + w) * MM)
 
-        r, (wx, _), hw = geo.WHEEL_D / 2, geo.WHEEL, geo.WHEEL_W / 2
-        tyre = [(wx - hw, r - 0.9, r - 0.9, 2), (wx - hw + 0.35, r - 0.25, r - 0.25, 2), (wx - hw + 0.9, r, r, 2),
-                (wx + hw - 0.9, r, r, 2), (wx + hw - 0.35, r - 0.25, r - 0.25, 2), (wx + hw, r - 0.9, r - 0.9, 2)]
-        mesh_object("wheel", loft("wheel", tyre, frame, 96), m["wheel"], root)
-        mesh_object("wheel_shaft", loft("wheel_shaft", [(wx + hw - 0.1, 3.0, 3.0, 2), (ax - 4.9, 3.0, 3.0, 2)], frame),
-                    m["plug"], root)
-        mesh_object("encoder_boss", loft("encoder_boss", [(ax - 5.0, 3.5, 3.5, 2), (ax + 0.2, 3.5, 3.5, 2)], frame),
-                    m["nickel"], root)
-        bw, bh = geo.ENCODER_BODY[2] / 2, geo.ENCODER_BODY[3] / 2
-        mesh_object("encoder", box_mesh("encoder", -bw, bw, -bh, bh, ax + 0.2, ax + geo.ENCODER_BODY[1], frame),
-                    m["plug"], root)
+        secs = [(-h, r - 0.6, r - 0.6, 2), (-h + 0.6, r, r, 2), (-1.2, r, r, 2),
+                (-0.3, r - 0.5, r - 0.5, 2), (0.0, r - 1.4, r - 1.4, 2)]
+        mesh_object("knob", loft("knob", secs, frame, 96), self.mats["case"], self.root)
 
     def _vga_plug(self) -> None:
         """Classic blue moulded VGA plug, after the L-com CAD models and photos:

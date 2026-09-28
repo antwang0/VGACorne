@@ -8,7 +8,7 @@ files that must track the hardware:
   (matrix row = ADC input, column = mux channel), USB IDs, EEPROM, keycodes.
 * ``he_wiring.h``   -- select/ADC pins, which inputs arrive over the VGA cable,
   the cable-detect pin, calibration defaults, the travel-curve table, the
-  scroll wheel's channel and levels, and the trackpad's I2C bus and driver
+  rotary encoder's channel and levels, and the trackpad's I2C bus and driver
   settings.
 * ``rules.mk``      -- the hall-effect matrix source and the trackpad driver.
 """
@@ -19,7 +19,7 @@ import json
 import math
 from pathlib import Path
 
-from .circuits import SENSOR, WHEEL_PULL_UP, WHEEL_SUM
+from .circuits import ENCODER_PULL_UP, ENCODER_SUM, SENSOR
 from .geometry import SATELLITE_SIDE
 from .trackpad import MODEL as PAD
 
@@ -32,7 +32,7 @@ LUT_SIZE = 1024
 # the satellite's mouse column (M0, M1) just inside the left half.
 _ROW_Y_LEFT = [0.3, 0.3, 0.1, 0.0, 0.1, 0.2]
 _THUMBS = [(4, 3.7, 1), (5, 3.7, 1), (6, 3.2, 1.5), (8, 3.2, 1.5), (9, 3.7, 1), (10, 3.7, 1)]
-_MOUSE = [(6, 1.2, 1), (6, 2.2, 1)]
+_MOUSE = [(6, 1.2, 1), (6, 0.2, 1)]  # M0 beside G, M1 beside T
 
 KEYCODES = [
     ("HE_ACTU", "HE: actuation point deeper"),
@@ -66,14 +66,14 @@ def adc_channel(pin: str) -> int:
     return base[0] + num
 
 
-def wheel_levels(adc_max: int = 4095) -> list[int]:
-    """ADC reading of the wheel's summing node for each contact state.
+def encoder_levels(adc_max: int = 4095) -> list[int]:
+    """ADC reading of the rotary encoder's summing node for each contact state.
 
     Index = A | B << 1, 1 meaning that contact is open (pulled up). A closed
     contact grounds its side, so with one contact open the node sits on the
     divider supply - pull-up - summing R - node - other summing R - ground.
     """
-    rp, ra, rb = WHEEL_PULL_UP, WHEEL_SUM["A"], WHEEL_SUM["B"]
+    rp, ra, rb = ENCODER_PULL_UP, ENCODER_SUM["A"], ENCODER_SUM["B"]
     node = [0.0, rb / (rp + ra + rb), ra / (rp + ra + rb), 1.0]
     return [round(adc_max * v) for v in node]
 
@@ -105,7 +105,7 @@ def keyboard_json(w) -> dict:
         # pid.codes test ID (libhmk builds use 0x0001/0x0002): request a real PID before distributing.
         "usb": {"vid": "0x1209", "pid": "0x0003", "device_version": "0.1.0", "polling_interval": 1},
         "features": {"bootmagic": False, "extrakey": True, "mousekey": True, "nkro": True,
-                     **({"encoder": True} if w.wheel else {})},
+                     **({"encoder": True} if w.encoder else {})},
         "matrix_size": {"rows": len(w.matrix), "cols": len(w.matrix[0])},
         "matrix_pins": {"custom_lite": True},
         "debounce": 0,
@@ -156,16 +156,16 @@ def wiring_h(w) -> str:
         "}",
         "",
     ]
-    if w.wheel:
-        row, col = w.wheel
+    if w.encoder:
+        row, col = w.encoder
         lines += [
-            "// Scroll wheel on the satellite's mouse column: its A/B contacts are summed into",
+            "// Rotary encoder on the satellite's mouse column: its A/B contacts are summed into",
             "// one level on this input and mux channel. Expected readings per contact state",
-            "// (index = A | B << 1, 1 = contact open), from circuits.WHEEL_PULL_UP/WHEEL_SUM.",
+            "// (index = A | B << 1, 1 = contact open), from circuits.ENCODER_PULL_UP/ENCODER_SUM.",
             "// QMK's quadrature driver reads it through encoder_quadrature_read_pin().",
-            f"#define HE_WHEEL_INPUT {row}",
-            f"#define HE_WHEEL_CHANNEL {col}",
-            f"#define HE_WHEEL_LEVELS {{ {', '.join(str(v) for v in wheel_levels())} }}",
+            f"#define HE_ENCODER_INPUT {row}",
+            f"#define HE_ENCODER_CHANNEL {col}",
+            f"#define HE_ENCODER_LEVELS {{ {', '.join(str(v) for v in encoder_levels())} }}",
             "#define NUM_ENCODERS 1",
             "",
         ]

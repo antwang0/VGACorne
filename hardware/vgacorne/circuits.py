@@ -3,7 +3,7 @@
 * ``main``      -- right half (geometry.MAIN_SIDE): 21 HE sensors, 3 muxes, the
                    MCU module socket, USB-C, the optional trackpad, link port.
 * ``satellite`` -- left half: 23 HE sensors (the Corne's 21 and two mouse
-                   buttons), a scroll-wheel encoder, 3 muxes, cable buffer, LDO,
+                   buttons), a rotary encoder, 3 muxes, cable buffer, LDO,
                    link port.
 * ``link``      -- VGA daughterboard (one per half, identical): vertical DE-15
                    socket screwed to the case wall, wired to the half's PCB
@@ -100,22 +100,22 @@ def C(ref, value, a, b, block, fp=C0402, **kw):
 # ---------------------------------------------------------------------------
 
 # Mux channel assignment, outer to inner. The satellite fills all 24 channels:
-# its mouse column (M0, M1 and the scroll wheel) takes mux C's last three; on
+# its mouse column (M0, M1 and the rotary encoder) takes mux C's last three; on
 # the main half those are tied to ground.
 MUX_KEYS = {
     "A": ["C0R0", "C0R1", "C0R2", "C1R0", "C1R1", "C1R2", "C2R0", "C2R1"],
     "B": ["C2R2", "C3R0", "C3R1", "C3R2", "C4R0", "C4R1", "C4R2", "T0"],
-    "C": ["C5R0", "C5R1", "C5R2", "T1", "T2", "M0", "M1", "WHEEL"],
+    "C": ["C5R0", "C5R1", "C5R2", "T1", "T2", "M0", "M1", "ENC"],
 }
 MUX_REFS = {"A": "U11", "B": "U12", "C": "U13"}
 KEY_ORDER = [k.name for k in all_keys()]  # C0R0..C5R2, T0..T2, M0, M1
 
-# Scroll wheel: the encoder's A/B contacts (common to GND) are summed into one
-# voltage on the WHEEL mux channel, each contact pulled up and weighted by its
-# own resistor, so each of the four contact states gives its own level (see
-# qmk.wheel_levels). 1 nF keeps the node quiet between mux samples.
-WHEEL_PULL_UP = 10e3
-WHEEL_SUM = {"A": 47e3, "B": 100e3}
+# Rotary encoder: its A/B contacts (common to GND) are summed into one voltage
+# on the ENC mux channel, each contact pulled up and weighted by its own
+# resistor, so each of the four contact states gives its own level (see
+# qmk.encoder_levels). 1 nF keeps the node quiet between mux samples.
+ENCODER_PULL_UP = 10e3
+ENCODER_SUM = {"A": 47e3, "B": 100e3}
 
 
 def key_index(name: str) -> int:
@@ -126,7 +126,7 @@ def key_index(name: str) -> int:
 def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str], side: str) -> list[Part]:
     parts: list[Part] = []
     keys = frame_keys(side)
-    present = {k.name for k in keys} | ({"WHEEL"} if side == SATELLITE_SIDE else set())
+    present = {k.name for k in keys} | ({"ENC"} if side == SATELLITE_SIDE else set())
     for key in keys:
         n = key_index(key.name)
         net = f"HE_{key.name}"
@@ -146,7 +146,7 @@ def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str], si
                 "A": com_nets[mux]}
         for ch in range(8):
             name = names[ch] if ch < len(names) else None
-            pins[f"A{ch}"] = ("WHEEL" if name == "WHEEL" else f"HE_{name}") if name in present else "GND"
+            pins[f"A{ch}"] = ("ENC" if name == "ENC" else f"HE_{name}") if name in present else "GND"
         used = [n for n in names if n in present]
         parts.append(Part(MUX_REFS[mux], "74xx:74HC4051", "SN74LV4051APWR", MUX_FP, pins, "mux",
                           fields={"MPN": "SN74LV4051APWR"},
@@ -373,18 +373,18 @@ def satellite() -> Circuit:
     p += sensor_array(("LINK_S0", "LINK_S1", "LINK_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"},
                       SATELLITE_SIDE)
     p += standoffs(SATELLITE_SIDE)
-    # Scroll wheel (mouse column): read through mux C's last channel, see WHEEL_SUM.
+    # Rotary encoder (mouse column): read through mux C's last channel, see ENCODER_SUM.
     p += [
-        Part("ENC1", "Device:RotaryEncoder", "PEC12R-2217F-N0024",
-             "Rotary_Encoder:RotaryEncoder_Bourns_Horizontal_PEC12R-2x17F-Nxxxx",
-             {"A": "WHEEL_A", "B": "WHEEL_B", "C": "GND"}, "wheel", fields={"MPN": "PEC12R-2217F-N0024"},
-             description="Scroll wheel: 24 detents, shaft 10 mm above the PCB; 18 x 6 mm rubber wheel "
-                         "on the shaft, which is cut to 13 mm"),
-        R("R21", f"{WHEEL_PULL_UP / 1e3:g}k", "WHEEL_A", "+3.3VA", "wheel"),
-        R("R22", f"{WHEEL_PULL_UP / 1e3:g}k", "WHEEL_B", "+3.3VA", "wheel"),
-        R("R23", f"{WHEEL_SUM['A'] / 1e3:g}k", "WHEEL_A", "WHEEL", "wheel", fields={"Tolerance": "1%"}),
-        R("R24", f"{WHEEL_SUM['B'] / 1e3:g}k", "WHEEL_B", "WHEEL", "wheel", fields={"Tolerance": "1%"}),
-        C("C5", "1n", "WHEEL", "GND", "wheel"),
+        Part("ENC1", "Device:RotaryEncoder", "PEC12R-4220F-N0024",
+             "Rotary_Encoder:RotaryEncoder_Bourns_Vertical_PEC12R-3x17F-Nxxxx",
+             {"A": "ENC_A", "B": "ENC_B", "C": "GND"}, "encoder", fields={"MPN": "PEC12R-4220F-N0024"},
+             description="Rotary encoder with a knob: 24 detents, 20 mm shaft, no bushing, no switch "
+                         "(same PCB layout as the -3 bushing version)"),
+        R("R21", f"{ENCODER_PULL_UP / 1e3:g}k", "ENC_A", "+3.3VA", "encoder"),
+        R("R22", f"{ENCODER_PULL_UP / 1e3:g}k", "ENC_B", "+3.3VA", "encoder"),
+        R("R23", f"{ENCODER_SUM['A'] / 1e3:g}k", "ENC_A", "ENC", "encoder", fields={"Tolerance": "1%"}),
+        R("R24", f"{ENCODER_SUM['B'] / 1e3:g}k", "ENC_B", "ENC", "encoder", fields={"Tolerance": "1%"}),
+        C("C5", "1n", "ENC", "GND", "encoder"),
     ]
     blocks = [
         ("link", "Link to main half (VGA daughterboard)", (20.32, 38.1), 250),
@@ -393,7 +393,7 @@ def satellite() -> Circuit:
         ("mux", "Analog muxes (selects driven by the main MCU over the cable)", (20.32, 205.74), 560),
         ("mech", "Mechanical", (596.9, 205.74), 225),
         ("keys", "Hall-effect sensors (on B.Cu, centred under each switch)", (20.32, 292.1), 800),
-        ("wheel", "Scroll wheel: A/B summed into one level on mux C channel 7", (292.1, 130.0), 250),
+        ("encoder", "Rotary encoder: A/B summed into one level on mux C channel 7", (292.1, 130.0), 250),
     ]
     return Circuit("vgacorne-satellite", f"VGACorne - satellite ({SATELLITE_SIDE}) half", REV, p, blocks)
 

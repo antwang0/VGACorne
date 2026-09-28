@@ -20,8 +20,8 @@ and +5 V rides pin 9. Every pin keeps its normal VGA role, so plugging a half
 into a monitor by mistake does no harm. The right half also carries the USB-C
 and an optional **trackpad** right beside Y/H/N: a 65 × 49 mm Azoteq TPS65 by
 default, or a 40 mm Cirque. The left half has a **mouse column** beside T/G/B:
-a **scroll wheel** above left- and right-click keys, read over the same cable
-through the muxes' spare channels.
+right- and left-click keys above a **rotary encoder** knob, read over the same
+cable through the muxes' spare channels.
 
 Two MCU modules are designed. The **AT32F405** runs
 [libhmk](https://github.com/peppapighs/libhmk) at 8 kHz (rapid trigger,
@@ -37,8 +37,8 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
 | PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module headers verified pin-for-pin against the socket. **Routing is still to do.** |
-| Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no scroll wheel under libhmk |
-| QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the scroll wheel and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
+| Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no rotary encoder under libhmk |
+| QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
 | 3D case model | Not started. The 2D case plan and stack-up define its envelope; `hardware/render.py` extrudes them for [renders](docs/img/render-top.jpg) |
 
@@ -93,9 +93,9 @@ which are yours to edit.
   carries only the keyboard link. `hardware/vgacorne/trackpad.py` picks the
   pad: an Azoteq TPS65 (multi-touch, 65 × 49 mm, landscape) or a 40 mm Cirque
   Pinnacle. QMK only. See [architecture](docs/architecture.md#trackpad-optional).
-- **Mouse buttons and a scroll wheel on the left half**, for the hand that
+- **Mouse buttons and a rotary encoder on the left half**, for the hand that
   isn't on the trackpad. They fill the satellite muxes' three spare channels;
-  the wheel's two contacts share one channel as four voltage levels. See
+  the encoder's two contacts share one channel as four voltage levels. See
   [architecture](docs/architecture.md#mouse-column-left-half).
 - **The VGA connector lives on the case, not the PCB.** A small vertical
   daughterboard is screwed to the aluminium wall by the DE-15's own screwlocks,

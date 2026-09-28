@@ -2807,7 +2807,7 @@
 		)
 		(uuid "4a3eb5e6-111f-5a52-9c6f-185506ea2a95")
 	)
-	(text "Scroll wheel: A/B summed into one level on mux C channel 7"
+	(text "Rotary encoder: A/B summed into one level on mux C channel 7"
 		(exclude_from_sim no)
 		(at 292.1 132.54 0)
 		(effects
@@ -21415,7 +21415,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "8:1 analog mux C (C5R0, C5R1, C5R2, T1, T2, M0, M1, WHEEL)"
+		(property "Description" "8:1 analog mux C (C5R0, C5R1, C5R2, T1, T2, M0, M1, ENC)"
 			(at 154.94 238.76 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -21557,7 +21557,7 @@
 		)
 		(uuid "99fa245e-46d3-587a-849a-5400c22de704")
 	)
-	(label "WHEEL"
+	(label "ENC"
 		(at 167.64 248.92 0)
 		(fields_autoplaced yes)
 		(effects
@@ -23023,14 +23023,14 @@
 				(justify left)
 			)
 		)
-		(property "Value" "PEC12R-2217F-N0024"
+		(property "Value" "PEC12R-4220F-N0024"
 			(at 322.58 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
-		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Bourns_Horizontal_PEC12R-2x17F-Nxxxx"
+		(property "Footprint" "Rotary_Encoder:RotaryEncoder_Bourns_Vertical_PEC12R-3x17F-Nxxxx"
 			(at 316.23 154.94 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -23044,14 +23044,14 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Scroll wheel: 24 detents, shaft 10 mm above the PCB; 18 x 6 mm rubber wheel on the shaft, which is cut to 13 mm"
+		(property "Description" "Rotary encoder with a knob: 24 detents, 20 mm shaft, no bushing, no switch (same PCB layout as the -3 bushing version)"
 			(at 316.23 154.94 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "MPN" "PEC12R-2217F-N0024"
+		(property "MPN" "PEC12R-4220F-N0024"
 			(at 316.23 154.94 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -23087,7 +23087,7 @@
 		)
 		(uuid "d9db1877-d7d0-5372-a1cb-356bfeb4c346")
 	)
-	(label "WHEEL_A"
+	(label "ENC_A"
 		(at 306.07 152.4 180)
 		(fields_autoplaced yes)
 		(effects
@@ -23107,7 +23107,7 @@
 		)
 		(uuid "d1e90774-70d0-5068-9ee0-d1836734e8f3")
 	)
-	(label "WHEEL_B"
+	(label "ENC_B"
 		(at 306.07 157.48 180)
 		(fields_autoplaced yes)
 		(effects
@@ -23254,7 +23254,7 @@
 		)
 		(uuid "3d79e778-9031-51a2-a406-b3accb9c2940")
 	)
-	(label "WHEEL_A"
+	(label "ENC_A"
 		(at 349.25 147.32 90)
 		(fields_autoplaced yes)
 		(effects
@@ -23401,7 +23401,7 @@
 		)
 		(uuid "7e0dab3b-5398-5d21-a71e-a34a2f24ffc3")
 	)
-	(label "WHEEL_B"
+	(label "ENC_B"
 		(at 367.03 147.32 90)
 		(fields_autoplaced yes)
 		(effects
@@ -23555,7 +23555,7 @@
 		)
 		(uuid "0b19102c-0e07-52e7-901a-d13ae860c8f6")
 	)
-	(label "WHEEL_A"
+	(label "ENC_A"
 		(at 384.81 147.32 90)
 		(fields_autoplaced yes)
 		(effects
@@ -23575,7 +23575,7 @@
 		)
 		(uuid "bda9c42d-8994-5417-82d2-47ef5028a75a")
 	)
-	(label "WHEEL"
+	(label "ENC"
 		(at 384.81 160.02 270)
 		(fields_autoplaced yes)
 		(effects
@@ -23661,7 +23661,7 @@
 		)
 		(uuid "b4ed0d11-8946-5585-b83d-1c68c43e8f68")
 	)
-	(label "WHEEL_B"
+	(label "ENC_B"
 		(at 403.86 147.32 90)
 		(fields_autoplaced yes)
 		(effects
@@ -23681,7 +23681,7 @@
 		)
 		(uuid "adf22825-e9b0-5aba-81ee-96b95041100a")
 	)
-	(label "WHEEL"
+	(label "ENC"
 		(at 403.86 160.02 270)
 		(fields_autoplaced yes)
 		(effects
@@ -23760,7 +23760,7 @@
 		)
 		(uuid "7ac5ba65-c959-5560-b240-aa246c8844ee")
 	)
-	(label "WHEEL"
+	(label "ENC"
 		(at 422.91 147.32 90)
 		(fields_autoplaced yes)
 		(effects

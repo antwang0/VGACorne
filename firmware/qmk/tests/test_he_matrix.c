@@ -12,7 +12,7 @@
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]);
 void matrix_init_custom(void);
-#ifdef HE_WHEEL_INPUT
+#ifdef HE_ENCODER_INPUT
 uint8_t encoder_quadrature_read_pin(uint8_t index, bool pad_b);
 #endif
 
@@ -22,8 +22,8 @@ static uint64_t now_us;
 static int      select_state[64];
 static bool     cable_plugged = true;
 static double   travel[MATRIX_ROWS][MATRIX_COLS]; // 0 = rest, 1 = bottomed out
-static int      wheel_ab = 3;                     // scroll wheel contacts, A | B << 1, 1 = open
-static int      wheel_offset;                     // ADC counts of supply mismatch between the halves
+static int      enc_ab = 3;                       // rotary encoder contacts, A | B << 1, 1 = open
+static int      enc_offset;                       // ADC counts of supply mismatch between the halves
 
 // A DRV5055 reading as the magnet approaches: rest ~2400, bottom-out ~1500.
 // Pressing lowers the raw value (HE_INVERT_ADC = 1). The field grows faster as
@@ -36,10 +36,10 @@ static double field(double t) {
 static adcsample_t sensor(int row, int col) {
     const bool remote = (HE_REMOTE_INPUTS >> row) & 1;
     if (remote && !cable_plugged) return 4095; // R11-R13 pull the input up
-#ifdef HE_WHEEL_INPUT
-    if (row == HE_WHEEL_INPUT && col == HE_WHEEL_CHANNEL) {
-        const uint16_t levels[] = HE_WHEEL_LEVELS;
-        const int      v        = levels[wheel_ab] + wheel_offset;
+#ifdef HE_ENCODER_INPUT
+    if (row == HE_ENCODER_INPUT && col == HE_ENCODER_CHANNEL) {
+        const uint16_t levels[] = HE_ENCODER_LEVELS;
+        const int      v        = levels[enc_ab] + enc_offset;
         return (adcsample_t)(v < 0 ? 0 : v > 4095 ? 4095 : v);
     }
 #endif
@@ -169,27 +169,27 @@ int main(void) {
     CHECK(down(1, 2), "local key works throughout");
     press_to(1, 2, 0.0);
 
-#ifdef HE_WHEEL_INPUT
-    // Scroll wheel: one detent walks the contacts through a Gray-code cycle. Each
-    // state must decode, even with the two halves' supplies ~100 mV apart.
+#ifdef HE_ENCODER_INPUT
+    // Rotary encoder: one detent walks the contacts through a Gray-code cycle.
+    // Each state must decode, even with the two halves' supplies ~100 mV apart.
     const int cycle[] = {3, 1, 0, 2, 3, 2, 0, 1, 3};
     bool      decoded = true;
     for (int off = -120; off <= 120; off += 120) {
-        wheel_offset = off;
+        enc_offset = off;
         for (unsigned i = 0; i < sizeof cycle / sizeof cycle[0]; i++) {
-            wheel_ab = cycle[i];
+            enc_ab = cycle[i];
             scan_ms(1);
             const int got = encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1;
             decoded &= got == cycle[i];
         }
     }
-    CHECK(decoded, "wheel: every contact state decodes from its summed level");
-    CHECK(pressed_count() == 0, "wheel: its channel never registers as a key");
-    wheel_ab      = 0;
+    CHECK(decoded, "encoder: every contact state decodes from its summed level");
+    CHECK(pressed_count() == 0, "encoder: its channel never registers as a key");
+    enc_ab        = 0;
     cable_plugged = false;
     scan_ms(10);
     CHECK((encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1) == 3,
-          "wheel: cable out reads as a resting wheel");
+          "encoder: cable out reads as a resting encoder");
     cable_plugged = true;
 #endif
 

@@ -42,10 +42,10 @@ Heights are from the underside of the case.
 | 13.6 | plate top |
 | 12.9 – 17.6 | trackpad module, its connector and the FFC fold, in their well (right half) |
 | 14.0 – 16.6 | MCU module (behind the trackpad): 5.4 mm connector stack, 1.0 mm board, 1.6 mm LQFP |
+| 16.6 – 30.6 | encoder knob (left half): 3 mm above the plate, top about 2 mm above the keycaps |
 | 17.1 | underside of the 1.5 mm roof over the MCU module and VGA bay (0.5 mm above the module) |
 | 17.6 – 18.6 | trackpad overlay, flush with the top (right half) |
-| 18.6 | top of case (frame 5 mm above the plate); scroll-wheel shaft (left half) |
-| 27.6 | top of the scroll wheel, about level with the keycaps |
+| 18.6 | top of case (frame 5 mm above the plate) |
 
 The frame height is set by the parts under the roof: the VGA bay needs more
 than the DE-15's 12.55 mm flange (it gets 14.1 mm), and the module needs 8.0 mm
@@ -81,8 +81,8 @@ silicone is springier, poron is more muted.
   corner radius), 2.2 mm standoff holes, eight 10 × 4.5 mm gasket tabs. On the
   right half the plate stops at the keys: the trackpad sits over the inner
   column beside it, and the VGA bay and MCU module are behind. On the left half
-  it covers the mouse column too, with a notch at its inner edge for the scroll
-  wheel and its encoder.
+  it covers the mouse column too, including a switch cutout for the rotary
+  encoder.
 - Aluminium 5052 or 6061 at 1.5 mm, waterjet/laser. POM or PC for a softer
   bottom-out.
 - **FR4:** `hardware/mechanical/plate-{left,right}/*.kicad_pcb` are
@@ -184,25 +184,22 @@ principle.
 - **Case:** the outside profile wraps the pad with the same 25 mm minimum
   concave radius. The pad is why the right half is 51 mm wider than the left.
 
-### Mouse column and scroll wheel (left half)
+### Mouse column and rotary encoder (left half)
 
-- The inner column beside T/G/B is exactly one key wide. From the top: the
-  scroll wheel, 3 mm behind T, then M0 (left click) beside G and M1 (right
-  click) beside B, in line with those rows. The wheel is 4 mm clear of M0's
-  keycap and 2.8 mm from T's; M1 is 2.5 mm clear of the 1.5u thumb key's.
-  The wheel can't go further back because the link connector J3 is under it:
-  J3 sits 3 mm toward column 5 so the encoder's legs clear it.
-- **Wheel:** an 18 mm rubber wheel, 6 mm wide, on the flatted shaft of a
-  Bourns PEC12R-2217F-N0024 (24 detents). The encoder stands on the PCB with
-  its shaft 10 mm up, level with the case top, so the wheel's top is level
-  with the keycaps and its bottom clears the PCB by 1 mm. The body (12.5 mm
-  wide, 13.4 mm tall) sits on the inner side, the wheel on the shaft toward
-  column 5; cut the shaft to 13 mm so it stays out from under T's keycap.
-- **Plate:** a notch from the wheel's outer face out through the plate's inner
-  and back edges: the wheel crosses the plate as a 13.8 mm chord, and the body
-  runs to the edge anyway. The plate foam has the same notch, and the case
-  foam a relief under the encoder's legs.
-- **Standoff:** one extra M2 standoff between G, B and the two mouse keys,
+- The inner column beside T/G/B is exactly one key wide, in line with column
+  5's rows: M1 (right click) beside T, M0 (left click) beside G and a rotary
+  encoder beside B.
+- **Encoder:** a Bourns PEC12R-4220F-N0024, upright with a 20 mm shaft, 24
+  detents, no bushing and no push switch. Its 12.4 × 13.4 mm body stands on
+  the PCB through an ordinary 14 mm switch cutout in the plate, like a key.
+  KiCad's footprint for the bushing version (`-3x17F`) has the same pads.
+- **Knob:** 16 mm across, 14 mm tall, on the 6 mm flatted shaft. Pushed on to
+  leave 2 mm above the shaft end, it spans 3 mm above the plate to about 2 mm
+  above the keycaps, and clears the left-click and B keycaps by 2 mm and the
+  1.5u thumb key by 6 mm. Any knob up to about 18 mm across fits.
+- **Foam:** the plate foam has a switch-sized cut at the encoder, and the case
+  foam a relief under its legs.
+- **Standoff:** one extra M2 standoff between G, B, left click and the encoder,
   since the mouse column's plate would otherwise hang 20 mm off column 5.
 
 ### MCU module

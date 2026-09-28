@@ -20,12 +20,12 @@
 |---|---|---|
 | Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the module socket J4 and trackpad FFC connector J5 on top (hand-solderable) |
 | MCU module, 2-layer **1.0 mm** | 1 per firmware you want | AT32F405 (libhmk, 8 kHz) and/or STM32F446 (QMK / libhmk); LQFP on top, header underneath |
-| Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the scroll-wheel encoder ENC1 on top (hand-solder) |
+| Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the rotary encoder ENC1 on top (hand-solder) |
 | VGA daughterboard | 2 | hand-solder: DE-15, 10-wire pigtail, 0402 cap |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
 | HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
-| Bourns PEC12R-2217F-N0024 encoder | 1 | scroll wheel (left half); cut its shaft to 13 mm |
-| Scroll wheel, 18 mm × 6 mm, rubber tyre, 6 mm D-bore | 1 | a mouse-wheel spare or a printed hub with an O-ring |
+| Bourns PEC12R-4220F-N0024 encoder | 1 | knob beside B (left half) |
+| Knob, ~16 mm across, 14 mm tall, 6 mm D-shaft | 1 | any keyboard/audio knob up to ~18 mm across |
 | M2 hex standoffs 3.5 mm, brass | 15 | plus 30 × M2 × 3 mm screws |
 | 10-pin JST-SH pigtail, ~5 cm, single-ended | 2 | plugs into J3, right in front of the daughterboard |
 | VGA cable, male–male | 1 | the classic blue monitor cable is fine. It needs pins 1–3, 5–10 and 12–15 (check pin 9, see JP1/JP2 below). Both ends plug into the back of the case, so ~30 cm reaches round behind the gap |
@@ -93,18 +93,17 @@ bootloader.
    cable. Beep out the VGA cable against the pinout table in
    [architecture.md](architecture.md#vga-link-pinout).
 
-## Scroll wheel (left half, QMK)
+## Rotary encoder (left half, QMK)
 
-1. Before fitting the wheel, measure the `WHEEL` node (C5) with the satellite
-   powered, turning the shaft slowly: it should step between about 0, 1.0,
-   2.1 and 3.3 V. A level that never appears means a contact or one of
-   R21-R24 is off.
-2. In QMK the wheel scrolls on the base layer, scrolls sideways on lower and
-   changes the volume on raise. If it scrolls the wrong way, add
-   `#define ENCODER_DIRECTION_FLIP` to `config.h`. One scroll step per detent
-   is the default (`ENCODER_RESOLUTION 4`); set it to 2 if an encoder gives
-   two steps per detent.
-3. libhmk has no encoder support: the two mouse keys work there, the wheel
+1. With the satellite powered, measure the `ENC` node (C5) while turning the
+   shaft slowly: it should step between about 0, 1.0, 2.1 and 3.3 V. A level
+   that never appears means a contact or one of R21-R24 is off.
+2. In QMK the knob scrolls on the base layer, scrolls sideways on lower and
+   changes the volume on raise. If it turns the wrong way, add
+   `#define ENCODER_DIRECTION_FLIP` to `config.h`. One step per detent is the
+   default (`ENCODER_RESOLUTION 4`); set it to 2 if an encoder gives two steps
+   per detent.
+3. libhmk has no encoder support: the two mouse keys work there, the knob
    doesn't.
 
 ## Trackpad (optional, QMK)
@@ -139,6 +138,6 @@ version (`-2024-`). Check 3.3 V on its FFC pin 12.
 | Left half keys stuck pressed after plugging the cable in late | rest values were learned with the cable out: recalibrate in hmkconf or re-plug USB |
 | One column on the left dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
 | Keys fine, trackpad dead | FFC reversed or folded the wrong way, the FFC seated after power-up (QMK only looks at boot), or, for a Cirque, an SPI pad with R1 still fitted |
-| Wheel scrolls in bursts or backwards on some detents | a missing level on `WHEEL` (see *Scroll wheel*), or the shaft rubbing T's keycap |
+| Knob scrolls in bursts or backwards on some detents | a missing level on `ENC` (see *Rotary encoder*) |
 | Keys trigger randomly with the cable unplugged | pull resistor set doesn't match `invert_adc` |
 | Rest value drifts when pressing on the plate | a standoff screw is loose, so the plate flexes against the PCB |

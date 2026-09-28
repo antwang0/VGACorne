@@ -153,7 +153,7 @@
       },
       {
         "netclass": "Analog",
-        "pattern": "/WHEEL"
+        "pattern": "/ENC"
       }
     ]
   },

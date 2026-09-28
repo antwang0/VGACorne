@@ -68,13 +68,13 @@ constants at the top of the script.
 
 | Module | Contents |
 |---|---|
-| `vgacorne/geometry.py` | Corne v4 key positions, `MAIN_SIDE`, the left half's mouse column and scroll wheel, PCB outline, VGA bay, USB and module ears, standoffs, anchors |
+| `vgacorne/geometry.py` | Corne v4 key positions, `MAIN_SIDE`, the left half's mouse column and rotary encoder, PCB outline, VGA bay, USB and module ears, standoffs, anchors |
 | `vgacorne/trackpad.py` | the optional trackpad: `PADS` (Azoteq TPS65, Cirque TM040040) and `MODEL` |
-| `vgacorne/circuits.py` | the five circuits (main + optional trackpad, satellite + scroll wheel, link, two MCU modules), `SENSOR`, mux channels, the VGA, link and module pinouts |
+| `vgacorne/circuits.py` | the five circuits (main + optional trackpad, satellite + rotary encoder, link, two MCU modules), `SENSOR`, mux channels, the VGA, link and module pinouts |
 | `vgacorne/schematic.py` | label-based `.kicad_sch` writer (library symbols embedded and flattened) |
 | `vgacorne/pcb.py` | pcbnew placement: per-key clusters, muxes, MCU, connectors, collision-aware auto-placer |
 | `vgacorne/firmware.py` | netlist tracer → libhmk `keyboard.json`, default keymap |
-| `vgacorne/qmk.py` | QMK `keyboard.json` layout, `he_wiring.h` (incl. the scroll wheel's levels) and `rules.mk` from the same trace |
+| `vgacorne/qmk.py` | QMK `keyboard.json` layout, `he_wiring.h` (incl. the rotary encoder's levels) and `rules.mk` from the same trace |
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |

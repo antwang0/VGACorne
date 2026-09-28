@@ -88,13 +88,13 @@
     253, 254, 254, 254, 254, 254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255 \
 }
 
-// Scroll wheel on the satellite's mouse column: its A/B contacts are summed into
+// Rotary encoder on the satellite's mouse column: its A/B contacts are summed into
 // one level on this input and mux channel. Expected readings per contact state
-// (index = A | B << 1, 1 = contact open), from circuits.WHEEL_PULL_UP/WHEEL_SUM.
+// (index = A | B << 1, 1 = contact open), from circuits.ENCODER_PULL_UP/ENCODER_SUM.
 // QMK's quadrature driver reads it through encoder_quadrature_read_pin().
-#define HE_WHEEL_INPUT 5
-#define HE_WHEEL_CHANNEL 7
-#define HE_WHEEL_LEVELS { 0, 2608, 1226, 4095 }
+#define HE_ENCODER_INPUT 5
+#define HE_ENCODER_CHANNEL 7
+#define HE_ENCODER_LEVELS { 0, 2608, 1226, 4095 }
 #define NUM_ENCODERS 1
 
 // Trackpad: Azoteq TPS65 under a 1 mm overlay, on I2C1 with 4.7k pull-ups on the main PCB.

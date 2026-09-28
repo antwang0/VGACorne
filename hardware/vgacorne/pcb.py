@@ -352,8 +352,8 @@ def build_satellite(c: Circuit, pcb_path: Path) -> Builder:
 
     lx, ly = geo.anchor("LINK", "left")
     b.face("J3", lx, ly, (0, -1))
-    # Scroll-wheel encoder on top of the mouse column, shaft toward column 5; its
-    # legs come through, so keep the underside clear there too.
+    # Rotary encoder on top of the mouse column's bottom cell, through the plate
+    # like a switch; its legs come through, so keep the underside clear there too.
     ex, ey, erot = geo.encoder_placement(b.side)
     b.put("ENC1", ex, ey, erot, "F", mirror=False)
     b.occupied["B"] += [("ENC1", box(pcbnew.ToMM(p.GetBoundingBox().GetX()), pcbnew.ToMM(p.GetBoundingBox().GetY()),

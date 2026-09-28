@@ -13,9 +13,9 @@
 // value learned while typing, a log-curve map to 0..255 of travel, and then a
 // fixed actuation point or rapid trigger.
 //
-// One mux channel of the other half carries the scroll wheel instead of a key:
-// its two encoder contacts summed into one of four levels. The scan keeps that
-// reading, and QMK's quadrature driver reads the contacts back through
+// One mux channel of the other half carries a rotary encoder instead of a key:
+// its two contacts summed into one of four levels. The scan keeps that reading,
+// and QMK's quadrature driver reads the contacts back through
 // encoder_quadrature_read_pin() below.
 
 #include "quantum.h"
@@ -77,9 +77,9 @@ static ADCConfig          adc_config;
 static ADCConversionGroup adc_group;
 static adcsample_t        samples[HE_INPUT_COUNT];
 
-#ifdef HE_WHEEL_INPUT
-static const uint16_t wheel_levels[4] = HE_WHEEL_LEVELS;
-static adcsample_t    wheel_sample    = ADC_MAX; // both contacts open, as with the cable out
+#ifdef HE_ENCODER_INPUT
+static const uint16_t encoder_levels[4] = HE_ENCODER_LEVELS;
+static adcsample_t    encoder_sample    = ADC_MAX; // both contacts open, as with the cable out
 #endif
 
 // ---------------------------------------------------------------------------
@@ -258,9 +258,9 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
         adcConvert(&ADCD1, &adc_group, samples, 1);
 
         for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
-#ifdef HE_WHEEL_INPUT
-            if (in == HE_WHEEL_INPUT && ch == HE_WHEEL_CHANNEL) {
-                wheel_sample = remote_connected ? samples[in] : ADC_MAX;
+#ifdef HE_ENCODER_INPUT
+            if (in == HE_ENCODER_INPUT && ch == HE_ENCODER_CHANNEL) {
+                encoder_sample = remote_connected ? samples[in] : ADC_MAX;
             }
 #endif
             if (!((used_mask[in] >> ch) & 1)) continue;
@@ -288,16 +288,16 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
 }
 
 // ---------------------------------------------------------------------------
-// Scroll wheel
+// Rotary encoder
 // ---------------------------------------------------------------------------
 
-#ifdef HE_WHEEL_INPUT
+#ifdef HE_ENCODER_INPUT
 // Contact state (A | B << 1, 1 = open) whose level is nearest the last reading.
-static uint8_t wheel_state(void) {
+static uint8_t encoder_contacts(void) {
     uint8_t  best = 3;
     uint16_t err  = UINT16_MAX;
     for (uint8_t s = 0; s < 4; s++) {
-        const uint16_t e = wheel_sample > wheel_levels[s] ? wheel_sample - wheel_levels[s] : wheel_levels[s] - wheel_sample;
+        const uint16_t e = encoder_sample > encoder_levels[s] ? encoder_sample - encoder_levels[s] : encoder_levels[s] - encoder_sample;
         if (e < err) {
             err  = e;
             best = s;
@@ -310,7 +310,7 @@ static uint8_t wheel_state(void) {
 // for each contact instead of reading GPIOs.
 uint8_t encoder_quadrature_read_pin(uint8_t index, bool pad_b) {
     (void)index;
-    return (wheel_state() >> (pad_b ? 1 : 0)) & 1;
+    return (encoder_contacts() >> (pad_b ? 1 : 0)) & 1;
 }
 #endif
 

@@ -193,7 +193,7 @@ class Wiring:
     input_sides: list[str]          # hand of each input's keys: "L" or "R" (see HAND)
     det_pin: str | None             # GPIO that reads the cable-detect line
     i2c_pins: tuple[str, str] | None = None  # (SCL, SDA) GPIOs of the trackpad bus
-    wheel: tuple[int, int] | None = None     # (input, mux channel) of the scroll wheel's level
+    encoder: tuple[int, int] | None = None   # (input, mux channel) of the rotary encoder's level
 
 
 def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
@@ -219,7 +219,7 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     select_pins = [select[b] for b in range(3)]
 
     # --- ADC inputs: each MCU pin that reaches exactly one mux common ------------------
-    inputs, matrix, sides, wheel = [], [], [], None
+    inputs, matrix, sides, encoder = [], [], [], None
     mnl = g.nl["module"]
     pins = sorted(((p, mnl.pin_net[(g.mcu, p)]) for r, p in mnl.pin_net if r == g.mcu),
                   key=lambda t: g.mcu_gpio(t[0]) or "")
@@ -235,10 +235,10 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
         for mpin, ch in sorted(MUX_CHANNEL_PINS.items(), key=lambda t: t[1]):
             cnet = nl.pin_net[(mux, mpin)].lstrip("/")
             row.append(index[(side_of[board], cnet[3:])] if cnet.startswith("HE_") else 0)
-            if cnet == "WHEEL":
-                if wheel:
-                    raise ValueError("two mux channels carry WHEEL")
-                wheel = (len(inputs), ch)
+            if cnet == "ENC":
+                if encoder:
+                    raise ValueError("two mux channels carry ENC")
+                encoder = (len(inputs), ch)
         inputs.append(g.mcu_gpio(pin))
         matrix.append(row)
         sides.append(side_of[board])
@@ -259,7 +259,7 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     # --- trackpad I2C: the MCU pins on the module's I2C nets ---------------------------
     i2c = {net.lstrip("/"): g.mcu_gpio(pin) for pin, net in pins if net.lstrip("/") in ("I2C_SCL", "I2C_SDA")}
     i2c_pins = (i2c["I2C_SCL"], i2c["I2C_SDA"]) if len(i2c) == 2 else None
-    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None, i2c_pins, wheel)
+    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None, i2c_pins, encoder)
 
 
 # ---------------------------------------------------------------------------
@@ -271,7 +271,7 @@ X = "XXXXXXX"
 
 
 def default_keymap() -> list[list[str]]:
-    # Last two: the mouse-button keys (libhmk has no scroll-wheel support).
+    # Last two: the mouse-button keys (libhmk has no encoder support).
     base = [
         "KC_TAB", "KC_Q", "KC_W", "KC_E", "KC_R", "KC_T", "KC_Y", "KC_U", "KC_I", "KC_O", "KC_P", "KC_BSPC",
         "KC_LCTL", "KC_A", "KC_S", "KC_D", "KC_F", "KC_G", "KC_H", "KC_J", "KC_K", "KC_L", "KC_SCLN", "KC_QUOT",
@@ -304,9 +304,9 @@ def default_keymap() -> list[list[str]]:
 
 
 def layout() -> dict:
-    # The mouse column sits just inside the left half: the wheel on the top row,
-    # M0 (42) on the home row, M1 (43) on the bottom row.
-    mouse = {1: 42, 2: 43}
+    # The mouse column sits just inside the left half: M1 (43) on the top row,
+    # M0 (42) on the home row, the rotary encoder on the bottom row.
+    mouse = {0: 43, 1: 42}
     rows = []
     n = 0
     for r in range(3):

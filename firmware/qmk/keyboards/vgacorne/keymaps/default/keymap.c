@@ -12,11 +12,11 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
         KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,         KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
                                    KC_LGUI, MO(_LOWER), KC_SPC,    KC_ENT,  MO(_RAISE), KC_RALT,
-        // Left half's mouse column, below the scroll wheel: beside G, then beside B.
+        // Left half's mouse column: left click beside G, right click beside T.
         MS_BTN1, MS_BTN2
     ),
     // Left home row: mouse buttons, for the trackpad on the right half (a tap clicks too).
-    // The mouse column's lower key becomes the middle button.
+    // The mouse column's right-click key becomes the middle button.
     [_LOWER] = LAYOUT(
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,         KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
         _______, XXXXXXX, MS_BTN3, MS_BTN2, MS_BTN1, XXXXXXX,      KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, XXXXXXX,
@@ -42,8 +42,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 };
 
 #ifdef ENCODER_MAP_ENABLE
-// The left half's scroll wheel. If it scrolls the wrong way, add
-// #define ENCODER_DIRECTION_FLIP to config.h.
+// The left half's rotary encoder, the knob below left click. If it turns the
+// wrong way, add #define ENCODER_DIRECTION_FLIP to config.h.
 const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
     [_BASE]   = { ENCODER_CCW_CW(MS_WHLD, MS_WHLU) },
     [_LOWER]  = { ENCODER_CCW_CW(MS_WHLL, MS_WHLR) }, // sideways

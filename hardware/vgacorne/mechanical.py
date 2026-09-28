@@ -136,32 +136,23 @@ def gasket_tabs(side: str) -> list[Polygon]:
     return [geo.mirror(t) for t in tabs] if side == "right" else tabs
 
 
-# Satellite: the scroll wheel and its encoder stand up through the plate. The
-# wheel crosses the plate as a 13.8 mm chord; the body runs out to the plate's
-# inner edge and the wheel sits at the top of the column, so the plate gets a
-# notch out through its inner and back edges rather than a hole.
-WHEEL_CLEARANCE = 0.6
-WHEEL_NOTCH_HALF = 7.5  # half-length along Y: wheel chord at the plate + clearance
-
-
-def wheel_notch(side: str) -> Polygon | None:
+def encoder_square(side: str, size: float) -> Polygon | None:
+    """Satellite: a switch-sized square round the rotary encoder's shaft (its body is 12.4 x 13.4 mm)."""
     if side != geo.SATELLITE_SIDE:
         return None
-    wheel, body = geo.wheel_left()
-    x0 = wheel.bounds[0] - WHEEL_CLEARANCE
-    _, cy = geo.corne(*geo.WHEEL)
-    notch = box(x0, cy - WHEEL_NOTCH_HALF - 20.0, body.bounds[2] + 5.0, cy + WHEEL_NOTCH_HALF)  # out past both edges
-    notch = notch.buffer(-1.0).buffer(1.0)  # 2 mm end mill
-    return geo.mirror(notch) if side == "right" else notch
+    x, y = geo.corne(*geo.ENCODER)
+    if side == "right":
+        x, y = geo.mirror_point(x, y)
+    return box(x - size / 2, y - size / 2, x + size / 2, y + size / 2)
 
 
 def plate(side: str) -> tuple[Polygon, list[Polygon], list[Polygon]]:
     """(outline incl. gasket tabs, switch cutouts, standoff holes)."""
     outline = unary_union([plate_outline(side), *gasket_tabs(side)])
-    notch = wheel_notch(side)
-    if notch is not None:
-        outline = outline.difference(notch)
     cutouts = [_rounded_square(k, SWITCH_CUTOUT, SWITCH_CUTOUT_R) for k in geo.keys_for(side)]
+    enc = encoder_square(side, SWITCH_CUTOUT - 2 * SWITCH_CUTOUT_R)
+    if enc is not None:
+        cutouts.append(enc.buffer(SWITCH_CUTOUT_R, join_style="round"))
     holes = [Point(x, y).buffer(STANDOFF_HOLE / 2, 32) for x, y in geo.standoffs(side)]
     return outline, cutouts, holes
 
@@ -170,9 +161,9 @@ def plate_foam(side: str) -> tuple[Polygon, list[Polygon]]:
     outline = plate_outline(side).buffer(-0.5)
     cut = [k.square(PLATE_FOAM_SWITCH) for k in geo.keys_for(side)]
     cut += [Point(x, y).buffer(2.75, 32) for x, y in geo.standoffs(side)]
-    notch = wheel_notch(side)
-    if notch is not None:
-        outline = outline.difference(notch.buffer(0.5))
+    enc = encoder_square(side, PLATE_FOAM_SWITCH)
+    if enc is not None:
+        cut.append(enc)
     return outline, cut
 
 
@@ -186,7 +177,7 @@ def case_foam(side: str, board_pcb: Path | None) -> tuple[Polygon, list[Polygon]
 
 
 # Bottom-side parts taller than the ~1.1 mm sensors get a relief in the case
-# foam, and so do the wheel encoder's through-hole legs.
+# foam, and so do the rotary encoder's through-hole legs.
 TALL_PARTS = {"J1", "J2", "J3", "SW22", "SW23", "ENC1"}
 
 

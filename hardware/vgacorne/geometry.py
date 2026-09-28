@@ -9,7 +9,7 @@ All coordinates are KiCad board millimetres (Y grows downward). Everything is
 drawn for the left half; the right half is its mirror image. MAIN_SIDE picks
 the half that carries the MCU module, USB-C and trackpad; the other half (the
 satellite) is passive apart from its mouse column: two mouse-button keys and a
-scroll wheel beside its inner column, for the hand that isn't on the trackpad.
+rotary encoder beside its inner column, for the hand that isn't on the trackpad.
 """
 
 from __future__ import annotations
@@ -120,21 +120,17 @@ MODULE_EAR = (INNER_X[1], BAY[1], INNER_X[1] + 20.5, -8.0)
 MODULE_CONN = ((MODULE_RECT[0] + MODULE_RECT[2]) / 2 + 0.4, (MODULE_RECT[1] + MODULE_RECT[3]) / 2 + 2.0)
 MODULE_CONN_ROT = 90.0
 
-# Satellite only: the mouse column, in the inner column (Corne frame): the scroll
-# wheel at the top, then M0 (left click) beside G and M1 (right click) beside B.
-# The wheel sits as far back as J3 (under it) allows, 4 mm clear of M0's keycap.
-# It is an 18 mm rubber wheel on the shaft of a Bourns PEC12R-2217F-N0024 (24
-# detents, shaft 10 mm above the PCB, so the wheel's top is level with the
-# keycaps). The encoder body stands on the inner side and the wheel on the shaft
-# toward column 5, which is cut to length.
+# Satellite only: the mouse column, in the inner column (Corne frame), in line
+# with column 5's rows: M1 (right click) beside T, M0 (left click) beside G, and
+# a rotary encoder with a knob beside B. The encoder is a Bourns
+# PEC12R-4220F-N0024 (upright, 20 mm shaft, 24 detents, no push switch); its
+# 12.4 x 13.4 mm body sits in a normal 14 mm switch cutout in the plate.
 MOUSE_X = _COLUMNS[5][0] + U
-MOUSE_KEYS = (("M0", _COLUMNS[5][1][1]), ("M1", _COLUMNS[5][1][2]))
-WHEEL_Y = -12.5
-ENCODER_PIN_A = (-10.0, WHEEL_Y - 2.5)  # footprint origin; its shaft points -X from x = -5
-WHEEL = (ENCODER_PIN_A[0] - 8.5, WHEEL_Y)  # wheel centre: 6 mm wide, 0.5 mm clear of the boss
-WHEEL_D, WHEEL_W = 18.0, 6.0
-ENCODER_AXIS = 10.0       # shaft above the PCB top (PEC12R-2xxxF datasheet)
-ENCODER_BODY = (-5.0, 5.2, 12.5, 13.4)  # x0, x1 (from pin A, boss included), width, height
+MOUSE_KEYS = (("M0", 1), ("M1", 0))  # (name, row beside column 5)
+ENCODER_ROW = 2
+ENCODER = (MOUSE_X, _COLUMNS[5][1][ENCODER_ROW])  # shaft centre
+ENCODER_SHAFT = 20.0            # shaft top above the PCB top
+KNOB_D, KNOB_H = 16.0, 14.0     # knob, pushed on to leave its top 2 mm above the shaft
 
 
 def _c(x: float, y: float) -> tuple[float, float]:
@@ -156,7 +152,7 @@ def left_keys() -> list[Key]:
 
 def mouse_keys() -> list[Key]:
     """The satellite's two mouse-button keys, left-half frame."""
-    return [Key(name, 7, 1 + i, *_c(MOUSE_X, y), 0.0) for i, (name, y) in enumerate(MOUSE_KEYS)]
+    return [Key(name, 7, row, *_c(MOUSE_X, _COLUMNS[5][1][row]), 0.0) for name, row in MOUSE_KEYS]
 
 
 def all_keys() -> list[Key]:
@@ -181,20 +177,17 @@ def keys_for(side: str) -> list[Key]:
 
 
 def encoder_placement(side: str) -> tuple[float, float, float]:
-    """Board (x, y, rotation) of the wheel encoder's footprint, shaft toward column 5."""
-    x, y = _c(*ENCODER_PIN_A)
+    """Board (x, y, rotation) of the encoder footprint (origin = pin A, shaft 7.5, 2.5 from it)."""
+    x, y = _c(*ENCODER)
     if side == "left":
-        return x, y, 0.0
-    return mirror_point(x, y)[0], y + 5.0, 180.0  # pins run the other way at 180 deg
+        return x - 7.5, y - 2.5, 0.0
+    return mirror_point(x, y)[0] + 7.5, y + 2.5, 180.0
 
 
-def wheel_left() -> tuple[Polygon, Polygon]:
-    """(wheel, encoder body incl. its boss) footprints in plan, left-half frame."""
-    wx, wy = WHEEL
-    wheel = _box(wx - WHEEL_W / 2, wy - WHEEL_D / 2, wx + WHEEL_W / 2, wy + WHEEL_D / 2)
-    ax = ENCODER_PIN_A[0]
-    body = _box(ax + ENCODER_BODY[0], WHEEL_Y - ENCODER_BODY[2] / 2, ax + ENCODER_BODY[1], WHEEL_Y + ENCODER_BODY[2] / 2)
-    return wheel, body
+def encoder_cell_left() -> Polygon:
+    """Satellite: the encoder's key-sized cell (PCB, plate and case opening), left-half frame."""
+    x, y = ENCODER
+    return _box(x - U / 2 - EDGE_MARGIN, y - U / 2 - EDGE_MARGIN, x + U / 2 + EDGE_MARGIN, y + U / 2 + EDGE_MARGIN)
 
 
 def place(side: str, x: float, y: float, rot: float = 0.0) -> tuple[float, float, float]:
@@ -234,11 +227,6 @@ def inner_tab_left() -> Polygon:
     return _box(INNER_X[0] - 1.0, INNER_TOP, INNER_X[1], TAB_BOTTOM)
 
 
-def mouse_column_left() -> Polygon:
-    """Satellite: the mouse column from the wheel's cell down to M1."""
-    return _box(INNER_X[0], WHEEL_Y - U / 2 - EDGE_MARGIN, INNER_X[1], MOUSE_KEYS[-1][1])
-
-
 def bay_left() -> Polygon:
     """Area reserved for the VGA daughterboard (no PCB, no plate)."""
     return _box(*BAY)
@@ -259,7 +247,7 @@ def frame_outline(side: str, with_tab: bool = True) -> Polygon:
     cells = [k.cell(EDGE_MARGIN) for k in frame_keys(side)]
     extra = [inner_tab_left()] if with_tab else []
     if side == SATELLITE_SIDE:
-        extra.append(mouse_column_left())
+        extra.append(encoder_cell_left())
     if with_tab and side == MAIN_SIDE:
         extra += [_box(*USB_EAR), _box(*MODULE_EAR)]
     shape = _smooth(unary_union(cells + extra))
@@ -313,7 +301,7 @@ _STANDOFFS = [
 
 # Satellite only: the mouse column's plate would otherwise hang 20 mm off column 5.
 _MOUSE_STANDOFFS = [
-    (MOUSE_X - U / 2, 19.05),  # between G, B, M0 and M1
+    (MOUSE_X - U / 2, 19.05),  # between G, B, M0 and the encoder
 ]
 
 
@@ -331,8 +319,7 @@ MUX_ANCHORS = {
     "C": (-33.3375, 19.05),
 }
 USB_ANCHOR = (USB_X, BACK)                # back edge of the USB ear (USB-C on B.Cu), main half
-LINK_ANCHOR = (-17.0, INNER_TOP + 3.1)    # JST-SH link on B.Cu at the tab's top edge, facing the bay,
-                                          # clear of the satellite's wheel encoder legs
+LINK_ANCHOR = (-14.0, INNER_TOP + 3.1)    # JST-SH link on B.Cu at the tab's top edge, facing the bay
 TAB_ANCHOR = (-14.0, -8.0)                # middle of the tab, for support parts
 
 
