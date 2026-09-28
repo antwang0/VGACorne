@@ -23,7 +23,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `lib` | `lib/vgacorne.kicad_sym`, `lib/vgacorne.pretty/` | yes (generated library) |
 | `schematics` | `kicad/*/…kicad_sch`, project files | **only with `--force`** |
 | `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`** |
-| `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json` + `he_wiring.h` | yes: traced from the schematics |
+| `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
 | `check` | nothing | — |
@@ -46,16 +46,35 @@ because they're read back from the schematics.
 
 Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
 
+## Renders
+
+`render.py` builds the assembled keyboard in Blender (the `bpy` module) from
+`geometry.py` and `mechanical.py`, then renders `docs/img/render-{hero,top,port}.jpg`
+with Cycles, on the GPU if one is available. bpy needs Python 3.13, so it gets its own venv:
+
+```sh
+uv venv --python 3.13 ../.venv-render
+uv pip install --python ../.venv-render/bin/python bpy shapely ezdxf
+
+../.venv-render/bin/python render.py                             # all views, 256 samples
+../.venv-render/bin/python render.py hero --samples 32 --scale 0.5   # quick look
+../.venv-render/bin/python render.py --blend /tmp/vgacorne.blend     # also save the scene
+```
+
+Colours, keycap sculpt, the gap between the halves and the splay angle are
+constants at the top of the script.
+
 ## Where things live
 
 | Module | Contents |
 |---|---|
-| `vgacorne/geometry.py` | Corne v4 key positions, PCB outline, daughterboard pocket, standoffs, anchors |
-| `vgacorne/circuits.py` | the five circuits (main, satellite, link, two MCU modules), `SENSOR`, the VGA, link and module pinouts |
+| `vgacorne/geometry.py` | Corne v4 key positions, `MAIN_SIDE`, the left half's mouse column and scroll wheel, PCB outline, VGA bay, USB and module ears, standoffs, anchors |
+| `vgacorne/trackpad.py` | the optional trackpad: `PADS` (Azoteq TPS65, Cirque TM040040) and `MODEL` |
+| `vgacorne/circuits.py` | the five circuits (main + optional trackpad, satellite + scroll wheel, link, two MCU modules), `SENSOR`, mux channels, the VGA, link and module pinouts |
 | `vgacorne/schematic.py` | label-based `.kicad_sch` writer (library symbols embedded and flattened) |
 | `vgacorne/pcb.py` | pcbnew placement: per-key clusters, muxes, MCU, connectors, collision-aware auto-placer |
 | `vgacorne/firmware.py` | netlist tracer → libhmk `keyboard.json`, default keymap |
-| `vgacorne/qmk.py` | QMK `keyboard.json` layout and `he_wiring.h` from the same trace |
+| `vgacorne/qmk.py` | QMK `keyboard.json` layout, `he_wiring.h` (incl. the scroll wheel's levels) and `rules.mk` from the same trace |
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |

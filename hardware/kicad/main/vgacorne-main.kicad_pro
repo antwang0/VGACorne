@@ -150,6 +150,10 @@
       {
         "netclass": "Analog",
         "pattern": "/LINK_[ABC]"
+      },
+      {
+        "netclass": "Analog",
+        "pattern": "/WHEEL"
       }
     ]
   },

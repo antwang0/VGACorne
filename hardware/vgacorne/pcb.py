@@ -23,6 +23,7 @@ from shapely.geometry import Point, Polygon, box
 from shapely.ops import unary_union
 
 from . import geometry as geo
+from .trackpad import MODEL as PAD
 from .circuits import MUX_REFS, key_index
 from .schematic import Circuit, symbol_uuid
 
@@ -290,65 +291,90 @@ def place_standoffs(b: Builder) -> None:
 # ---------------------------------------------------------------------------
 
 def build_main(c: Circuit, pcb_path: Path) -> Builder:
-    b = Builder(c, "left", geo.pcb_outline("left"), pcb_path)
+    b = Builder(c, geo.MAIN_SIDE, geo.pcb_outline(geo.MAIN_SIDE), pcb_path)
     place_keys(b)
     place_standoffs(b)
     place_muxes(b)
 
+    # USB-C on the ear behind column 4, J3 at the top of the tab: both face the back wall.
     ux, uy = geo.anchor("USB", "left")
     b.face("J1", ux, uy + 3.6, (0, -1))
     lx, ly = geo.anchor("LINK", "left")
-    b.face("J3", lx, ly, (0, 1))
-    # MCU module socket on top of the tab; nothing else goes on that side of the tab.
-    b.put("J4", *geo.anchor("MODULE_CONN", "left"), geo.MODULE_CONN_ROT, "F")
-    b.occupied["F"].append(("module", geo.module_rect("left")))
+    b.face("J3", lx, ly, (0, -1))
+    # MCU module socket on the ear behind the trackpad; nothing else goes on top there.
+    mx, my = geo.anchor("MODULE_CONN", "left")
+    b.put("J4", mx, my, geo.MODULE_CONN_ROT, "F")
+    b.occupied["F"].append(("module", geo.module_rect(b.side)))
+    tx, ty = geo.anchor("TAB", "left")
     # Tag-Connect guide pins poke through the board: keep them out from under switches
     # and the module socket (under the rest of the module there is 5 mm of air).
-    b.autoplace("J2", (ux - 3, uy + 11), 0, max_r=24,
+    b.autoplace("J2", (tx - 3, ty + 2), 0, max_r=24,
                 avoid=switch_bodies(b) + [b.poly(b.fps["J4"], "F", grow=0.5)])
 
-    # USB / power / module support: around the tab, spilling under column 5.
-    for ref, rot in (("U4", 0), ("R1", 90), ("R2", 90), ("F1", 0), ("U2", 0), ("U3", 0),
-                     ("C1", 0), ("C2", 0), ("C3", 0), ("C4", 0), ("C5", 0), ("C9", 0), ("C10", 0)):
-        b.autoplace(ref, (ux - 4, uy + 9), rot, max_r=26)
+    # USB input on the ear, spilling under column 4; regulators under the tab,
+    # module decoupling under the socket.
+    for ref, rot in (("U4", 0), ("R1", 90), ("R2", 90), ("F1", 0), ("C1", 0)):
+        b.autoplace(ref, (ux, uy + 9), rot, max_r=26)
+    for ref in ("U2", "U3", "C2", "C3", "C4", "C5"):
+        b.autoplace(ref, (tx + 2, ty), 0, max_r=26)
+    for ref in ("C9", "C10"):
+        b.autoplace(ref, (mx, my), 0, max_r=20)
     for ref in ("SW22", "SW23"):
-        b.autoplace(ref, (ux - 18, uy + 14), 0, max_r=24)
-    # Link: between the module socket and the JST.
+        b.autoplace(ref, (tx - 12, ty + 5), 0, max_r=24)
+    # Link: between the JST and the module socket.
+    for ref in ("F2", "D1", "C15", "U6", "U7"):
+        b.autoplace(ref, (lx - 4, ly + 3), 0, max_r=26)
     for ref in ("R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16",
                 "R17", "R18"):
-        b.autoplace(ref, (lx - 9, ly + 4), 90, max_r=26)
-    for ref in ("F2", "D1", "C15", "U6", "U7"):
-        b.autoplace(ref, (lx - 9, ly + 8), 0, max_r=26)
+        b.autoplace(ref, (lx - 9, ly + 6), 90, max_r=26)
+    # Trackpad FFC connector on top of the board, under the pad's well, its mouth
+    # toward the pad's own connector; the pull-ups beside it.
+    fx, fy = geo.corne(*PAD.fpc)
+    b.face("J5", fx, fy, PAD.fpc_mouth, layer="F")
+    for ref, rot in (("R19", 90), ("R20", 90), ("C16", 0), ("C17", 0)):
+        if ref in b.fps:
+            b.autoplace(ref, (fx, fy), rot, max_r=20)
 
     outline = b.outline
     b.edge(outline)
     b.ground_zones(outline)
     # Strip between the middle column's bottom key and T0: visible between keycaps.
-    b.text(f"VGACorne  left  rev {c.rev}", *geo.corne(-64.0, 35.7), pcbnew.F_SilkS, size=0.9)
+    b.text(f"VGACorne  {b.side}  rev {c.rev}", *geo.place(b.side, *geo.corne(-64.0, 35.7))[:2],
+           pcbnew.F_SilkS, size=0.9)
     return b
 
 
 def build_satellite(c: Circuit, pcb_path: Path) -> Builder:
-    b = Builder(c, "right", geo.pcb_outline("right"), pcb_path)
+    b = Builder(c, geo.SATELLITE_SIDE, geo.pcb_outline(geo.SATELLITE_SIDE), pcb_path)
     place_keys(b)
     place_standoffs(b)
     place_muxes(b)
 
     lx, ly = geo.anchor("LINK", "left")
-    b.face("J3", lx, ly, (0, 1))
-    b.autoplace("R17", (lx, ly - 5), 0, max_r=15)
+    b.face("J3", lx, ly, (0, -1))
+    # Scroll-wheel encoder on top of the mouse column, shaft toward column 5; its
+    # legs come through, so keep the underside clear there too.
+    ex, ey, erot = geo.encoder_placement(b.side)
+    b.put("ENC1", ex, ey, erot, "F", mirror=False)
+    b.occupied["B"] += [("ENC1", box(pcbnew.ToMM(p.GetBoundingBox().GetX()), pcbnew.ToMM(p.GetBoundingBox().GetY()),
+                                     pcbnew.ToMM(p.GetBoundingBox().GetRight()),
+                                     pcbnew.ToMM(p.GetBoundingBox().GetBottom())).buffer(0.5))
+                        for p in b.fps["ENC1"].Pads()]
+    for ref in ("R21", "R22", "R23", "R24", "C5"):
+        b.autoplace(ref, (ex, ey), 90, max_r=20, mirror=False)
+    b.autoplace("R17", (lx, ly + 5), 0, max_r=15)
     for ref in ("U6", "U7"):
-        b.autoplace(ref, (lx, ly - 6), 0, max_r=20)
-    ux, uy = geo.anchor("USB", "left")
-    b.autoplace("U5", (ux, uy + 7), 0, max_r=20)
+        b.autoplace(ref, (lx, ly + 6), 0, max_r=20)
+    tx, ty = geo.anchor("TAB", "left")
+    b.autoplace("U5", (tx, ty), 0, max_r=24)
     for ref in ("R1", "R2", "R3", "C4"):
-        b.autoplace(ref, (ux, uy + 7), 90, max_r=20)
+        b.autoplace(ref, (tx, ty), 90, max_r=24)
     for ref in ("U2", "C1", "C2", "C3"):
-        b.autoplace(ref, (ux - 4, uy + 4), 0, max_r=22)
+        b.autoplace(ref, (tx - 4, ty + 5), 0, max_r=26)
 
     b.edge(b.outline)
     b.ground_zones(b.outline)
-    b.text(f"VGACorne  right  rev {c.rev}", *geo.mirror_point(*geo.corne(-64.0, 35.7)),
+    b.text(f"VGACorne  {b.side}  rev {c.rev}", *geo.place(b.side, *geo.corne(-64.0, 35.7))[:2],
            pcbnew.F_SilkS, size=0.9)
     return b
 
@@ -380,7 +406,7 @@ def build_link(c: Circuit, pcb_path: Path) -> Builder:
         b.autoplace(ref, (cx, cy + LINK_H / 2 - 2.0), 0, layer="B", max_r=16, mirror=False)
     b.edge(outline)
     b.ground_zones(outline)
-    b.text("VGACorne link", cx + 12.5, cy - LINK_H / 2 + 1.6, pcbnew.B_SilkS, size=0.8)
+    b.text("VGACorne", cx + 13.0, cy - LINK_H / 2 + 1.6, pcbnew.B_SilkS, size=0.8)
     return b
 
 
@@ -391,13 +417,14 @@ def build_module(c: Circuit, pcb_path: Path) -> Builder:
     sits on top right over it (under the case roof, see mechanical.STACK), with
     passives around it and, if the top runs out of room, beside the header.
     """
-    outline = geo.module_rect("left").buffer(-0.5).buffer(0.5)
-    b = Builder(c, "left", outline, pcb_path, has_keys=False)
-    cx, cy = geo.anchor("MODULE_CONN", "left")
+    side = geo.MAIN_SIDE
+    outline = geo.module_rect(side).buffer(-0.5).buffer(0.5)
+    b = Builder(c, side, outline, pcb_path, has_keys=False)
+    cx, cy, rot = geo.place(side, *geo.corne(*geo.MODULE_CONN), geo.MODULE_CONN_ROT)
     # Underside, into the carrier's J4. A B.Cu footprint at 0 deg is KiCad's top-bottom
     # mirror of the F.Cu one; 180 deg turns that into the left-right mirror a header
     # plugged face-down actually is (checks.module_connector verifies pin n -> pin n).
-    b.put("J1", cx, cy, geo.MODULE_CONN_ROT + 180, "B", mirror=False)
+    b.put("J1", cx, cy, rot + 180, "B", mirror=False)
     x0, y0, x1, y1 = outline.bounds
     b.put("U1", cx, (y0 + y1) / 2, 0, "F", mirror=False)  # top side, over the connector
     for ref in ("Y1", *(r for r in b.fps if r not in ("J1", "U1", "Y1"))):

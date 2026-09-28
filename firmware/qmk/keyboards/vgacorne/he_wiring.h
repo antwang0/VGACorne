@@ -8,10 +8,10 @@
 #define HE_INPUT_COUNT 6
 #define HE_ADC_PINS { A0, A1, A2, A3, A4, A5 }
 #define HE_ADC_CHANNELS { 0, 1, 2, 3, 4, 5 }
-#define HE_USED_MASK { 0x3F, 0x7F, 0xFF, 0x3F, 0x7F, 0xFF }
-// Inputs that come from the right half over the VGA cable (bit per input).
+#define HE_USED_MASK { 0xFF, 0xFF, 0x1F, 0xFF, 0xFF, 0x7F }
+// Inputs that come from the left half over the VGA cable (bit per input).
 #define HE_REMOTE_INPUTS 0x38
-// Low when the right half is connected (1 k to GND there, 10 k pull-up here).
+// Low when the left half is connected (1 k to GND there, 10 k pull-up here).
 #define HE_DET_PIN C4
 
 // Sensor: DRV5055A3QDBZR. 1 = its reading falls as a key is pressed; the matrix flips it
@@ -87,3 +87,22 @@
     252, 252, 252, 252, 252, 252, 252, 253, 253, 253, 253, 253, 253, 253, 253, 253, \
     253, 254, 254, 254, 254, 254, 254, 254, 254, 254, 255, 255, 255, 255, 255, 255 \
 }
+
+// Scroll wheel on the satellite's mouse column: its A/B contacts are summed into
+// one level on this input and mux channel. Expected readings per contact state
+// (index = A | B << 1, 1 = contact open), from circuits.WHEEL_PULL_UP/WHEEL_SUM.
+// QMK's quadrature driver reads it through encoder_quadrature_read_pin().
+#define HE_WHEEL_INPUT 5
+#define HE_WHEEL_CHANNEL 7
+#define HE_WHEEL_LEVELS { 0, 2608, 1226, 4095 }
+#define NUM_ENCODERS 1
+
+// Trackpad: Azoteq TPS65 under a 1 mm overlay, on I2C1 with 4.7k pull-ups on the main PCB.
+#define I2C_DRIVER I2CD1
+#define I2C1_SCL_PIN B6
+#define I2C1_SDA_PIN B7
+#define I2C1_SCL_PAL_MODE 4
+#define I2C1_SDA_PAL_MODE 4
+#define I2C1_CLOCK_SPEED 400000
+#define I2C1_DUTY_CYCLE FAST_DUTY_CYCLE_2
+#define AZOTEQ_IQS5XX_TPS65 // landscape; if both axes come out reversed add AZOTEQ_IQS5XX_ROTATION_180

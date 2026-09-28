@@ -4,7 +4,7 @@
 // Hall-effect analog matrix (QMK custom matrix "lite").
 //
 // Each scan step sets the three mux select lines -- switching all six 8:1 muxes
-// at once, three on this half and three on the right half over the VGA cable --
+// at once, three on this half and three on the other half over the VGA cable --
 // waits for the outputs to settle, then converts every ADC input in one ADC
 // sequence. Eight steps read the whole keyboard. Matrix row = ADC input,
 // column = mux channel (see he_wiring.h, generated from the schematics).
@@ -12,6 +12,11 @@
 // Per key: an exponential filter, a rest value learned at start-up, a bottom-out
 // value learned while typing, a log-curve map to 0..255 of travel, and then a
 // fixed actuation point or rapid trigger.
+//
+// One mux channel of the other half carries the scroll wheel instead of a key:
+// its two encoder contacts summed into one of four levels. The scan keeps that
+// reading, and QMK's quadrature driver reads the contacts back through
+// encoder_quadrature_read_pin() below.
 
 #include "quantum.h"
 #include "he_matrix.h"
@@ -71,6 +76,11 @@ static bool          remote_connected = true;
 static ADCConfig          adc_config;
 static ADCConversionGroup adc_group;
 static adcsample_t        samples[HE_INPUT_COUNT];
+
+#ifdef HE_WHEEL_INPUT
+static const uint16_t wheel_levels[4] = HE_WHEEL_LEVELS;
+static adcsample_t    wheel_sample    = ADC_MAX; // both contacts open, as with the cable out
+#endif
 
 // ---------------------------------------------------------------------------
 // Hardware
@@ -137,7 +147,7 @@ void he_recalibrate(uint8_t input_mask) {
 static void finish_calibration(void) {
     for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
         if (!calibrating[in] || timer_elapsed(calibration_start[in]) < HE_CALIBRATION_MS) continue;
-        if (is_remote(in) && !remote_connected) continue; // wait for the right half
+        if (is_remote(in) && !remote_connected) continue; // wait for the other half
         for (uint8_t ch = 0; ch < HE_CHANNELS; ch++) {
             he_key_t *k = &keys[in][ch];
             k->rest     = k->value;
@@ -210,7 +220,7 @@ static void update_link(void) {
     const bool connected = !gpio_read_pin(HE_DET_PIN);
     if (connected == remote_connected) return;
     remote_connected = connected;
-    // Unplugged: hold the right half released. Plugged in: learn fresh rest
+    // Unplugged: hold the other half released. Plugged in: learn fresh rest
     // values, since the cable path shifts them slightly.
     he_recalibrate(HE_REMOTE_INPUTS);
 }
@@ -248,6 +258,11 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
         adcConvert(&ADCD1, &adc_group, samples, 1);
 
         for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
+#ifdef HE_WHEEL_INPUT
+            if (in == HE_WHEEL_INPUT && ch == HE_WHEEL_CHANNEL) {
+                wheel_sample = remote_connected ? samples[in] : ADC_MAX;
+            }
+#endif
             if (!((used_mask[in] >> ch) & 1)) continue;
             he_key_t *k = &keys[in][ch];
             k->value    = (uint16_t)(((uint32_t)k->value * ((1u << HE_FILTER_SHIFT) - 1) + oriented(samples[in])) >> HE_FILTER_SHIFT);
@@ -271,6 +286,33 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
     finish_calibration();
     return changed;
 }
+
+// ---------------------------------------------------------------------------
+// Scroll wheel
+// ---------------------------------------------------------------------------
+
+#ifdef HE_WHEEL_INPUT
+// Contact state (A | B << 1, 1 = open) whose level is nearest the last reading.
+static uint8_t wheel_state(void) {
+    uint8_t  best = 3;
+    uint16_t err  = UINT16_MAX;
+    for (uint8_t s = 0; s < 4; s++) {
+        const uint16_t e = wheel_sample > wheel_levels[s] ? wheel_sample - wheel_levels[s] : wheel_levels[s] - wheel_sample;
+        if (e < err) {
+            err  = e;
+            best = s;
+        }
+    }
+    return best;
+}
+
+// QMK's quadrature encoder driver (ENCODER_ENABLE, no ENCODER_A_PINS) calls this
+// for each contact instead of reading GPIOs.
+uint8_t encoder_quadrature_read_pin(uint8_t index, bool pad_b) {
+    (void)index;
+    return (wheel_state() >> (pad_b ? 1 : 0)) & 1;
+}
+#endif
 
 // ---------------------------------------------------------------------------
 // Accessors

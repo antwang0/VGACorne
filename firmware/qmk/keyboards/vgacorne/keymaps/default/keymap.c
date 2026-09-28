@@ -7,32 +7,50 @@ enum layers { _BASE, _LOWER, _RAISE, _ADJUST };
 
 // clang-format off
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
-    [_BASE] = LAYOUT_split_3x6_3(
+    [_BASE] = LAYOUT(
         KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,         KC_Y,    KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
         KC_LCTL, KC_A,    KC_S,    KC_D,    KC_F,    KC_G,         KC_H,    KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
         KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,         KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_ESC,
-                                   KC_LGUI, MO(_LOWER), KC_SPC,    KC_ENT,  MO(_RAISE), KC_RALT
+                                   KC_LGUI, MO(_LOWER), KC_SPC,    KC_ENT,  MO(_RAISE), KC_RALT,
+        // Left half's mouse column, below the scroll wheel: beside G, then beside B.
+        MS_BTN1, MS_BTN2
     ),
-    [_LOWER] = LAYOUT_split_3x6_3(
+    // Left home row: mouse buttons, for the trackpad on the right half (a tap clicks too).
+    // The mouse column's lower key becomes the middle button.
+    [_LOWER] = LAYOUT(
         KC_GRV,  KC_1,    KC_2,    KC_3,    KC_4,    KC_5,         KC_6,    KC_7,    KC_8,    KC_9,    KC_0,    _______,
-        _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, XXXXXXX,
+        _______, XXXXXXX, MS_BTN3, MS_BTN2, MS_BTN1, XXXXXXX,      KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT, XXXXXXX, XXXXXXX,
         _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_HOME, KC_PGDN, KC_PGUP, KC_END,  XXXXXXX, XXXXXXX,
-                                   _______, _______, _______,      _______, _______, _______
+                                   _______, _______, _______,      _______, _______, _______,
+        _______, MS_BTN3
     ),
-    [_RAISE] = LAYOUT_split_3x6_3(
+    [_RAISE] = LAYOUT(
         KC_TILD, KC_EXLM, KC_AT,   KC_HASH, KC_DLR,  KC_PERC,      KC_CIRC, KC_AMPR, KC_ASTR, KC_LPRN, KC_RPRN, KC_DEL,
         _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_BSLS, KC_GRV,
         _______, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_PIPE, KC_TILD,
-                                   _______, _______, _______,      _______, _______, _______
+                                   _______, _______, _______,      _______, _______, _______,
+        _______, _______
     ),
     // Hold both layer keys. Left: hall-effect tuning. Right: media.
-    [_ADJUST] = LAYOUT_split_3x6_3(
+    [_ADJUST] = LAYOUT(
         QK_BOOT, KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,        KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11,
         HE_CALB, HE_ACTD, HE_ACTU, HE_RTTG, HE_RTSD, HE_RTSU,      KC_MPRV, KC_VOLD, KC_VOLU, KC_MNXT, XXXXXXX, KC_F12,
         HE_DBG,  XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,      KC_MPLY, KC_MUTE, XXXXXXX, XXXXXXX, XXXXXXX, XXXXXXX,
-                                   _______, _______, _______,      _______, _______, _______
+                                   _______, _______, _______,      _______, _______, _______,
+        _______, _______
     ),
 };
+
+#ifdef ENCODER_MAP_ENABLE
+// The left half's scroll wheel. If it scrolls the wrong way, add
+// #define ENCODER_DIRECTION_FLIP to config.h.
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+    [_BASE]   = { ENCODER_CCW_CW(MS_WHLD, MS_WHLU) },
+    [_LOWER]  = { ENCODER_CCW_CW(MS_WHLL, MS_WHLR) }, // sideways
+    [_RAISE]  = { ENCODER_CCW_CW(KC_VOLD, KC_VOLU) },
+    [_ADJUST] = { ENCODER_CCW_CW(_______, _______) },
+};
+#endif
 // clang-format on
 
 layer_state_t layer_state_set_user(layer_state_t state) {

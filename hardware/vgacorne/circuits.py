@@ -1,10 +1,14 @@
-"""Electrical design of the three VGACorne boards.
+"""Electrical design of the VGACorne boards.
 
-* ``main``      -- left half: 21 HE sensors, 3 muxes, AT32F405 MCU, USB-C, link port.
-* ``satellite`` -- right half: 21 HE sensors, 3 muxes, cable buffer, LDO, link port.
+* ``main``      -- right half (geometry.MAIN_SIDE): 21 HE sensors, 3 muxes, the
+                   MCU module socket, USB-C, the optional trackpad, link port.
+* ``satellite`` -- left half: 23 HE sensors (the Corne's 21 and two mouse
+                   buttons), a scroll-wheel encoder, 3 muxes, cable buffer, LDO,
+                   link port.
 * ``link``      -- VGA daughterboard (one per half, identical): vertical DE-15
                    socket screwed to the case wall, wired to the half's PCB
                    with a 10-pin JST-SH pigtail.
+* ``module_*``  -- the plug-in MCU modules.
 
 Only the main half has a microcontroller. The satellite's three mux outputs
 travel to the MCU's ADC over the VGA cable's three 75-ohm coax pairs; the three
@@ -16,7 +20,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .geometry import keys_for
+from .geometry import MAIN_SIDE, SATELLITE_SIDE, all_keys, frame_keys
+from .trackpad import MODEL as PAD
 from .schematic import Circuit, Part
 
 REV = "0.1"
@@ -94,14 +99,23 @@ def C(ref, value, a, b, block, fp=C0402, **kw):
 # Sensor array + muxes (identical on both halves)
 # ---------------------------------------------------------------------------
 
-# Mux channel assignment: one mux per column pair, thumbs on the inner muxes.
+# Mux channel assignment, outer to inner. The satellite fills all 24 channels:
+# its mouse column (M0, M1 and the scroll wheel) takes mux C's last three; on
+# the main half those are tied to ground.
 MUX_KEYS = {
-    "A": ["C0R0", "C0R1", "C0R2", "C1R0", "C1R1", "C1R2"],
-    "B": ["C2R0", "C2R1", "C2R2", "C3R0", "C3R1", "C3R2", "T0"],
-    "C": ["C4R0", "C4R1", "C4R2", "C5R0", "C5R1", "C5R2", "T1", "T2"],
+    "A": ["C0R0", "C0R1", "C0R2", "C1R0", "C1R1", "C1R2", "C2R0", "C2R1"],
+    "B": ["C2R2", "C3R0", "C3R1", "C3R2", "C4R0", "C4R1", "C4R2", "T0"],
+    "C": ["C5R0", "C5R1", "C5R2", "T1", "T2", "M0", "M1", "WHEEL"],
 }
 MUX_REFS = {"A": "U11", "B": "U12", "C": "U13"}
-KEY_ORDER = [k.name for k in keys_for("left")]  # C0R0..C5R2, T0..T2
+KEY_ORDER = [k.name for k in all_keys()]  # C0R0..C5R2, T0..T2, M0, M1
+
+# Scroll wheel: the encoder's A/B contacts (common to GND) are summed into one
+# voltage on the WHEEL mux channel, each contact pulled up and weighted by its
+# own resistor, so each of the four contact states gives its own level (see
+# qmk.wheel_levels). 1 nF keeps the node quiet between mux samples.
+WHEEL_PULL_UP = 10e3
+WHEEL_SUM = {"A": 47e3, "B": 100e3}
 
 
 def key_index(name: str) -> int:
@@ -109,9 +123,11 @@ def key_index(name: str) -> int:
     return KEY_ORDER.index(name) + 1
 
 
-def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str]) -> list[Part]:
+def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str], side: str) -> list[Part]:
     parts: list[Part] = []
-    for key in keys_for("left"):
+    keys = frame_keys(side)
+    present = {k.name for k in keys} | ({"WHEEL"} if side == SATELLITE_SIDE else set())
+    for key in keys:
         n = key_index(key.name)
         net = f"HE_{key.name}"
         fp = "vgacorne:SW_HE_MX_1u" if key.w == 1 else "vgacorne:SW_HE_MX_1.5u"
@@ -124,26 +140,28 @@ def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str]) ->
             C(f"C{100 + n}", "100n", "+3.3VA", "GND", "keys", key=key.name),
             C(f"C{200 + n}", "4.7n", net, "GND", "keys", key=key.name),
         ]
-    for mux, keys in MUX_KEYS.items():
+    for mux, names in MUX_KEYS.items():
         pins = {"VCC": "+3.3VA", "VEE": "GND", "GND": "GND", "~{E}": "GND",
                 "S0": select_nets[0], "S1": select_nets[1], "S2": select_nets[2],
                 "A": com_nets[mux]}
         for ch in range(8):
-            pins[f"A{ch}"] = f"HE_{keys[ch]}" if ch < len(keys) else "GND"
+            name = names[ch] if ch < len(names) else None
+            pins[f"A{ch}"] = ("WHEEL" if name == "WHEEL" else f"HE_{name}") if name in present else "GND"
+        used = [n for n in names if n in present]
         parts.append(Part(MUX_REFS[mux], "74xx:74HC4051", "SN74LV4051APWR", MUX_FP, pins, "mux",
                           fields={"MPN": "SN74LV4051APWR"},
-                          description=f"8:1 analog mux {mux} ({', '.join(keys)})"))
+                          description=f"8:1 analog mux {mux} ({', '.join(used)})"))
     parts.append(C("C31", "100n", "+3.3VA", "GND", "mux"))
     parts.append(C("C32", "100n", "+3.3VA", "GND", "mux"))
     parts.append(C("C33", "100n", "+3.3VA", "GND", "mux"))
     return parts
 
 
-def standoffs(block="mech") -> list[Part]:
+def standoffs(side: str, block="mech") -> list[Part]:
     from .geometry import standoffs as pts
     return [Part(f"H{i + 1}", "Mechanical:MountingHole", "M2 standoff", "vgacorne:Standoff_M2", {}, block,
                  description="PCB-to-plate M2 standoff")
-            for i in range(len(pts("left")))]
+            for i in range(len(pts(side)))]
 
 
 def link_esd(block="link") -> list[Part]:
@@ -179,7 +197,7 @@ HEADER_FP = "Connector_PinHeader_1.27mm:PinHeader_2x12_P1.27mm_Vertical_SMD"
 # main PCB). Net names are the same on both boards. USB sits between grounds;
 # the analog inputs are grouped away from the select lines.
 MODULE_PINS = {
-    "1": "GND", "2": "GND",
+    "1": "I2C_SCL", "2": "I2C_SDA",  # trackpad bus; pulled up on the carrier
     "3": "+3V3", "4": "+3.3VA",  # digital supply; analog rail = the module's ADC reference
     "5": "+5V", "6": "GND",
     "7": "USB_DP", "8": "USB_DN",
@@ -217,6 +235,7 @@ MCU_SIGNAL_PINS = {
     "9": "MUX_S0", "10": "MUX_S1", "11": "MUX_S2",  # PC1..PC3
     "24": "DET",  # PC4
     "7": "NRST", "60": "BOOT", "46": "SWDIO", "49": "SWCLK",  # NRST, BOOT0, PA13, PA14
+    "58": "I2C_SCL", "59": "I2C_SDA",  # PB6/PB7: I2C1 (AF4 on the STM32, MUX4 on the AT32)
 }
 # firmware.py derives libhmk's select/input pin names from these by tracing the netlists.
 
@@ -266,6 +285,19 @@ def main() -> Circuit:
              "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical",
              {"1": "+3V3", "2": "SWDIO", "3": "NRST", "4": "SWCLK", "5": "GND"}, "mcu"),
     ]
+    # Optional trackpad (trackpad.MODEL) on the module's I2C1: an FFC to the pad,
+    # which runs from the digital +3V3. Pads carry no I2C pull-ups of their own.
+    n = max(int(k) for k in PAD.connector_pins if k.isdigit())  # unused pins get no-connect flags
+    p += [
+        Part("J5", f"Connector_Generic_MountingPin:Conn_01x{n:02d}_MountingPin", "Trackpad", PAD.connector_fp,
+             dict(PAD.connector_pins), "trackpad", fields={"MPN": PAD.connector_mpn},
+             description=PAD.connector_note),
+        R("R19", "4.7k", "I2C_SCL", "+3V3", "trackpad"),
+        R("R20", "4.7k", "I2C_SDA", "+3V3", "trackpad"),
+        C("C16", "1u", "+3V3", "GND", "trackpad", fp=C0603),
+    ]
+    if "TP_NRST" in PAD.connector_pins.values():  # internal pull-up; Azoteq recommends 100 nF
+        p.append(C("C17", "100n", "TP_NRST", "GND", "trackpad"))
     # Link to the satellite (via the VGA daughterboard)
     pull_up = SENSOR.invert_adc  # pull toward "released" when the cable is absent
     p += [
@@ -293,12 +325,13 @@ def main() -> Circuit:
         *link_esd(),
     ]
     p += sensor_array(("MUX_S0", "MUX_S1", "MUX_S2"),
-                      {"A": "ADC_L_A", "B": "ADC_L_B", "C": "ADC_L_C"})
-    p += standoffs()
+                      {"A": "ADC_L_A", "B": "ADC_L_B", "C": "ADC_L_C"}, MAIN_SIDE)
+    p += standoffs(MAIN_SIDE)
     blocks = [
         ("power", "USB-C, protection, regulators", (20.32, 38.1), 260),
         ("mcu", "MCU module socket, boot/reset, SWD", (292.1, 38.1), 290),
-        ("link", "Link to right half (VGA daughterboard)", (596.9, 38.1), 225),
+        ("link", "Link to the satellite half (VGA daughterboard)", (596.9, 38.1), 225),
+        ("trackpad", "Trackpad (optional)", (292.1, 130.0), 290),
         ("mux", "Analog muxes (select lines shared with the right half)", (20.32, 205.74), 560),
         ("mech", "Mechanical", (596.9, 205.74), 225),
         ("keys", "Hall-effect sensors (on B.Cu, centred under each switch)", (20.32, 292.1), 800),
@@ -307,7 +340,7 @@ def main() -> Circuit:
         ("Cable unplugged: R11-R13 (pull-up) or R14-R16 (pull-down) hold the remote ADC inputs at the\n"
          "'released' end of the range; populate the set matching libhmk invert_adc.", (596.9, 250.0)),
     ]
-    return Circuit("vgacorne-main", "VGACorne - main (left) half", REV, p, blocks, notes)
+    return Circuit("vgacorne-main", f"VGACorne - main ({MAIN_SIDE}) half", REV, p, blocks, notes)
 
 
 # ---------------------------------------------------------------------------
@@ -337,8 +370,22 @@ def satellite() -> Circuit:
         R("R2", "75", "OPA_B", "LINK_B", "buffer"),
         R("R3", "75", "OPA_C", "LINK_C", "buffer"),
     ]
-    p += sensor_array(("LINK_S0", "LINK_S1", "LINK_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"})
-    p += standoffs()
+    p += sensor_array(("LINK_S0", "LINK_S1", "LINK_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"},
+                      SATELLITE_SIDE)
+    p += standoffs(SATELLITE_SIDE)
+    # Scroll wheel (mouse column): read through mux C's last channel, see WHEEL_SUM.
+    p += [
+        Part("ENC1", "Device:RotaryEncoder", "PEC12R-2217F-N0024",
+             "Rotary_Encoder:RotaryEncoder_Bourns_Horizontal_PEC12R-2x17F-Nxxxx",
+             {"A": "WHEEL_A", "B": "WHEEL_B", "C": "GND"}, "wheel", fields={"MPN": "PEC12R-2217F-N0024"},
+             description="Scroll wheel: 24 detents, shaft 10 mm above the PCB; 18 x 6 mm rubber wheel "
+                         "on the shaft, which is cut to 13 mm"),
+        R("R21", f"{WHEEL_PULL_UP / 1e3:g}k", "WHEEL_A", "+3.3VA", "wheel"),
+        R("R22", f"{WHEEL_PULL_UP / 1e3:g}k", "WHEEL_B", "+3.3VA", "wheel"),
+        R("R23", f"{WHEEL_SUM['A'] / 1e3:g}k", "WHEEL_A", "WHEEL", "wheel", fields={"Tolerance": "1%"}),
+        R("R24", f"{WHEEL_SUM['B'] / 1e3:g}k", "WHEEL_B", "WHEEL", "wheel", fields={"Tolerance": "1%"}),
+        C("C5", "1n", "WHEEL", "GND", "wheel"),
+    ]
     blocks = [
         ("link", "Link to main half (VGA daughterboard)", (20.32, 38.1), 250),
         ("power", "Local analog regulator (from VGA pin 9 +5 V)", (292.1, 38.1), 250),
@@ -346,8 +393,9 @@ def satellite() -> Circuit:
         ("mux", "Analog muxes (selects driven by the main MCU over the cable)", (20.32, 205.74), 560),
         ("mech", "Mechanical", (596.9, 205.74), 225),
         ("keys", "Hall-effect sensors (on B.Cu, centred under each switch)", (20.32, 292.1), 800),
+        ("wheel", "Scroll wheel: A/B summed into one level on mux C channel 7", (292.1, 130.0), 250),
     ]
-    return Circuit("vgacorne-satellite", "VGACorne - satellite (right) half", REV, p, blocks)
+    return Circuit("vgacorne-satellite", f"VGACorne - satellite ({SATELLITE_SIDE}) half", REV, p, blocks)
 
 
 # ---------------------------------------------------------------------------
@@ -357,7 +405,7 @@ def satellite() -> Circuit:
 def link() -> Circuit:
     """Vertical daughterboard: DE-15 on the front, pigtail pads on the back.
 
-    It stands against the case's inner wall and is held there by the DE-15's
+    It stands against the case's back wall and is held there by the DE-15's
     4-40 screwlocks, so cable forces go straight into the aluminium.
     """
     p: list[Part] = [

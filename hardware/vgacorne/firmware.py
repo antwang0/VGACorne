@@ -23,6 +23,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from .circuits import LINK_PINS, SENSOR, mating_pin
+from .geometry import MAIN_SIDE, SATELLITE_SIDE
 
 HARDWARE = Path(__file__).resolve().parent.parent
 REPO = HARDWARE.parent
@@ -120,16 +121,20 @@ def _gpio(pinfunction: str) -> str | None:
     return f"{m.group(1)}{m.group(2)}" if m else None
 
 
-# Key order seen by the firmware / configurator (left to right, like QMK's
-# LAYOUT_split_3x6_3): three rows of 12, then the six thumbs.
+HAND = {"left": "L", "right": "R"}  # key_order() labels
+
+
+# Key order seen by the firmware / configurator: the Corne's 42 keys left to
+# right like QMK's LAYOUT_split_3x6_3 (three rows of 12, then the six thumbs),
+# then the satellite's two mouse-button keys, so keys 0-41 keep their numbers.
 def key_order() -> list[tuple[str, str]]:
     order = []
     for row in range(3):
         order += [("L", f"C{c}R{row}") for c in range(6)]
         order += [("R", f"C{c}R{row}") for c in reversed(range(6))]
     order += [("L", "T0"), ("L", "T1"), ("L", "T2"), ("R", "T2"), ("R", "T1"), ("R", "T0")]
+    order += [(HAND[SATELLITE_SIDE], "M0"), (HAND[SATELLITE_SIDE], "M1")]
     return order
-
 
 MODULE_CONN = ("J4", "J1")  # carrier socket, module header
 LINK_CONN = "J3"            # JST-SH on both halves; the VGA path is 1:1
@@ -185,15 +190,17 @@ class Wiring:
     select_pins: list[str]          # GPIO per select bit (S0 first)
     inputs: list[str]               # GPIO per ADC input
     matrix: list[list[int]]         # [input][mux channel] -> 1-based key index, 0 = unused
-    input_sides: list[str]          # "L" (main half) or "R" (satellite, via the cable)
+    input_sides: list[str]          # hand of each input's keys: "L" or "R" (see HAND)
     det_pin: str | None             # GPIO that reads the cable-detect line
+    i2c_pins: tuple[str, str] | None = None  # (SCL, SDA) GPIOs of the trackpad bus
+    wheel: tuple[int, int] | None = None     # (input, mux channel) of the scroll wheel's level
 
 
 def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     g = Boards(module, main, sat)
     order = key_order()
     index = {k: i + 1 for i, k in enumerate(order)}  # libhmk matrix is 1-based, 0 = none
-    side_of = {"main": "L", "sat": "R"}
+    side_of = {"main": HAND[MAIN_SIDE], "sat": HAND[SATELLITE_SIDE]}
 
     # --- select lines: every mux S_i on both halves must reach the same MCU pin --------
     select: dict[int, str] = {}
@@ -212,7 +219,7 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     select_pins = [select[b] for b in range(3)]
 
     # --- ADC inputs: each MCU pin that reaches exactly one mux common ------------------
-    inputs, matrix, sides = [], [], []
+    inputs, matrix, sides, wheel = [], [], [], None
     mnl = g.nl["module"]
     pins = sorted(((p, mnl.pin_net[(g.mcu, p)]) for r, p in mnl.pin_net if r == g.mcu),
                   key=lambda t: g.mcu_gpio(t[0]) or "")
@@ -225,9 +232,13 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
         board, _, mux, _ = hits[0]
         nl = g.nl[board]
         row = []
-        for mpin, _ch in sorted(MUX_CHANNEL_PINS.items(), key=lambda t: t[1]):
+        for mpin, ch in sorted(MUX_CHANNEL_PINS.items(), key=lambda t: t[1]):
             cnet = nl.pin_net[(mux, mpin)].lstrip("/")
             row.append(index[(side_of[board], cnet[3:])] if cnet.startswith("HE_") else 0)
+            if cnet == "WHEEL":
+                if wheel:
+                    raise ValueError("two mux channels carry WHEEL")
+                wheel = (len(inputs), ch)
         inputs.append(g.mcu_gpio(pin))
         matrix.append(row)
         sides.append(side_of[board])
@@ -244,7 +255,11 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     det.discard(None)
     if len(det) > 1:
         raise ValueError(f"several MCU pins reach LINK_DET: {det}")
-    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None)
+
+    # --- trackpad I2C: the MCU pins on the module's I2C nets ---------------------------
+    i2c = {net.lstrip("/"): g.mcu_gpio(pin) for pin, net in pins if net.lstrip("/") in ("I2C_SCL", "I2C_SDA")}
+    i2c_pins = (i2c["I2C_SCL"], i2c["I2C_SDA"]) if len(i2c) == 2 else None
+    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None, i2c_pins, wheel)
 
 
 # ---------------------------------------------------------------------------
@@ -256,38 +271,48 @@ X = "XXXXXXX"
 
 
 def default_keymap() -> list[list[str]]:
+    # Last two: the mouse-button keys (libhmk has no scroll-wheel support).
     base = [
         "KC_TAB", "KC_Q", "KC_W", "KC_E", "KC_R", "KC_T", "KC_Y", "KC_U", "KC_I", "KC_O", "KC_P", "KC_BSPC",
         "KC_LCTL", "KC_A", "KC_S", "KC_D", "KC_F", "KC_G", "KC_H", "KC_J", "KC_K", "KC_L", "KC_SCLN", "KC_QUOT",
         "KC_LSFT", "KC_Z", "KC_X", "KC_C", "KC_V", "KC_B", "KC_N", "KC_M", "KC_COMM", "KC_DOT", "KC_SLSH", "KC_ESC",
         "KC_LGUI", "MO(1)", "KC_SPC", "KC_ENT", "MO(2)", "KC_RALT",
+        "MS_BTN1", "MS_BTN2",
     ]
     lower = [
         "KC_GRV", "KC_1", "KC_2", "KC_3", "KC_4", "KC_5", "KC_6", "KC_7", "KC_8", "KC_9", "KC_0", _,
         _, X, X, X, X, X, "KC_LEFT", "KC_DOWN", "KC_UP", "KC_RGHT", X, X,
         _, X, X, X, X, X, "KC_HOME", "KC_PGDN", "KC_PGUP", "KC_END", X, X,
         _, _, _, _, "MO(3)", _,
+        _, _,
     ]
     raise_ = [
         "KC_GRV", X, X, X, X, X, "KC_MINS", "KC_EQL", "KC_LBRC", "KC_RBRC", "KC_BSLS", "KC_DEL",
         _, X, X, X, X, X, X, X, X, X, X, X,
         _, X, X, X, X, X, X, X, X, X, X, X,
         _, "MO(3)", _, _, _, _,
+        _, _,
     ]
     adjust = [
         "SP_BOOT", "KC_F1", "KC_F2", "KC_F3", "KC_F4", "KC_F5", "KC_F6", "KC_F7", "KC_F8", "KC_F9", "KC_F10", "KC_F11",
         X, "PF(0)", "PF(1)", "PF(2)", "PF(3)", X, "KC_MPRV", "KC_VOLD", "KC_VOLU", "KC_MNXT", X, "KC_F12",
         X, X, X, X, X, X, "KC_MPLY", "KC_MUTE", X, X, X, X,
         _, _, _, _, _, _,
+        _, _,
     ]
     return [base, lower, raise_, adjust]
 
 
 def layout() -> dict:
+    # The mouse column sits just inside the left half: the wheel on the top row,
+    # M0 (42) on the home row, M1 (43) on the bottom row.
+    mouse = {1: 42, 2: 43}
     rows = []
     n = 0
-    for _row in range(3):
-        row = [{"key": n + i} for i in range(6)] + [{"key": n + 6, "x": 3}] + [{"key": n + 7 + i} for i in range(5)]
+    for r in range(3):
+        row = [{"key": n + i} for i in range(6)]
+        row += [{"key": mouse[r]}, {"key": n + 6, "x": 2}] if r in mouse else [{"key": n + 6, "x": 3}]
+        row += [{"key": n + 7 + i} for i in range(5)]
         rows.append(row)
         n += 12
     rows.append([{"key": 36, "x": 4}, {"key": 37}, {"key": 38, "h": 1.5},

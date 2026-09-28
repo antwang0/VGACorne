@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 #pragma once
 
-#include "he_wiring.h" // generated from the schematics
+#include "he_wiring.h" // generated from the schematics, incl. the trackpad settings
 
 // Hall-effect settings (actuation, rapid trigger) live in the keyboard datablock.
 #define EECONFIG_KB_DATA_SIZE 8

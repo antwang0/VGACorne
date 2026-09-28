@@ -7,3 +7,7 @@
 // Hall-effect matrix: all six mux outputs are read by ADC1 in one sequence.
 #undef STM32_ADC_USE_ADC1
 #define STM32_ADC_USE_ADC1 TRUE
+
+// Trackpad on I2C1.
+#undef STM32_I2C_USE_I2C1
+#define STM32_I2C_USE_I2C1 TRUE

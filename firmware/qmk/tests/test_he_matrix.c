@@ -12,6 +12,9 @@
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]);
 void matrix_init_custom(void);
+#ifdef HE_WHEEL_INPUT
+uint8_t encoder_quadrature_read_pin(uint8_t index, bool pad_b);
+#endif
 
 // --- simulated hardware ------------------------------------------------------
 ADCDriver       ADCD1;
@@ -19,6 +22,8 @@ static uint64_t now_us;
 static int      select_state[64];
 static bool     cable_plugged = true;
 static double   travel[MATRIX_ROWS][MATRIX_COLS]; // 0 = rest, 1 = bottomed out
+static int      wheel_ab = 3;                     // scroll wheel contacts, A | B << 1, 1 = open
+static int      wheel_offset;                     // ADC counts of supply mismatch between the halves
 
 // A DRV5055 reading as the magnet approaches: rest ~2400, bottom-out ~1500.
 // Pressing lowers the raw value (HE_INVERT_ADC = 1). The field grows faster as
@@ -31,6 +36,13 @@ static double field(double t) {
 static adcsample_t sensor(int row, int col) {
     const bool remote = (HE_REMOTE_INPUTS >> row) & 1;
     if (remote && !cable_plugged) return 4095; // R11-R13 pull the input up
+#ifdef HE_WHEEL_INPUT
+    if (row == HE_WHEEL_INPUT && col == HE_WHEEL_CHANNEL) {
+        const uint16_t levels[] = HE_WHEEL_LEVELS;
+        const int      v        = levels[wheel_ab] + wheel_offset;
+        return (adcsample_t)(v < 0 ? 0 : v > 4095 ? 4095 : v);
+    }
+#endif
     return (adcsample_t)(2400 + 7 * row + col - 900.0 * field(travel[row][col]));
 }
 
@@ -133,7 +145,7 @@ int main(void) {
     press_to(3, 0, 0.0);
     CHECK(!down(3, 0), "rapid trigger: fully released at rest");
 
-    // Cable unplugged mid-press: right half releases and stays quiet.
+    // Cable unplugged mid-press: the remote half releases and stays quiet.
     s.flags = 0;
     he_set_settings(&s);
     press_to(4, 1, 1.0);
@@ -152,9 +164,34 @@ int main(void) {
     CHECK(down(4, 1), "re-plugged: remote key works again");
     press_to(4, 1, 0.0);
 
-    // Local keys are unaffected by the right half's calibration.
+    // Local keys are unaffected by the remote half's calibration.
     press_to(1, 2, 1.0);
     CHECK(down(1, 2), "local key works throughout");
+    press_to(1, 2, 0.0);
+
+#ifdef HE_WHEEL_INPUT
+    // Scroll wheel: one detent walks the contacts through a Gray-code cycle. Each
+    // state must decode, even with the two halves' supplies ~100 mV apart.
+    const int cycle[] = {3, 1, 0, 2, 3, 2, 0, 1, 3};
+    bool      decoded = true;
+    for (int off = -120; off <= 120; off += 120) {
+        wheel_offset = off;
+        for (unsigned i = 0; i < sizeof cycle / sizeof cycle[0]; i++) {
+            wheel_ab = cycle[i];
+            scan_ms(1);
+            const int got = encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1;
+            decoded &= got == cycle[i];
+        }
+    }
+    CHECK(decoded, "wheel: every contact state decodes from its summed level");
+    CHECK(pressed_count() == 0, "wheel: its channel never registers as a key");
+    wheel_ab      = 0;
+    cable_plugged = false;
+    scan_ms(10);
+    CHECK((encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1) == 3,
+          "wheel: cable out reads as a resting wheel");
+    cable_plugged = true;
+#endif
 
     printf("all passed\n");
     return 0;

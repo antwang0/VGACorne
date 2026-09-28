@@ -26,7 +26,7 @@ typedef struct {
 
 typedef struct {
     uint16_t value;  // filtered reading, oriented so pressing increases it
-    uint16_t rest;   // learned at start-up (and when the right half is plugged in)
+    uint16_t rest;   // learned at start-up (and when the other half is plugged in)
     uint16_t bottom; // learned while typing
     uint8_t  distance;
     bool     calibrating;

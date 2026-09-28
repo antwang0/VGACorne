@@ -32,8 +32,10 @@ python setup.py -k vgacorne_at32    # or vgacorne_f446
 pio run                             # -> .pio/build/<keyboard>/firmware.bin (DFU suffix added)
 ```
 
-Checked against libhmk `main` in September 2026: AT32 33 KB flash / 13 KB RAM,
-F446 37 KB flash / 13 KB RAM.
+Checked against libhmk `main` (July 2026) in September 2026: AT32 33 KB flash /
+13 KB RAM, F446 37 KB flash / 13 KB RAM. The left half's two mouse-column keys
+are `MS_BTN1`/`MS_BTN2`; libhmk has no encoder support, so its scroll wheel
+does nothing there.
 
 ## QMK (STM32F446 module)
 
@@ -42,19 +44,42 @@ QMK has no hall-effect support, so the keyboard brings its own analog matrix
 
 ```
 qmk/keyboards/vgacorne/
-  he_matrix.c/.h     scan, calibration, travel curve, fixed actuation + rapid trigger
+  he_matrix.c/.h     scan, calibration, travel curve, fixed actuation + rapid trigger, scroll wheel
   vgacorne.c         HE settings in EEPROM, HE_* keycodes, bring-up console output
   keyboard.json      generated: layout with matrix positions traced from the schematics
-  he_wiring.h        generated: pins, ADC channels, right-half rows, cable detect, curve table
-  config.h, halconf.h, mcuconf.h, rules.mk, keymaps/default
+  he_wiring.h        generated: pins, ADC channels, remote rows, cable detect, curve table,
+                     scroll-wheel channel and levels, trackpad settings
+  rules.mk           generated: matrix source + the trackpad's QMK driver
+  config.h, halconf.h, mcuconf.h, keymaps/default (keymap.c, rules.mk)
 qmk/tests/           host test of he_matrix.c against simulated sensors (./run.sh)
 ```
 
 Matrix row = ADC input, column = mux channel. One scan steps all eight mux
 channels and converts the six ADC inputs in a single sequence, taking about
-0.23 ms. It uses `DET` (PC4) to hold the right half released while the VGA
+0.23 ms. It uses `DET` (PC4) to hold the satellite half released while the VGA
 cable is out and to recalibrate it when the cable comes back, which libhmk
 can't do yet.
+
+**Trackpad.** The optional trackpad beside Y/H/N is chosen in
+`hardware/vgacorne/trackpad.py`. Its QMK driver and settings are generated
+into `rules.mk` and `he_wiring.h`, and it runs on I2C1 (PB6/PB7) at 400 kHz.
+- **Azoteq TPS65** (default): `azoteq_iqs5xx`. Tap clicks, a two-finger tap
+  right-clicks, and two fingers scroll.
+- **Cirque TM040040:** `cirque_pinnacle_i2c`, with tap-to-click and circular
+  scroll.
+- **Buttons:** the left half's mouse column has the scroll wheel with left
+  and right click below it (beside G and B); the lower layer's left home row
+  has all three buttons too.
+- **Without a pad:** the driver's one failed init costs about 0.1–0.3 s at
+  boot.
+
+**Scroll wheel.** Its two encoder contacts are summed into one of four
+voltages on the left half's last spare mux channel (see
+[architecture](../docs/architecture.md#mouse-column-left-half)). `he_matrix.c`
+keeps that reading each scan and answers QMK's quadrature driver through
+`encoder_quadrature_read_pin()`, so `ENCODER_ENABLE` and an encoder map are all
+the keymap needs. Default map: scroll on base, sideways scroll on lower,
+volume on raise. `ENCODER_DIRECTION_FLIP` in `config.h` reverses it.
 
 Build:
 
@@ -65,7 +90,8 @@ cd qmk_firmware && make vgacorne:default        # needs arm-none-eabi-gcc >= 10 
 make vgacorne:default:flash                     # hold BOOT while plugging in first
 ```
 
-Built against QMK 0.34.5 (September 2026) with GCC 15: 31.6 KB, no warnings.
+Built against QMK master (September 2026) with GCC 15: 36.8 KB with the
+TPS65 driver and the scroll wheel, no warnings.
 GCC 7 is too old for current QMK's USB code.
 
 | Keycode | Action |
@@ -75,6 +101,9 @@ GCC 7 is too old for current QMK's USB code.
 | `HE_RTSU` / `HE_RTSD` | rapid trigger less / more sensitive (default 0.3 mm) |
 | `HE_CALB` | recalibrate every key (hands off for half a second) |
 | `HE_DBG` | print raw/rest/bottom/distance per key (`CONSOLE_ENABLE = yes`, `qmk console`) |
+
+The layout macro is `LAYOUT`: the Corne's 42 keys in `LAYOUT_split_3x6_3`
+order, then the two mouse-column keys.
 
 Settings persist in flash sector 1 through QMK's legacy wear-levelling
 driver. ChibiOS's embedded-flash driver doesn't support the F446, and the
@@ -91,11 +120,13 @@ layout; `config.h` supplies the F446 values.
 ## Key indices
 
 ```
- 0  1  2  3  4  5        6  7  8  9 10 11
-12 13 14 15 16 17       18 19 20 21 22 23
-24 25 26 27 28 29       30 31 32 33 34 35
-          36 37 38     39 40 41
+ 0  1  2  3  4  5 ()      6  7  8  9 10 11
+12 13 14 15 16 17 42     18 19 20 21 22 23
+24 25 26 27 28 29 43     30 31 32 33 34 35
+          36 37 38      39 40 41
 ```
+
+`()` is the scroll wheel.
 
 The default keymap is base / lower (`MO(1)`) / raise (`MO(2)`) / adjust (hold
 both). Adjust has `SP_BOOT` on key 0 and profile switching `PF(0..3)`. Change

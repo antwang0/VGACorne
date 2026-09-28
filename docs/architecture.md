@@ -3,9 +3,9 @@
 ## Block diagram
 
 ```
- LEFT HALF (main PCB = carrier)                             RIGHT HALF (satellite PCB)
+ RIGHT HALF (main PCB = carrier)                            LEFT HALF (satellite PCB)
  ──────────────────────────────                             ──────────────────────────
- 21 × DRV5055 ─► 3 × SN74LV4051 ─► ADC_L_A..C ┐             21 × DRV5055 ─► 3 × SN74LV4051
+ 21 × DRV5055 ─► 3 × SN74LV4051 ─► ADC_L_A..C ┐             23 × DRV5055 ─► 3 × SN74LV4051
                      ▲ MUX_S0..S2             │                               ▲ S0..S2   │ A/B/C
                      │                        ▼                               │          ▼
  USB-C ─► ESD ─► ┌─ J4 ═ MCU module (swappable) ─┐ ◄─ ADC_R ◄─ 100 Ω ◄──┐      │     TLV9064 ×3
@@ -16,6 +16,9 @@
    ├─► XC6206   ─► +3V3   (module)                          J3 (JST-SH 10) ··· J3 ─► TLV75733 ─► +3.3VA
    └─► PTC ─► Schottky ─► +5V_LINK ──────────────────────────────►  │                 ▲
                                     pigtail ─► VGA daughterboard ═══ VGA cable ═══ VGA daughterboard
+
+ I2C1 (PB6/PB7) ─► 4.7 kΩ pull-ups ─► J5 ─ FFC ─► trackpad          scroll wheel ─► R ladder ─► mux C ch 7
+                                                      (optional: Azoteq TPS65 or Cirque)
 ```
 
 The satellite has no firmware at all, and the main PCB is only a carrier: the
@@ -23,12 +26,14 @@ microcontroller lives on a small plug-in module (see [below](#mcu-modules)).
 Each scan step, the MCU sets the three
 select lines. All six muxes, local and remote, switch to the same channel.
 After a settling delay the ADC converts six inputs, so 8 steps read all 48 mux
-channels (42 used).
+channels: 44 keys and the scroll wheel. The satellite's 23 sensors are the
+Corne's 21 plus two mouse-button keys, and with the wheel they fill all 24 of
+its channels (see [mouse column](#mouse-column-left-half)).
 
 ## Why an analog link
 
-A split HE board has to move 21 analog readings, or their digital results,
-across the cable. The options:
+A split HE board has to move one half's analog readings (here 23 keys and the
+scroll wheel), or their digital results, across the cable. The options:
 
 | Approach | Cable | Cost |
 |---|---|---|
@@ -36,11 +41,11 @@ across the cable. The options:
 | Remote ADC chip over SPI/I²C | 4–6 wires | new driver in libhmk |
 | **Remote muxes, analog out** | 3 selects + N analog + power | nothing new in firmware |
 
-libhmk already scans "select lines + a list of ADC inputs", so the right half
-just becomes three more mux inputs. The firmware can't tell the difference
+libhmk already scans "select lines + a list of ADC inputs", so the satellite
+half just becomes three more mux inputs. The firmware can't tell the difference
 between a local and a remote mux.
 
-**Why VGA?** Three 8:1 muxes cover 21 keys, which means three analog outputs.
+**Why VGA?** Three 8:1 muxes cover up to 24 channels, which means three analog outputs.
 A VGA cable has exactly three 75 Ω coax pairs (R, G, B), made to carry analog
 signals over metres, plus enough plain wires for three logic lines, +5 V and
 ground. It also has screw locks. RJ45 would fit the 8 conductors but has no
@@ -53,9 +58,9 @@ cable**. Both halves have female DE-15 ports, like a PC or a monitor.
 
 | DE-15 pin | VGA name | VGACorne signal | Notes |
 |---|---|---|---|
-| 1 | Red (coax) | `LINK_A` | satellite mux A (col 0–1) via buffer + 75 Ω |
-| 2 | Green (coax) | `LINK_B` | satellite mux B (col 2–3, T0) |
-| 3 | Blue (coax) | `LINK_C` | satellite mux C (col 4–5, T1, T2) |
+| 1 | Red (coax) | `LINK_A` | satellite mux A (col 0–1, top of col 2) via buffer + 75 Ω |
+| 2 | Green (coax) | `LINK_B` | satellite mux B (rest of col 2, col 3–4, T0) |
+| 3 | Blue (coax) | `LINK_C` | satellite mux C (col 5, T1, T2, mouse column) |
 | 6 / 7 / 8 | R/G/B return | GND | coax shields |
 | 5, 10 | GND | GND | |
 | 13 | HSYNC | `LINK_S0` | mux select bit 0 |
@@ -118,14 +123,96 @@ settles in about 1 µs, so the delay can be reduced after measuring.
 
 | Load | Typical | Worst case |
 |---|---|---|
-| 42 × DRV5055 at 3.3 V | 84 mA | 168 mA |
+| 44 × DRV5055 at 3.3 V | 88 mA | 176 mA |
 | AT32F405 with USB HS PHY | ~60 mA (estimate) | ~100 mA |
 | 6 × SN74LV4051A, TLV9064 | ~3 mA | ~5 mA |
-| **Total** | **≈ 150 mA** | **≈ 275 mA** |
+| Trackpad (optional) | 2–4 mA | 5 mA |
+| **Total** | **≈ 155 mA** | **≈ 285 mA** |
 
-The satellite takes about 45 mA typ / 90 mA max through VGA pin 9. F2 is a
+The satellite takes about 50 mA typ / 95 mA max through VGA pin 9. F2 is a
 500 mA PTC; a lower hold current (200–350 mA) would also do. No RGB, so the
 budget has plenty of margin.
+
+## Trackpad (optional)
+
+The trackpad sits flush in the main (right) half's case top, right beside
+Y/H/N over the inner column, with the MCU module behind it (see
+[mechanical.md](mechanical.md#trackpad-right-half)). It is an ordinary
+on-board I2C device, which is why the MCU lives on this half. The VGA cable
+carries only the keyboard link.
+
+`hardware/vgacorne/trackpad.py` holds one entry per supported pad, and `MODEL`
+picks one. The case pocket, the FFC connector J5 and its parts, and the QMK
+driver settings (generated into `he_wiring.h` and `rules.mk`) all follow it.
+To switch, change `MODEL`, then run `generate.py --force schematics pcbs` and
+`generate.py firmware mechanical bom`.
+
+Both pads share the same bus: I2C1 on PB6/PB7 (module pins 1/2) at 400 kHz,
+4.7 kΩ pull-ups (R19/R20) and the digital +3V3 with 1 µF (C16). Both are
+**QMK only**, since libhmk has no pointing-device support. Without a pad
+fitted, QMK's init fails once at boot and it stops polling.
+
+**Azoteq TPS65 (default):** 65 × 49 mm, IQS550, multi-touch.
+- **Gestures** (QMK `azoteq_iqs5xx`): tap for left click, two-finger tap for
+  right click, two-finger scroll. Swipe and zoom can be turned on.
+- **Connector:** a 6-pin 0.5 mm ZIF (J1) on the module's back.
+  - Pinout: 1 RDY, 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA.
+  - RDY is left unconnected; QMK polls.
+  - NRST has an internal pull-up and gets the recommended 100 nF (C17).
+  - On the main PCB it goes to J5, a Jushuo AFC07-S06FCA-00 (LCSC C262553),
+    on the module ear right under the pad's own connector.
+- **I2C:** address 0x74. The module very likely carries its own 4.7 kΩ
+  pull-ups (seen on real units); together with R19/R20 that makes about
+  2.35 kΩ, which is fine.
+- **Overlay:** the `-201A` module has no overlay of its own, only adhesive. It
+  is bonded under a 1 mm non-metal overlay (glass or acrylic) 3 mm bigger all
+  round. Azoteq warns that grounded metal within 5 mm of the electrodes costs
+  sensitivity; the margin keeps the aluminium about 4 mm away. The case is
+  grounded through the DE-15 shell, as Azoteq also asks.
+- **Availability:** Azoteq put the TPS65 on its end-of-life list in 2024, and
+  LCSC is out of stock. Keycapsss still sells it. GR-Trackpad65 is an
+  open-source clone with the same pinout, but it needs Azoteq's programmer to
+  load its settings.
+
+**Cirque TM040040:** 40 mm round, one finger (move, tap, circular scroll), QMK
+`cirque_pinnacle_i2c`.
+- It must be a Gen2 Pinnacle module:
+  - TM040040-2023-xx2: I2C.
+  - TM040040-2024-xx2: the SPI version. Remove R1 to put it in I2C mode.
+- Its 12-pin FFC carries SCL on 9, SDA on 10, GND on 11 and VDD on 12.
+- Cirque's current "Gen6s" modules aren't supported by QMK.
+- It sits in the same spot beside Y/H/N, and the right half is 171 mm wide
+  instead of 202. Cirque asks for no metal bezel, so a plastic ring
+  (`overlay_margin`) is worth trying.
+
+## Mouse column (left half)
+
+The satellite's inner column, beside T/G/B, holds a scroll wheel at the top
+and two extra hall-effect keys below it, beside G and B, for the hand that
+isn't on the trackpad. The keys are ordinary matrix keys (42 and 43 in the key
+order); the default keymaps make them the left and right mouse buttons.
+
+The wheel is a Bourns PEC12R-2217F-N0024 encoder (24 detents) with an 18 mm
+rubber wheel on its shaft. It needs no extra pins or cable conductors: it
+takes the satellite's last spare mux channel (mux C, channel 7). Its A and B
+contacts switch to ground; each has a 10 kΩ pull-up (R21/R22) and feeds the
+`WHEEL` node through its own resistor, 47 kΩ for A and 100 kΩ for B (R23/R24,
+1 %), with 1 nF (C5) to ground. The four contact states give four levels:
+
+| A | B | `WHEEL` | ADC counts |
+|---|---|---|---|
+| closed | closed | 0 V | 0 |
+| open | closed | 2.10 V | 2608 |
+| closed | open | 0.99 V | 1226 |
+| open | open | 3.30 V | 4095 |
+
+`generate.py firmware` works the levels out from the resistor values and writes
+them to `he_wiring.h`. QMK's matrix scan keeps the reading, picks the nearest
+level, and hands the two contact states to QMK's own quadrature encoder driver.
+The levels are at least 1 V apart, so a few percent of supply difference
+between the halves doesn't matter. With the cable out, the wheel reads as
+resting. libhmk has no encoder support: under libhmk the two keys still work,
+the wheel doesn't.
 
 ## MCU modules
 
@@ -144,8 +231,9 @@ QMK doesn't support the AT32F405: only the AT32F415 is in QMK `master` and
 modules.
 
 **Mechanics.** The module plugs into a 2×12, 1.27 mm SMD socket (J4) on top of
-the main PCB's inner tab, where there are no switches and the plate is cut
-away. Its header is on the underside, and the LQFP sits on top right above it.
+a PCB ear behind the trackpad, beside the VGA bay, where there are no switches
+and no plate. Its header is on the underside, and the LQFP sits on top right
+above it.
 The stack is 5.4 mm of connector, a 1.0 mm board and the 1.6 mm LQFP. That
 leaves 0.5 mm under the case roof, which is what keeps the module seated; there
 is no screw. Everything else stays on the carrier: USB-C and its ESD, both
@@ -157,7 +245,7 @@ header meets pin *n* on pin *n*, and `generate.py check` verifies it pad by pad.
 
 | Pin | Signal | Pin | Signal |
 |---|---|---|---|
-| 1 | GND | 2 | GND |
+| 1 | I2C_SCL (trackpad; pulled up on the carrier) | 2 | I2C_SDA |
 | 3 | +3V3 (MCU supply) | 4 | +3.3VA (module VDDA = ADC reference) |
 | 5 | +5V | 6 | GND |
 | 7 | USB D+ | 8 | USB D− |
@@ -171,7 +259,8 @@ header meets pin *n* on pin *n*, and `generate.py check` verifies it pad by pad.
 | 23 | SWDIO | 24 | SWCLK |
 
 A new module only has to supply 6 ADC inputs, 3 GPIO outputs and 1 GPIO input,
-USB device, and some boot-mode entry driven by `BOOT`. The RP2350B (8 ADC
+USB device, and some boot-mode entry driven by `BOOT`, plus an optional I2C
+master for the trackpad. The RP2350B (8 ADC
 inputs) would qualify once QMK supports it. The RP2040 and Pro Micro-style
 boards don't, with only 4 ADC inputs.
 
@@ -184,6 +273,7 @@ numbers for every keyboard signal, so both modules share one map:
 | 17, 20, 21 | PA3–PA5 | `ADC_R_A/B/C` (satellite, via cable) | `input` A3–A5 |
 | 9, 10, 11 | PC1–PC3 | `MUX_S0..S2` | `select` C1–C3 |
 | 24 | PC4 | `DET` | — |
+| 58, 59 | PB6, PB7 | `I2C_SCL/SDA` (trackpad; AF4 on the STM32, MUX4 on the AT32) | — |
 | 7, 60 | NRST, BOOT0 | reset / boot (buttons on the carrier) | factory DFU |
 | 46, 49 | PA13, PA14 | SWD | |
 
@@ -206,8 +296,9 @@ swap mux channels in KiCad to make routing easier, then run
 select wiring disagrees between halves.
 
 Key indices follow QMK's `LAYOUT_split_3x6_3` order: three rows of 12, left to
-right, then the six thumbs. The default keymap is a plain Corne layout (base /
-lower / raise / adjust, with `SP_BOOT` on adjust). Tap-hold, rapid trigger and
+right, then the six thumbs, then the left half's two mouse-column keys (42,
+43). The default keymap is a plain Corne layout (base / lower / raise /
+adjust, with `SP_BOOT` on adjust) plus the two mouse buttons. Tap-hold, rapid trigger and
 actuation depths are configured at runtime in hmkconf.
 
 Both definitions build against libhmk with PlatformIO. See
@@ -218,9 +309,10 @@ Both definitions build against libhmk with PlatformIO. See
 feature. Its `keyboard.json` layout and `he_wiring.h` are generated from the
 same trace as the libhmk configs. It supports fixed actuation and rapid
 trigger, adjustable with keycodes and saved to flash. It uses the cable-detect
-line to pause and recalibrate the right half when the VGA cable is unplugged
-and replugged. A host test runs the real matrix code against simulated
-sensors. VIA support and per-key features are still to do. See
+line to pause and recalibrate the satellite half when the VGA cable is
+unplugged and replugged. It also drives the optional trackpad (see [above](#trackpad-optional))
+and the scroll wheel (see [mouse column](#mouse-column-left-half)).
+A host test runs the real matrix code against simulated sensors. VIA support and per-key features are still to do. See
 [firmware/README.md](../firmware/README.md#qmk-stm32f446-module).
 
 ## Alternatives considered
@@ -237,9 +329,13 @@ sensors. VIA support and per-key features are still to do. See
 
 ## Open items
 
-1. **Route the PCBs.** Keep USB D+/D− short and paired (2-layer is what the
-   HE60 uses; 4-layer would give cleaner USB and analog ground). Route analog
-   nets (`HE_*`, `ADC_*`, `LINK_A/B/C`) away from the select lines.
+1. **Route the PCBs.** The USB-C sits on an ear behind column 4 so it can
+   share the back face with the DE-15, and the module sits on the other side
+   of the VGA bay. D+/D− therefore run about 75 mm to the module socket,
+   across the top of column 5 and the tab: route them as a tight 90 Ω pair
+   over unbroken ground, which matters for the AT32's high-speed USB (2-layer is
+   what the HE60 uses; 4-layer would give cleaner USB and analog ground). Route analog
+   nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `WHEEL`) away from the select lines.
 2. **Hot-plugging.** libhmk calibrates each key's rest value only during the
    first 500 ms after boot. Connect the VGA cable *before* USB, or recalibrate
    from hmkconf. A small libhmk patch could use `DET` (PC4) to ignore remote

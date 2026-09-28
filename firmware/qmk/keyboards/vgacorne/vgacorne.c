@@ -86,7 +86,7 @@ void housekeeping_task_kb(void) {
     static uint16_t last;
     if (!debug_values || timer_elapsed(last) < 250) return;
     last = timer_read();
-    uprintf("HE: right half %s\n", he_remote_connected() ? "connected" : "absent");
+    uprintf("HE: other half %s\n", he_remote_connected() ? "connected" : "absent");
     for (uint8_t row = 0; row < MATRIX_ROWS; row++) {
         for (uint8_t col = 0; col < MATRIX_COLS; col++) {
             he_key_info_t k;

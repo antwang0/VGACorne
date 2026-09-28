@@ -4,18 +4,24 @@ A hall-effect (magnetic switch) split **Corne** with **one microcontroller** and
 **VGA cable** between the halves, designed for a gasket-mounted CNC aluminium case
 with poron or silicone dampening.
 
-![Main half, underside](docs/img/main-bottom.png)
+![VGACorne render: both halves in a space-grey case, joined by a VGA cable](docs/img/render-hero.jpg)
+
+<sub>Rendered from the rev 0.1 design files by `hardware/render.py`. The case, plate and key positions are the real geometry; keycaps, switches and cables are stand-ins.</sub>
 
 ## The idea in one paragraph
 
-The right half has no MCU. It is just 21 hall sensors, three 8:1 analog
-multiplexers and a small buffer. On the left half, the MCU sits on a
+The left half has no MCU. It is just hall sensors, three 8:1 analog
+multiplexers and a small buffer. On the right half, the MCU sits on a
 **swappable plug-in module** and steps all six muxes
-with the same three select lines. It reads the right half's three mux outputs
+with the same three select lines. It reads the left half's three mux outputs
 over the VGA cable's three 75 Ω coax pairs (the R, G and B lines), which were
 built to carry analog signals. The select lines ride HSYNC, VSYNC and DDC-SDA,
 and +5 V rides pin 9. Every pin keeps its normal VGA role, so plugging a half
-into a monitor by mistake does no harm.
+into a monitor by mistake does no harm. The right half also carries the USB-C
+and an optional **trackpad** right beside Y/H/N: a 65 × 49 mm Azoteq TPS65 by
+default, or a 40 mm Cirque. The left half has a **mouse column** beside T/G/B:
+a **scroll wheel** above left- and right-click keys, read over the same cable
+through the muxes' spare channels.
 
 Two MCU modules are designed. The **AT32F405** runs
 [libhmk](https://github.com/peppapighs/libhmk) at 8 kHz (rapid trigger,
@@ -31,10 +37,12 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
 | PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module headers verified pin-for-pin against the socket. **Routing is still to do.** |
-| Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB) |
-| QMK | F446 module: hall-effect matrix with actuation + rapid trigger. **Builds** (31.6 KB) and passes host tests; VIA not yet |
+| Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no scroll wheel under libhmk |
+| QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the scroll wheel and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
-| 3D case model | Not started. The 2D case plan and stack-up define its envelope. |
+| 3D case model | Not started. The 2D case plan and stack-up define its envelope; `hardware/render.py` extrudes them for [renders](docs/img/render-top.jpg) |
+
+![Main half, underside](docs/img/main-bottom.png)
 
 ## Repository layout
 
@@ -80,6 +88,15 @@ which are yours to edit.
 - **Rigid plate+PCB sandwich, gasket mounted.** HE switches aren't soldered, so
   M2 standoffs lock the plate-to-sensor distance. The whole sandwich then floats
   on poron or silicone gaskets.
+- **MCU, USB and trackpad on the right half.** The optional trackpad sits
+  flush right beside Y/H/N, on the MCU module's own I2C bus, so the VGA cable
+  carries only the keyboard link. `hardware/vgacorne/trackpad.py` picks the
+  pad: an Azoteq TPS65 (multi-touch, 65 × 49 mm, landscape) or a 40 mm Cirque
+  Pinnacle. QMK only. See [architecture](docs/architecture.md#trackpad-optional).
+- **Mouse buttons and a scroll wheel on the left half**, for the hand that
+  isn't on the trackpad. They fill the satellite muxes' three spare channels;
+  the wheel's two contacts share one channel as four voltage levels. See
+  [architecture](docs/architecture.md#mouse-column-left-half).
 - **The VGA connector lives on the case, not the PCB.** A small vertical
   daughterboard is screwed to the aluminium wall by the DE-15's own screwlocks,
   so cable tug never reaches the gasket-mounted sandwich.

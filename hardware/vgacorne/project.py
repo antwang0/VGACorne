@@ -46,7 +46,7 @@ PATTERNS = [
     ("Power", "GND"), ("Power", "+*"), ("Power", "VBUS"), ("Power", "/+5V_LINK"), ("Power", "/LINK_5V_F"),
     ("USB", "/USB_*"),
     ("Analog", "/HE_*"), ("Analog", "/ADC_*"), ("Analog", "/MUX_[ABC]"), ("Analog", "/OPA_*"),
-    ("Analog", "/LINK_[ABC]"),
+    ("Analog", "/LINK_[ABC]"), ("Analog", "/WHEEL"),
 ]
 
 

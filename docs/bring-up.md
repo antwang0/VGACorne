@@ -18,15 +18,20 @@
 
 | Item | Qty | Notes |
 |---|---|---|
-| Main PCB, 2-layer 1.6 mm | 1 | bottom-side assembly, plus the module socket J4 on top (hand-solderable) |
+| Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the module socket J4 and trackpad FFC connector J5 on top (hand-solderable) |
 | MCU module, 2-layer **1.0 mm** | 1 per firmware you want | AT32F405 (libhmk, 8 kHz) and/or STM32F446 (QMK / libhmk); LQFP on top, header underneath |
-| Satellite PCB, 2-layer 1.6 mm | 1 | bottom-side assembly |
-| VGA daughterboard | 2 | hand-solder: DE-15, pigtail, 0402 cap |
+| Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the scroll-wheel encoder ENC1 on top (hand-solder) |
+| VGA daughterboard | 2 | hand-solder: DE-15, 10-wire pigtail, 0402 cap |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
-| HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 42 | |
-| M2 hex standoffs 3.5 mm, brass | 14 | plus 28 × M2 × 3 mm screws |
-| 10-pin JST-SH pigtail, ~10 cm, single-ended | 2 | plugs into J3 |
-| VGA cable, male–male, pins 9/12/13/14/15 wired | 1 | as short as you like |
+| HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
+| Bourns PEC12R-2217F-N0024 encoder | 1 | scroll wheel (left half); cut its shaft to 13 mm |
+| Scroll wheel, 18 mm × 6 mm, rubber tyre, 6 mm D-bore | 1 | a mouse-wheel spare or a printed hub with an O-ring |
+| M2 hex standoffs 3.5 mm, brass | 15 | plus 30 × M2 × 3 mm screws |
+| 10-pin JST-SH pigtail, ~5 cm, single-ended | 2 | plugs into J3, right in front of the daughterboard |
+| VGA cable, male–male | 1 | the classic blue monitor cable is fine. It needs pins 1–3, 5–10 and 12–15 (check pin 9, see JP1/JP2 below). Both ends plug into the back of the case, so ~30 cm reaches round behind the gap |
+| Azoteq TPS65-201A-S trackpad (optional) | 1 | end-of-life at Azoteq and out of stock at LCSC; Keycapsss still sells it. GR-Trackpad65 is an open clone |
+| Trackpad overlay, 1 mm glass or acrylic, 71 × 55 mm, ~7 mm corners | 1 | non-metal, matte/etched top; laser-cut black acrylic works |
+| 6-pin 0.5 mm FFC, same-side contacts, ~30 mm | 1 | trackpad to J5 (Jushuo AFC07-S06FCA-00, LCSC C262553) |
 | Poron/silicone gaskets, case foam, plate foam | | see [mechanical.md](mechanical.md) |
 
 BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
@@ -88,12 +93,48 @@ bootloader.
    cable. Beep out the VGA cable against the pinout table in
    [architecture.md](architecture.md#vga-link-pinout).
 
+## Scroll wheel (left half, QMK)
+
+1. Before fitting the wheel, measure the `WHEEL` node (C5) with the satellite
+   powered, turning the shaft slowly: it should step between about 0, 1.0,
+   2.1 and 3.3 V. A level that never appears means a contact or one of
+   R21-R24 is off.
+2. In QMK the wheel scrolls on the base layer, scrolls sideways on lower and
+   changes the volume on raise. If it scrolls the wrong way, add
+   `#define ENCODER_DIRECTION_FLIP` to `config.h`. One scroll step per detent
+   is the default (`ENCODER_RESOLUTION 4`); set it to 2 if an encoder gives
+   two steps per detent.
+3. libhmk has no encoder support: the two mouse keys work there, the wheel
+   doesn't.
+
+## Trackpad (optional, QMK)
+
+For the default Azoteq TPS65:
+
+1. Bond the module, centred, under the overlay using its own adhesive, with a
+   3 mm margin all round. Turn it so its connector is near the back edge, on
+   the half nearer the keys: it then sits right over J5.
+2. Mock up the FFC with a paper strip first: it drops from the module's
+   connector straight into J5. Check that module pin 4 (VDDHI) lands on J5's
+   +3V3 pin. The fold decides the order.
+3. With USB plugged in, measure 3.3 V between the module's VDDHI and GND pads.
+4. QMK looks for the pad once, at boot, about 100 ms in. If both axes come out
+   reversed, add `AZOTEQ_IQS5XX_ROTATION_180` to the TPS65's `qmk_defines` in
+   `trackpad.py` and regenerate (`_90`/`_270` if they come out swapped). Build
+   with `CONSOLE_ENABLE = yes` and QMK's `POINTING_DEVICE_DEBUG` to see what the
+   driver reads.
+
+A Cirque pad (the `cirque40` entry) needs its R1 removed if it is the SPI
+version (`-2024-`). Check 3.3 V on its FFC pin 12.
+
 ## Troubleshooting
 
 | Symptom | Likely cause |
 |---|---|
-| Right half dead, left fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or F2 tripped |
-| Right half keys stuck pressed after plugging the cable in late | rest values were learned with the cable out: recalibrate in hmkconf or re-plug USB |
-| One column on the right dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
+| Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or F2 tripped |
+| Left half keys stuck pressed after plugging the cable in late | rest values were learned with the cable out: recalibrate in hmkconf or re-plug USB |
+| One column on the left dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
+| Keys fine, trackpad dead | FFC reversed or folded the wrong way, the FFC seated after power-up (QMK only looks at boot), or, for a Cirque, an SPI pad with R1 still fitted |
+| Wheel scrolls in bursts or backwards on some detents | a missing level on `WHEEL` (see *Scroll wheel*), or the shaft rubbing T's keycap |
 | Keys trigger randomly with the cable unplugged | pull resistor set doesn't match `invert_adc` |
 | Rest value drifts when pressing on the plate | a standoff screw is loose, so the plate flexes against the PCB |
