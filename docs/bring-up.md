@@ -123,6 +123,10 @@ For the default Azoteq TPS65:
    `trackpad.py` and regenerate (`_90`/`_270` if they come out swapped). Build
    with `CONSOLE_ENABLE = yes` and QMK's `POINTING_DEVICE_DEBUG` to see what the
    driver reads.
+5. Check two known issues, see
+   [firmware/pointing-devices.md](../firmware/pointing-devices.md): whether a tap
+   leaves the left button held, and whether key presses lag while the pad is
+   being read.
 
 A Cirque pad (the `cirque40` entry) needs its R1 removed if it is the SPI
 version (`-2024-`). Check 3.3 V on its FFC pin 12.

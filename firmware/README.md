@@ -111,6 +111,10 @@ legacy driver only has presets for the F401/F411, which share its sector
 layout; `config.h` supplies the F446 values.
 
 **Not done yet:**
+- Trackpad reads in their own thread, so they can't hold up the key scan, and
+  the fix for QMK's Azoteq tap bug. Planned in
+  [pointing-devices.md](pointing-devices.md), along with scroll-wheel and
+  trackpad support for libhmk.
 - VIA / Vial configuration. Settings are keycode-driven for now.
 - Per-key actuation, DKS and SOCD. Keychron's GPL-2+ `analog_matrix` module
   has these and could be merged in.

@@ -351,5 +351,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real
    sensor data (see [firmware/README.md](../firmware/README.md#qmk-stm32f446-module)).
+   Move the trackpad reads to their own thread, and give libhmk the scroll wheel
+   and trackpad: see [firmware/pointing-devices.md](../firmware/pointing-devices.md).
 7. **Module retention.** The case roof holds the module in its socket with
    0.5 mm clearance. Add a thin foam pad on the roof if it rattles.
