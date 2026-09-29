@@ -81,6 +81,6 @@ constants at the top of the script.
 
 Common changes:
 - **Different sensor:** edit `SENSOR` in `circuits.py`, then regenerate
-  schematics/PCBs (`--force`) and firmware.
+  schematics/PCBs (`--force`) and firmware. Options: `docs/sensors.md`.
 - **Move a key or standoff:** edit `geometry.py`, then regenerate the PCBs and
   mechanical files.

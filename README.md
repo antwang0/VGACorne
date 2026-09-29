@@ -51,6 +51,7 @@ docs/
   architecture.md     electrical design, VGA link, power, firmware mapping, decisions
   mechanical.md       stack-up, plate/gaskets/foam (poron or silicone), aluminium case rules
   bring-up.md         ordering, assembly, first power-up, flashing, calibration
+  sensors.md          Hall/TMR sensor options and the field the common HE switches give
 hardware/
   generate.py         regenerates everything below (see hardware/README.md)
   vgacorne/           the generator: layout, circuits, schematic/PCB writers, checks
@@ -86,6 +87,7 @@ which are yours to edit.
   same signals. See [architecture](docs/architecture.md#mcu-modules).
 - **DRV5055A3 sensors on the PCB underside**, read through the board as on the
   HE60. Other sensors are drop-in with a firmware polarity/calibration change.
+  See [sensors](docs/sensors.md) for the options, including TMR.
 - **Rigid plate+PCB sandwich, gasket mounted.** HE switches aren't soldered, so
   M2 standoffs lock the plate-to-sensor distance. The whole sandwich then floats
   on poron or silicone gaskets.

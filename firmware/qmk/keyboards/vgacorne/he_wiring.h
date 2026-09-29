@@ -17,7 +17,7 @@
 // Sensor: DRV5055A3QDBZR. 1 = its reading falls as a key is pressed; the matrix flips it
 // so that pressing always increases the value.
 #define HE_INVERT_ADC 1
-#define HE_INITIAL_BOTTOM_OUT 650
+#define HE_INITIAL_BOTTOM_OUT 400
 
 // Travel curve: 255 * log(1 + a x) / log(1 + a (N - 1)), a = 0.0082.
 #define HE_LUT_SIZE 1024

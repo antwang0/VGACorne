@@ -101,6 +101,9 @@ The supply current depends on which silicon you get.
 - **Distributors:** they can ship either. The power budget below allows for
   both; measure your sensors at bring-up.
 
+Other sensors, including TMR, and the field the common switches give at the
+sensor are compared in [sensors.md](sensors.md).
+
 **Local ADC path.** Mux outputs go straight to PA0–PA2, as on the HE60. On
 the main half, VDDA (the ADC reference) is the same +3.3VA rail that feeds the
 sensors, so LDO drift cancels out ratiometrically.
@@ -398,8 +401,10 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    first 500 ms after boot. Connect the VGA cable *before* USB, or recalibrate
    from hmkconf. A small libhmk patch could use `DET` (PC4) to ignore remote
    keys while the cable is out and recalibrate when it returns.
-3. **Sensor polarity and calibration.** `invert_adc` and the initial
-   rest/bottom-out values are copied from HE60 practice. Confirm them in
+3. **Sensor polarity and calibration.** `invert_adc` and the initial rest
+   value are copied from HE60 practice. The initial bottom-out threshold is 400
+   counts rather than HE60's 650, because the weaker switches may swing less
+   than 650 ([sensors.md](sensors.md#field-at-the-sensor)). Confirm them in
    hmkconf's debug view at bring-up ([bring-up.md](bring-up.md)).
 4. **Parts to confirm at ordering:**
    - A vertical DE-15F with 4-40 inserts that matches the KiCad footprint, and
@@ -407,7 +412,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
      ([mechanical.md](mechanical.md#vga-daughterboard)).
    - LCSC stock for the TLV9064, SRV05-4 and DRV5055A3.
    - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
-   - Alternative sensors used on the HE60: MT9102ET, SS39ET, GH39FKSW.
+   - Second-source sensor: MT9102ET ([sensors.md](sensors.md)).
 5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes
    test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real

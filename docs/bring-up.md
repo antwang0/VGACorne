@@ -10,8 +10,9 @@
       `DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles`. Check its panel
       cutout against `PORTS` (20.5 × 11.4 mm). Use jackscrews with a hex no
       taller than 4.8 mm.
-- [ ] Check stock for the DRV5055A3QDBZR (or an HE60-proven alternative:
-      MT9102ET, SS39ET, GH39FKSW; see *Sensor polarity* below).
+- [ ] Check stock for the DRV5055A3QDBZR. The second source is the
+      MT9102ET; it reads the other way round, so flip `invert_adc`. See
+      [sensors.md](sensors.md) and *Sensor polarity* below.
 - [ ] Prefer DRV5055s on TI's newer LBC9 process: 2 mA typical instead of
       6 mA, see the [power budget](architecture.md#power-budget-usb-500-ma).
       - From ti.com, their packaging label says "Rev: C" and "CSO: RFAB".
@@ -99,7 +100,11 @@ bootloader.
      `hardware/vgacorne/circuits.py` (`SENSOR`), then regenerate: this also
      swaps which cable-unplugged pull resistors are fitted.
    - Set `initial_rest_value` / `initial_bottom_out_threshold` from what you
-     observe. The HE60 values used here are only a starting point.
+     observe. The rest value is HE60's; the bottom-out threshold starts at 400
+     counts and grows as keys are pressed further.
+   - Note the raw value at bottom-out. With the DRV5055A3, if it stays within
+     about 740 counts of mid-scale (2048), the field stays under ~40 mT and a
+     DRV5055A2 would double the resolution ([sensors.md](sensors.md#notes)).
 3. Check every key on both halves reaches full travel. A dead column on one
    half usually means a select or analog line isn't making it through the
    cable. Beep out the VGA cable against the pinout table in

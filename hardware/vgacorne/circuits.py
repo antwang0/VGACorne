@@ -47,12 +47,18 @@ class SensorChoice:
     travel_curve: float = 0.0082
 
 
+# Options, the field the common switches give and why this one: docs/sensors.md.
 SENSOR = SensorChoice(
     lib_id="Sensor_Magnetic:DRV5055A3xDBZxQ1",
     mpn="DRV5055A3QDBZR",
     invert_adc=True,
     initial_rest_value=2400,
-    initial_bottom_out_threshold=650,
+    # The firmware starts each key's bottom-out this far from rest and extends it
+    # the first time the key goes further, so too small is harmless and too big
+    # leaves the key short of full travel. HE60 uses 650 counts (~35 mT at
+    # 15 mV/mT); the weaker switches (550 Gs Jades, TTC) may swing only ~25 mT
+    # here, i.e. ~450 counts.
+    initial_bottom_out_threshold=400,
 )
 
 # ---------------------------------------------------------------------------

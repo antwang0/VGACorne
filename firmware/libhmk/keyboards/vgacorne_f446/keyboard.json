@@ -20,7 +20,7 @@
       ]
     }
   },
-  "calibration": {"initial_rest_value": 2400, "initial_bottom_out_threshold": 650},
+  "calibration": {"initial_rest_value": 2400, "initial_bottom_out_threshold": 400},
   "layout": {
     "keymap": [
       [
