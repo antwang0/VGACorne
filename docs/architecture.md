@@ -91,10 +91,15 @@ not to put a capacitor straight on the output, since it can make it unstable.
 The cap is the charge reservoir the mux samples from, and the 34 kHz RC corner
 sits above the sensor's bandwidth.
 
-The supply current is uncertain. TI's current datasheet (SBAS640C) says
-2 mA typ / 4 mA max, but the original (SBAS640) said 6 / 10 mA, and Rev C's own
-supply-current graph still shows 5–6.6 mA. The power budget below allows for
-both; measure your sensors at bring-up.
+The supply current depends on which silicon you get.
+- **LBC9:** TI moved the DRV5055 from its LBC8 process to LBC9. LBC9 parts
+  draw 2 mA typ / 4 mA max, the figures in the current datasheet (SBAS640C).
+  TI says (E2E, 2026) that they come in packaging labelled "Rev: C" with
+  "CSO: RFAB".
+- **LBC8:** older stock still draws the original 6 / 10 mA. Rev C's
+  supply-current graph still shows that part.
+- **Distributors:** they can ship either. The power budget below allows for
+  both; measure your sensors at bring-up.
 
 **Local ADC path.** Mux outputs go straight to PA0–PA2, as on the HE60. On
 the main half, VDDA (the ADC reference) is the same +3.3VA rail that feeds the
@@ -128,7 +133,7 @@ settles in about 1 µs, so the delay can be reduced after measuring.
 
 ## Power budget (USB 500 mA)
 
-Two figures per line where the DRV5055's datasheet revisions disagree (Rev C / original):
+Two figures where the DRV5055's process matters (LBC9 / older LBC8 parts):
 
 | Load | Typical | Worst case |
 |---|---|---|
@@ -138,16 +143,16 @@ Two figures per line where the DRV5055's datasheet revisions disagree (Rev C / o
 | Trackpad (optional) | 2–4 mA | 5 mA |
 | **Total** | **≈ 180 / 360 mA** | **≈ 290 / 550 mA** |
 
-- **USB:** only a board with every part at its maximum under the old figures
-  goes past the 500 mA a USB 2.0 port must supply. F1 is a 750 mA-hold PTC so it
-  doesn't trip at the old typical figure in a warm case.
+- **USB:** only a board of LBC8 parts with every part at its maximum goes past
+  the 500 mA a USB 2.0 port must supply. F1 is a 750 mA-hold PTC so it
+  doesn't trip at the LBC8 typical figure in a warm case.
 - **Satellite:** it takes 50–140 mA typ, 95–235 mA max through VGA pin 9. U8, a
   TPS2051C power switch, feeds it: it soft-starts in 0.55 ms and limits at
   0.65–1.05 A, so plugging the cable in with USB live can't pull +5V down far
   enough to brown out the MCU. It also keeps the satellite's capacitance off
   VBUS when USB is plugged in.
 - **Regulators:** both 3.3 V rails use a TLV75733 (1 A, SOT-23-5). With the old
-  sensor figure the main half's analog one drops 1.7 V at ~0.2 A, about 0.36 W:
+  LBC8 sensors the main half's analog one drops 1.7 V at ~0.2 A, about 0.36 W:
   that is ~125 °C at the junction at 40 °C ambient with minimal copper (JEDEC,
   231 °C/W), but about 75 °C with a generous copper pour (TI's EVM, 101 °C/W).
   Pour copper round U2 and U3.
@@ -401,7 +406,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
      jackscrews with a hex no taller than 4.8 mm
      ([mechanical.md](mechanical.md#vga-daughterboard)).
    - LCSC stock for the TLV9064, SRV05-4 and DRV5055A3.
-   - The DRV5055's real supply current (see [signal chain](#signal-chain-details)).
+   - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
    - Alternative sensors used on the HE60: MT9102ET, SS39ET, GH39FKSW.
 5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes
    test IDs. Request real PIDs before sharing boards.

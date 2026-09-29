@@ -12,9 +12,12 @@
       taller than 4.8 mm.
 - [ ] Check stock for the DRV5055A3QDBZR (or an HE60-proven alternative:
       MT9102ET, SS39ET, GH39FKSW; see *Sensor polarity* below).
-- [ ] Measure the supply current of a few sensors before buying all 44. TI's
-      datasheets disagree (2 mA or 6 mA typical); see the
-      [power budget](architecture.md#power-budget-usb-500-ma).
+- [ ] Prefer DRV5055s on TI's newer LBC9 process: 2 mA typical instead of
+      6 mA, see the [power budget](architecture.md#power-budget-usb-500-ma).
+      - From ti.com, their packaging label says "Rev: C" and "CSO: RFAB".
+      - Elsewhere, ask the distributor, or measure a few before buying all 44.
+      - Assembly houses like JLC use whatever lot they stock; bring-up step 1
+        tells you which you got. Either kind works.
 
 ## What to order
 
@@ -54,7 +57,7 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
    measure +5V, +3V3 (U3) and +3.3VA (U2). Both 3.3 V rails are also on J4
    pads 11 and 10.
    - The current now is almost all the 21 sensors. Divide it by 21: about
-     2 mA each is TI's current datasheet, about 6 mA the original.
+     2 mA each means LBC9 parts, about 6 mA the older LBC8 ones.
    - Much more than 6 mA each means the [power budget](architecture.md#power-budget-usb-500-ma)
      needs another look.
 2. Solder the module on: tack two opposite corner pads, check it sits flat and

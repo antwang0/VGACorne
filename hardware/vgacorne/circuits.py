@@ -261,7 +261,7 @@ def main() -> Circuit:
              fields={"MPN": "HRO TYPE-C-31-M-12"}),
         R("R1", "5.1k", "CC1", "GND", "power"),
         R("R2", "5.1k", "CC2", "GND", "power"),
-        # 750 mA hold: 44 sensors at the DRV5055's older 6 mA typical already draw
+        # 750 mA hold: 44 sensors at the older (LBC8) DRV5055's 6 mA typical already draw
         # ~0.36 A with the MCU, and a 500 mA part derates to ~0.4 A in a warm case.
         Part("F1", "Device:Polyfuse", "750mA", PTC_FP, {"1": "VBUS", "2": "+5V"}, "power",
              fields={"MPN": "SMD0805-075"}),
