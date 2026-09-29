@@ -8005,7 +8005,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinSocket_1.27mm:PinSocket_2x12_P1.27mm_Vertical_SMD"
+		(property "Footprint" "vgacorne:Module_Castellated_Landing_2x12_P1.27mm_19.4x25mm"
 			(at 313.69 72.39 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -8019,7 +8019,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Socket for the swappable MCU module (2x12 1.27 mm SMD, top side)"
+		(property "Description" "Landing pads for the castellated MCU module (2x12, 1.27 mm), top side under the trackpad; the module is soldered on"
 			(at 313.69 72.39 0)
 			(effects
 				(font (size 1.27 1.27))

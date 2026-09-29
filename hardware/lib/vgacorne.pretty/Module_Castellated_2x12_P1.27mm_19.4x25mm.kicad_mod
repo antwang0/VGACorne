@@ -1,0 +1,327 @@
+(footprint "Module_Castellated_2x12_P1.27mm_19.4x25mm"
+	(version 20241229)
+	(generator "vgacorne")
+	(generator_version "1.0")
+	(layer "F.Cu")
+	(descr "19.4 x 25 mm MCU module edge: 2 x 12 castellated pads, 1.27 mm pitch, 0.6 mm half-holes on the board edge")
+	(tags "module castellated stamp")
+	(property "Reference" "REF**"
+		(at 0 0 0)
+		(layer "F.Fab")
+		(uuid "2cba61f3-8d70-5f33-b2e4-bc7c8ffe44d6")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Value" "Module_Castellated_2x12_P1.27mm_19.4x25mm"
+		(at 0 1.5 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "516cc4ff-8095-5c65-8f91-e719f2ffc82b")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "25fe8a49-3292-5501-ac5a-894406577131")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "0eccd210-260a-5e58-b8b1-0ad4094f1521")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "b7dd2a82-19ee-538d-83b1-89d009b64648")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(attr through_hole exclude_from_pos_files exclude_from_bom)
+	(fp_rect
+		(start -9.7 -12.5)
+		(end 9.7 12.5)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "c2e6740b-7721-5bdf-8c1f-b960e8fde31f")
+	)
+	(fp_rect
+		(start -7.735 -12.8)
+		(end 7.735 -10.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "83e486b2-cb65-517f-81c9-dcf585ea3968")
+	)
+	(fp_rect
+		(start -7.735 12.8)
+		(end 7.735 10.9)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "b12fdffe-4c43-5953-85f8-21dc5de90bc6")
+	)
+	(pad "1" thru_hole oval
+		(at -6.985 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a2d29736-ee7b-54aa-bd99-d89491eb5325")
+	)
+	(pad "2" thru_hole oval
+		(at -6.985 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "7c385693-6b31-5fd9-a0be-85ee7a94224b")
+	)
+	(pad "3" thru_hole oval
+		(at -5.715 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "cd9fe42d-4cb5-5b88-8ba0-0241e8061ef3")
+	)
+	(pad "4" thru_hole oval
+		(at -5.715 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "9661eb35-7e8d-5344-9905-d46190550e32")
+	)
+	(pad "5" thru_hole oval
+		(at -4.445 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "3147c33e-08d2-58ce-b9f8-3edb12ebc9a8")
+	)
+	(pad "6" thru_hole oval
+		(at -4.445 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "dd4603c3-4f93-5215-856f-145745a43565")
+	)
+	(pad "7" thru_hole oval
+		(at -3.175 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a3d02d96-7959-50e0-87eb-4f3de88d1fbd")
+	)
+	(pad "8" thru_hole oval
+		(at -3.175 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "145409f1-55d9-5a05-87ef-93f78e9153db")
+	)
+	(pad "9" thru_hole oval
+		(at -1.905 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "b9e4f837-bed9-502e-9eee-fcd2a1f7af4d")
+	)
+	(pad "10" thru_hole oval
+		(at -1.905 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "2960e750-01f7-5e90-800b-9a715ef83c16")
+	)
+	(pad "11" thru_hole oval
+		(at -0.635 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "f5293b02-0248-5f41-91bd-b68af4cdf188")
+	)
+	(pad "12" thru_hole oval
+		(at -0.635 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "e9eb46c2-8bb7-59da-9497-9dedea89a18b")
+	)
+	(pad "13" thru_hole oval
+		(at 0.635 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "a7991640-87f0-50db-a37a-0e4898f59f0e")
+	)
+	(pad "14" thru_hole oval
+		(at 0.635 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "fe9f6500-98f8-52c8-b726-a87c4642b62c")
+	)
+	(pad "15" thru_hole oval
+		(at 1.905 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "73cbf46c-4253-53f1-8646-f949ef7ee28d")
+	)
+	(pad "16" thru_hole oval
+		(at 1.905 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "f5af8cb7-4596-5d37-b34e-51d942cc4a40")
+	)
+	(pad "17" thru_hole oval
+		(at 3.175 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "d763ffd1-af1f-552a-bc8d-682c437d2357")
+	)
+	(pad "18" thru_hole oval
+		(at 3.175 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "73efa6ac-b296-5343-b9c4-37ad411debe6")
+	)
+	(pad "19" thru_hole oval
+		(at 4.445 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "abaf4b18-f9f4-54a5-981d-421b73a948bc")
+	)
+	(pad "20" thru_hole oval
+		(at 4.445 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "5cb6ada9-a635-5a09-91cf-e41bc738db01")
+	)
+	(pad "21" thru_hole oval
+		(at 5.715 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "16836ea5-b211-55ff-9793-427ac791c32f")
+	)
+	(pad "22" thru_hole oval
+		(at 5.715 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "963567ea-5179-57c1-8955-0281979ed74b")
+	)
+	(pad "23" thru_hole oval
+		(at 6.985 -12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "bcf5ac6c-0a09-58f9-b503-50b35da66892")
+	)
+	(pad "24" thru_hole oval
+		(at 6.985 12.5)
+		(size 0.95 1.8)
+		(drill 0.6
+			(offset 0 -0.35)
+		)
+		(property pad_prop_castellated)
+		(layers "*.Cu" "*.Mask")
+		(uuid "934fb41b-cc01-57a8-b74e-553f4436504a")
+	)
+	(embedded_fonts no)
+)

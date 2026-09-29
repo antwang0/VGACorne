@@ -8,7 +8,7 @@
  21 × DRV5055 ─► 3 × SN74LV4051 ─► ADC_L_A..C ┐             23 × DRV5055 ─► 3 × SN74LV4051
                      ▲ MUX_S0..S2             │                               ▲ S0..S2   │ A/B/C
                      │                        ▼                               │          ▼
- USB-C ─► ESD ─► ┌─ J4 ═ MCU module (swappable) ─┐ ◄─ ADC_R ◄─ 100 Ω ◄──┐      │     TLV9064 ×3
+ USB-C ─► ESD ─► ┌─ J4 ═ MCU module (soldered) ──┐ ◄─ ADC_R ◄─ 100 Ω ◄──┐      │     TLV9064 ×3
    │             │  AT32F405 (libhmk, 8 kHz)  or │                      │      │     (followers)
    │             │  STM32F446 (QMK / libhmk)     │ ─ MUX_S ─► 470 Ω ─┐  │      │          │ 75 Ω
    │             └───────────────────────────────┘                   │  │      │          │
@@ -22,7 +22,7 @@
 ```
 
 The satellite has no firmware at all, and the main PCB is only a carrier: the
-microcontroller lives on a small plug-in module (see [below](#mcu-modules)).
+microcontroller lives on a small module soldered onto it (see [below](#mcu-modules)).
 Each scan step, the MCU sets the three
 select lines. All six muxes, local and remote, switch to the same channel.
 After a settling delay the ADC converts six inputs, so 8 steps read all 48 mux
@@ -160,7 +160,7 @@ fitted, QMK's init fails once at boot and it stops polling.
   - RDY is left unconnected; QMK polls.
   - NRST has an internal pull-up and gets the recommended 100 nF (C17).
   - On the main PCB it goes to J5, a Jushuo AFC07-S06FCA-00 (LCSC C262553),
-    on the module ear right under the pad's own connector.
+    on a PCB tongue right under the pad's own connector.
 - **I2C:** address 0x74. The module very likely carries its own 4.7 kΩ
   pull-ups (seen on real units); together with R19/R20 that makes about
   2.35 kΩ, which is fine.
@@ -216,8 +216,8 @@ the knob doesn't.
 
 ## MCU modules
 
-The MCU is on a 19 × 17 mm plug-in module, so the firmware family is chosen by
-which module you fit:
+The MCU is on a 19.4 × 25 mm castellated module, so the firmware family is
+chosen by which module you solder in:
 
 | Module | MCU | USB | Firmware | Crystal |
 |---|---|---|---|---|
@@ -230,18 +230,21 @@ QMK doesn't support the AT32F405: only the AT32F415 is in QMK `master` and
 `develop`, and the AT32F405 PR was closed unmerged. That's why there are two
 modules.
 
-**Mechanics.** The module plugs into a 2×12, 1.27 mm SMD socket (J4) on top of
-a PCB ear behind the trackpad, beside the VGA bay, where there are no switches
-and no plate. Its header is on the underside, and the LQFP sits on top right
-above it.
-The stack is 5.4 mm of connector, a 1.0 mm board and the 1.6 mm LQFP. That
-leaves 0.5 mm under the case roof, which is what keeps the module seated; there
-is no screw. Everything else stays on the carrier: USB-C and its ESD, both
-regulators, and the BOOT/RESET buttons and SWD pads, reachable from under the
-case.
+**Mechanics.** The module is a "stamp": 2 × 12 castellated half-holes (1.27 mm
+pitch) along its top and bottom edges, every part on its top side and a flat
+underside. It is soldered flat onto the landing pads J4 on top of the main
+PCB's tab, under the trackpad and beside Y/H/N. Solder, a 1.0 mm board and the
+1.6 mm LQFP make it ~2.7 mm tall, which leaves 1.6 mm under the trackpad's
+well, so it needs no space of its own in the case. The module is larger than
+the old plug-in one (19.4 × 25 mm) because nothing can go on its underside.
+Everything else stays on the carrier: USB-C and its ESD, both regulators, and
+the BOOT/RESET buttons and SWD pads, reachable from under the case.
 
-**Connector pinout.** Numbered as on the carrier's socket J4; the module's
-header meets pin *n* on pin *n*, and `generate.py check` verifies it pad by pad.
+Changing module later means desoldering it with hot air. The main PCB is the
+same for both, so the choice is made per build.
+
+**Connector pinout.** Numbered as on the landing pads J4; module pad *n* is
+soldered to J4 pad *n*, and `generate.py check` verifies it pad by pad.
 
 | Pin | Signal | Pin | Signal |
 |---|---|---|---|
@@ -330,9 +333,9 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 ## Open items
 
 1. **Route the PCBs.** The USB-C sits on an ear behind column 4 so it can
-   share the back face with the DE-15, and the module sits on the other side
-   of the VGA bay. D+/D− therefore run about 75 mm to the module socket,
-   across the top of column 5 and the tab: route them as a tight 90 Ω pair
+   share the back face with the DE-15, and the module sits on the tab beyond
+   column 5. D+/D− therefore run about 50 mm to the module's pads, across the
+   top of column 5: route them as a tight 90 Ω pair
    over unbroken ground, which matters for the AT32's high-speed USB (2-layer is
    what the HE60 uses; 4-layer would give cleaner USB and analog ground). Route analog
    nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the select lines.
@@ -353,5 +356,3 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    sensor data (see [firmware/README.md](../firmware/README.md#qmk-stm32f446-module)).
    Move the trackpad reads to their own thread, and give libhmk the rotary encoder
    and trackpad: see [firmware/pointing-devices.md](../firmware/pointing-devices.md).
-7. **Module retention.** The case roof holds the module in its socket with
-   0.5 mm clearance. Add a thin foam pad on the roof if it rattles.

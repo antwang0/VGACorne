@@ -42,6 +42,7 @@ class Part:
     rot: float = 0.0
     key: str | None = None  # switch this part belongs to (per-key parts)
     description: str | None = None
+    in_bom: bool | None = None  # None: the symbol's default
 
 
 @dataclass
@@ -247,7 +248,7 @@ class _Writer:
 
     def place_part(self, part: Part, at, unit=1):
         sym = self.symbol(part.lib_id, part.ref, part.value, at, part.rot, unit, part.footprint,
-                          part.fields, part.dnp, description=part.description)
+                          part.fields, part.dnp, description=part.description, in_bom=part.in_bom)
         resolved = {sym.pin(k).number: net for k, net in part.pins.items()}
         seen: dict[tuple[float, float], str | None] = {}
         attachments = []

@@ -18,8 +18,8 @@
 
 | Item | Qty | Notes |
 |---|---|---|
-| Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the module socket J4 and trackpad FFC connector J5 on top (hand-solderable) |
-| MCU module, 2-layer **1.0 mm** | 1 per firmware you want | AT32F405 (libhmk, 8 kHz) and/or STM32F446 (QMK / libhmk); LQFP on top, header underneath |
+| Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the trackpad FFC connector J5 on top (hand-solderable); J4 is bare landing pads for the module |
+| MCU module, 2-layer **1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order with JLC's castellated-hole option |
 | Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the rotary encoder ENC1 on top (hand-solder) |
 | VGA daughterboard | 2 | hand-solder: DE-15, 10-wire pigtail, 0402 cap |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
@@ -48,10 +48,11 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 
 ## First power-up (main half alone)
 
-1. **Without a module:** plug in USB and measure +5V, +3V3 (U3) and +3.3VA
-   (U2), both also on J4 pins 3 and 4.
-2. Fit a module and plug in again with a USB meter. Expect about 60–90 mA with
-   no satellite.
+1. **Before soldering the module:** plug in USB and measure +5V, +3V3 (U3)
+   and +3.3VA (U2), both also on J4 pads 3 and 4.
+2. Solder the module on: tack two opposite corner pads, check it sits flat and
+   square on J4, then solder the rest along both edges. Plug in again with a
+   USB meter. Expect about 60–90 mA with no satellite.
 3. Hold **BOOT** while plugging in. The factory DFU bootloader (AT32 or STM32)
    should enumerate.
 

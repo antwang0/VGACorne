@@ -59,9 +59,9 @@ class Stack:
     def case_height(self) -> float:
         return self.plate_top + self.frame_above_plate
 
-    # MCU module: 1.27 mm SMD socket (4.4 mm) + header base (1.0 mm), 1.0 mm module
-    # PCB, LQFP-64 (1.6 mm) on its top side.
-    module_stack: float = 5.4
+    # MCU module: castellated, soldered flat on the main PCB (~0.1 mm of solder),
+    # 1.0 mm module PCB, LQFP-64 (1.6 mm) on its top side.
+    module_stack: float = 0.1
     module_pcb: float = 1.0
     module_top_parts: float = 1.6
 
@@ -71,8 +71,8 @@ class Stack:
 
     @property
     def module_clearance(self) -> float:
-        """Gap between the module's tallest part and the case roof over the inner column."""
-        return self.case_height - self.roof - self.module_top
+        """Gap between the module's tallest part and the bottom of the trackpad's well above it."""
+        return self.case_height - PAD.board_t - PAD.parts - self.module_top
 
     @property
     def bay_interior(self) -> float:

@@ -20,7 +20,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from .geometry import MAIN_SIDE, SATELLITE_SIDE, all_keys, frame_keys
+from .geometry import MAIN_SIDE, MODULE_SIZE, SATELLITE_SIDE, all_keys, frame_keys
 from .trackpad import MODEL as PAD
 from .schematic import Circuit, Part
 
@@ -190,12 +190,14 @@ def link_connector(block="link") -> Part:
 # MCU module interface
 # ---------------------------------------------------------------------------
 
-SOCKET_FP = "Connector_PinSocket_1.27mm:PinSocket_2x12_P1.27mm_Vertical_SMD"
-HEADER_FP = "Connector_PinHeader_1.27mm:PinHeader_2x12_P1.27mm_Vertical_SMD"
+_MW, _MH = MODULE_SIZE
+LANDING_FP = f"vgacorne:Module_Castellated_Landing_2x12_P1.27mm_{_MW:g}x{_MH:g}mm"
+CASTELLATED_FP = f"vgacorne:Module_Castellated_2x12_P1.27mm_{_MW:g}x{_MH:g}mm"
 
-# The module connector, numbered as on the carrier's socket (J4, top side of the
-# main PCB). Net names are the same on both boards. USB sits between grounds;
-# the analog inputs are grouped away from the select lines.
+# The module connector: 2 x 12 castellated pads on the module, soldered onto the
+# landing pads J4 on the main PCB. Numbered as on J4; net names are the same on
+# both boards. USB sits between grounds; the analog inputs are grouped away from
+# the select lines.
 MODULE_PINS = {
     "1": "I2C_SCL", "2": "I2C_SDA",  # trackpad bus; pulled up on the carrier
     "3": "+3V3", "4": "+3.3VA",  # digital supply; analog rail = the module's ADC reference
@@ -213,12 +215,11 @@ MODULE_PINS = {
 
 
 def mating_pin(n: str) -> str:
-    """Carrier socket pin that module header pin ``n`` lands on.
+    """Main-PCB landing pad that module pad ``n`` is soldered to.
 
-    KiCad's 1.27 mm SMD socket footprint puts pin 1 in the opposite column to
-    the header footprint, and the header is flipped onto the module's underside,
-    so the two mirrors cancel: pin n meets pin n. checks.module_connector
-    verifies this geometrically on the real PCBs.
+    The module sits face up on the landing pads and both footprints are drawn
+    the same way round, so pad n meets pad n. checks.module_connector verifies
+    this geometrically on the real PCBs.
     """
     return n
 
@@ -273,8 +274,9 @@ def main() -> Circuit:
     # MCU module socket. Boot/reset buttons and SWD stay on the carrier, reachable
     # from under the case; everything MCU-specific lives on the module.
     p += [
-        Part("J4", "Connector_Generic:Conn_02x12_Odd_Even", "MCU module", SOCKET_FP, dict(MODULE_PINS), "mcu",
-             description="Socket for the swappable MCU module (2x12 1.27 mm SMD, top side)"),
+        Part("J4", "Connector_Generic:Conn_02x12_Odd_Even", "MCU module", LANDING_FP, dict(MODULE_PINS), "mcu",
+             description="Landing pads for the castellated MCU module (2x12, 1.27 mm), top side under "
+                         "the trackpad; the module is soldered on"),
         C("C9", "10u", "+3V3", "GND", "mcu", fp=C0805),
         C("C10", "1u", "+3.3VA", "GND", "mcu", fp=C0603),
         Part("SW22", "Switch:SW_Push", "BOOT", "Button_Switch_SMD:SW_Push_1P1T_XKB_TS-1187A",
@@ -442,12 +444,13 @@ def link() -> Circuit:
 
 def _module(name: str, title: str, mcu: Part, parts: list[Part], notes: list[str]) -> Circuit:
     p = [
-        Part("J1", "Connector_Generic:Conn_02x12_Odd_Even", "to main PCB J4", HEADER_FP,
+        Part("J1", "Connector_Generic:Conn_02x12_Odd_Even", "to main PCB J4", CASTELLATED_FP,
              module_header_pins(), "conn",
-             description="2x12 1.27 mm header on the underside; mates with J4 on the main PCB"),
+             description="2x12 castellated edge pads, 1.27 mm; soldered onto J4 on the main PCB (not a part)",
+             in_bom=False),
         mcu, *parts,
     ]
-    blocks = [("conn", "Module connector (header on the underside; pin n mates with J4 pin n)", (20.32, 38.1), 120),
+    blocks = [("conn", "Module edge pads (castellated; pad n is soldered to J4 pad n)", (20.32, 38.1), 120),
               ("mcu", mcu.value, (150.0, 38.1), 250)]
     return Circuit(name, title, REV, p, blocks, [("\n".join(notes), (20.32, 250.0))], paper="A3")
 

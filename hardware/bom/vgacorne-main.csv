@@ -9,7 +9,7 @@
 "HE1-HE21","DRV5055A3QDBZR","Package_TO_SOT_SMD:SOT-23","DRV5055A3QDBZR","21",""
 "J1","TYPE-C-31-M-12","Connector_USB:USB_C_Receptacle_HRO_TYPE-C-31-M-12","HRO TYPE-C-31-M-12","1",""
 "J3","SM10B-SRSS-TB","Connector_JST:JST_SH_SM10B-SRSS-TB_1x10-1MP_P1.00mm_Horizontal","SM10B-SRSS-TB","1",""
-"J4","MCU module","Connector_PinSocket_1.27mm:PinSocket_2x12_P1.27mm_Vertical_SMD","","1",""
+"J4","MCU module","vgacorne:Module_Castellated_Landing_2x12_P1.27mm_19.4x25mm","","1",""
 "J5","Trackpad","Connector_FFC-FPC:Jushuo_AFC07-S06FCA-00_1x6-1MP_P0.50_Horizontal","AFC07-S06FCA-00 (LCSC C262553)","1",""
 "R1,R2","5.1k","Resistor_SMD:R_0402_1005Metric","","2",""
 "R5-R7","470","Resistor_SMD:R_0402_1005Metric","","3",""

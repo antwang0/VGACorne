@@ -40,7 +40,7 @@ because they're read back from the schematics.
   warnings are tolerated)
 - a comparison of each netlist against `circuits.py` (informational once you've
   edited)
-- a check that each MCU module's header meets the main board's socket pin-for-pin
+- a check that each MCU module's castellated pads land on the main board's J4 pads pin-for-pin
 - a check that each generated firmware file is current, and the QMK matrix host
   test (needs a host C compiler)
 
@@ -68,7 +68,7 @@ constants at the top of the script.
 
 | Module | Contents |
 |---|---|
-| `vgacorne/geometry.py` | Corne v4 key positions, `MAIN_SIDE`, the left half's mouse column and rotary encoder, PCB outline, VGA bay, USB and module ears, standoffs, anchors |
+| `vgacorne/geometry.py` | Corne v4 key positions, `MAIN_SIDE`, the left half's mouse column and rotary encoder, PCB outline, VGA bay, USB ear, MCU module and pad tongue, standoffs, anchors |
 | `vgacorne/trackpad.py` | the optional trackpad: `PADS` (Azoteq TPS65, Cirque TM040040) and `MODEL` |
 | `vgacorne/circuits.py` | the five circuits (main + optional trackpad, satellite + rotary encoder, link, two MCU modules), `SENSOR`, mux channels, the VGA, link and module pinouts |
 | `vgacorne/schematic.py` | label-based `.kicad_sch` writer (library symbols embedded and flattened) |

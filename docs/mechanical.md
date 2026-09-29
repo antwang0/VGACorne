@@ -41,15 +41,15 @@ Heights are from the underside of the case.
 | 12.1 | plate underside (MX spec: plate top is 5.0 mm above the PCB top) |
 | 13.6 | plate top |
 | 12.9 – 17.6 | trackpad module, its connector and the FFC fold, in their well (right half) |
-| 14.0 – 16.6 | MCU module (behind the trackpad): 5.4 mm connector stack, 1.0 mm board, 1.6 mm LQFP |
+| 8.6 – 11.3 | MCU module (under the trackpad): soldered flat, 1.0 mm board, 1.6 mm LQFP |
 | 16.6 – 30.6 | encoder knob (left half): 3 mm above the plate, top about 2 mm above the keycaps |
-| 17.1 | underside of the 1.5 mm roof over the MCU module and VGA bay (0.5 mm above the module) |
+| 17.1 | underside of the 1.5 mm roof over the VGA bay and USB-C ear |
 | 17.6 – 18.6 | trackpad overlay, flush with the top (right half) |
 | 18.6 | top of case (frame 5 mm above the plate) |
 
 The frame height is set by the parts under the roof: the VGA bay needs more
-than the DE-15's 12.55 mm flange (it gets 14.1 mm), and the module needs 8.0 mm
-above the PCB (it gets 8.5 mm).
+than the DE-15's 12.55 mm flange (it gets 14.1 mm). The MCU module is 2.7 mm
+tall and sits 1.6 mm under the trackpad's well.
 For a typing angle, keep these heights at the front and raise the back by
 `depth × tan(angle)`. The case is 116 mm deep, so 5° adds about 10 mm.
 
@@ -99,20 +99,19 @@ silicone is springier, poron is more muted.
 | `INNER_WALL` | cavity: PCB outline + 0.75 mm, plus the VGA bay |
 | `GASKET_POCKETS` | tab pockets (tab + 0.5 mm): gasket seat in the tray below, frame above |
 | `PLATE` | plate outline with tabs, for reference |
-| `ROOF` | where the top frame is a 1.5 mm roof: over the MCU module, the VGA bay and the USB-C ear |
+| `ROOF` | where the top frame is a 1.5 mm roof: over the tab, the VGA bay and the USB-C ear |
 | `DAUGHTERBOARD` | plan-view envelope of the vertical VGA board |
-| `MCU_MODULE` | the plug-in MCU module behind the trackpad (under the roof) |
+| `MCU_MODULE` | the soldered MCU module on the tab, under the trackpad |
 | `PORTS` | DE-15 shell cutout and USB-C opening (right half), through the back face |
 | `JACKSCREWS` | two Ø3.2 mm holes through the back face for the 4-40 screwlocks, 24.99 mm apart |
 | `FLOOR_ACCESS` | Ø3 mm floor holes under the BOOT and RESET buttons (right half) |
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
-| `TRACKPAD_WELL` | well under it for the module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and module ear |
+| `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
 
 Suggested split: the **bottom tray** carries the floor, walls up to the lower
 gasket seat and the lower tab pockets. The **top frame** carries the bezel
 around the keys, the upper tab pockets and the **1.5 mm roof** (`ROOF`), which
-covers the VGA bay and the MCU module and keeps the module seated in its
-socket. Join them with M3 screws from below through the wall thickness (6–8
+covers the VGA bay, the tab and the USB-C ear. Join them with M3 screws from below through the wall thickness (6–8
 places), clear of the gasket pockets. The left half is about 150 × 116 mm. The
 right half is 202 × 116 mm with the TPS65 trackpad (171 mm with the 40 mm
 Cirque).
@@ -179,7 +178,7 @@ principle.
     connector and the fold of the FFC.
 - **Cable:** the module's ZIF connector is 9.2 mm in from a long edge and
   25.3 mm from an end. Turn the module so that is the back edge and the end
-  nearer the keys: the connector then sits right over J5 on the module ear,
+  nearer the keys: the connector then sits right over J5 on a PCB tongue,
   and a short 6-pin 0.5 mm same-side FFC folds down into it.
 - **Case:** the outside profile wraps the pad with the same 25 mm minimum
   concave radius. The pad is why the right half is 51 mm wider than the left.
@@ -204,14 +203,14 @@ principle.
 
 ### MCU module
 
-- 19.2 × 16.8 mm module on a 2×12, 1.27 mm SMD socket, on a PCB ear behind
-  the trackpad and beside the VGA bay (see
-  [architecture.md](architecture.md#mcu-modules)). The ear runs from the back
-  face forward under the pad, where it also carries the pad's connector J5.
-  The top of the module is 8.0 mm above the PCB; the roof is 0.5 mm above
-  that. A thin foam pad on the underside of the roof stops rattle.
-- To swap it: open the case, lift the module straight up, plug in the other
-  one, then flash its firmware.
+- 19.4 × 25 mm castellated module, soldered flat onto landing pads J4 on top
+  of the main PCB's tab, under the trackpad (see
+  [architecture.md](architecture.md#mcu-modules)). It is 2.7 mm tall and
+  1.6 mm below the trackpad's well, so the case needs no room for it. The
+  back of the right half tapers from the keys, over the whole trackpad.
+- A short PCB tongue from the tab reaches under the pad for its connector J5.
+  It stays inside the pad's footprint.
+- Changing module means desoldering it (hot air); the main PCB fits either.
 
 ### USB-C (right half)
 

@@ -31,7 +31,7 @@ class Pad:
     board_t: float                  # what sits in the counterbore, flush with the case top
     parts: float                    # depth the well must clear below the counterbore
     well_grow: float                # well outline vs the module: < 0 leaves a ledge for its rim
-    fpc: tuple[float, float]        # FFC connector on top of the main PCB (tab or module ear)
+    fpc: tuple[float, float]        # FFC connector on top of the main PCB (tab or pad tongue)
     fpc_mouth: tuple[float, float]  # which way the connector opens
     channel: tuple[float, float, float, float] | None  # extra well area for the FFC, x0 y0 x1 y1
     connector_fp: str
@@ -97,7 +97,7 @@ PADS = {
     # Module 2.03 mm with adhesive; its 2 mm ZIF (J1) and the FFC's fold under it
     # need ~4.7 mm below the overlay. J1 sits 9.2 mm in from a long edge, 25.3 mm
     # from an end: turn the module so that is the back edge and the end nearer the
-    # keys, which puts J1 right over J5 on the module ear.
+    # keys, which puts J1 right over J5 on the PCB tongue under the pad.
     "tps65": Pad(
         name="Azoteq TPS65 under a 1 mm overlay", mpn="TPS65-201A-S",
         shape="rect", size=(65.0, 49.0), corner_r=3.8, centre=(16.14, 6.2),

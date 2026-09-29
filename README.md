@@ -11,8 +11,8 @@ with poron or silicone dampening.
 ## The idea in one paragraph
 
 The left half has no MCU. It is just hall sensors, three 8:1 analog
-multiplexers and a small buffer. On the right half, the MCU sits on a
-**swappable plug-in module** and steps all six muxes
+multiplexers and a small buffer. On the right half, the MCU sits on a small
+**module soldered flat under the trackpad** and steps all six muxes
 with the same three select lines. It reads the left half's three mux outputs
 over the VGA cable's three 75 Ω coax pairs (the R, G and B lines), which were
 built to carry analog signals. The select lines ride HSYNC, VSYNC and DDC-SDA,
@@ -36,7 +36,7 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 |---|---|
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
-| PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module headers verified pin-for-pin against the socket. **Routing is still to do.** |
+| PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module edge pads verified pin-for-pin against the landing pads. **Routing is still to do.** |
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no rotary encoder under libhmk |
 | QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
@@ -79,8 +79,9 @@ which are yours to edit.
 - **One MCU, analog link.** A 3-select, 3-analog link fits the VGA cable, and it
   avoids a second MCU, split-sync firmware and the extra latency on the slave
   half. See [architecture](docs/architecture.md#why-an-analog-link).
-- **Swappable MCU module** on a 2×12, 1.27 mm socket under the case roof.
-  AT32F405RCT7 for libhmk at 8 kHz (the HE60 reference board's MCU), or
+- **MCU on a castellated module**, soldered flat to the main PCB under the
+  trackpad, so it takes no space in the case. You choose the module when you
+  build: AT32F405RCT7 for libhmk at 8 kHz (the HE60 reference board's MCU), or
   STM32F446RET6 for QMK. The two chips share a pin map, so both modules use the
   same signals. See [architecture](docs/architecture.md#mcu-modules).
 - **DRV5055A3 sensors on the PCB underside**, read through the board as on the

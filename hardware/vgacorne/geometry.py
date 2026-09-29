@@ -91,11 +91,11 @@ INNER_X = (-33.3375 + U / 2, -4.2625)
 BAY_BACKSET = 4.5
 BAY_FRONT = _COLUMNS[5][1][0] - U / 2 - 1.0 - BAY_BACKSET
 BAY = (INNER_X[1] - 36.0, BAY_FRONT - 12.25, INNER_X[1], BAY_FRONT)
-BACK = BAY[1]  # PCB back edge at the connectors (bay, USB ear, module ear)
+BACK = BAY[1]  # PCB back edge at the connectors (bay and USB ear)
 
 # The "tab": the inner column below the bay. J3 (facing the bay) and the
-# regulators underneath; on the main half the trackpad sits over it, on the
-# satellite the mouse column's keys.
+# regulators underneath; on the main half the MCU module on top and the trackpad
+# over both, on the satellite the mouse column's keys.
 INNER_TOP = BAY_FRONT
 TAB_BOTTOM = 14.0
 # Below the tab down to the tilted 1.5u thumb key the case is solid; the outside
@@ -110,15 +110,20 @@ USB_EAR = (USB_X - 6.5, BACK, USB_X + 6.5, _COLUMNS[4][1][0] - U / 2)
 # The optional trackpad on the main half is described in trackpad.py; it sits
 # over the tab, beside Y/H/N.
 
-# MCU module (Corne frame), main half: on a PCB ear behind the trackpad and
-# beside the VGA bay, under the case roof, on a 2x12 1.27 mm header/socket
-# pair. The ear reaches forward under the pad to carry its FFC connector.
-MODULE_RECT = (INNER_X[1] + 0.5, BAY[1] + 0.5, INNER_X[1] + 19.7, BAY[1] + 17.3)  # x0, y0, x1, y1
-MODULE_EAR = (INNER_X[1], BAY[1], INNER_X[1] + 20.5, -8.0)
-# 2x12 connector: runs along X across the module, 0.4 mm right of and 2 mm in
-# front of its centre (where the module boards have always had it).
-MODULE_CONN = ((MODULE_RECT[0] + MODULE_RECT[2]) / 2 + 0.4, (MODULE_RECT[1] + MODULE_RECT[3]) / 2 + 2.0)
-MODULE_CONN_ROT = 90.0
+# MCU module (Corne frame), main half: soldered flat on top of the tab by 2 x 12
+# castellated pads along its top and bottom edges, under the trackpad. It is
+# ~2.7 mm tall, well under the pad's well (4.3 mm above the PCB), so it needs no
+# space of its own in the case. All its parts are on top; its underside is flat.
+# The tab is 20.55 mm wide; the landing pads run 1.2 mm out past the module's
+# top and bottom edges.
+MODULE_SIZE = (19.4, 25.0)
+MODULE_CONN = ((INNER_X[0] - 1.0 + INNER_X[1]) / 2, INNER_TOP + 1.7 + MODULE_SIZE[1] / 2)  # module centre
+MODULE_RECT = (MODULE_CONN[0] - MODULE_SIZE[0] / 2, MODULE_CONN[1] - MODULE_SIZE[1] / 2,
+               MODULE_CONN[0] + MODULE_SIZE[0] / 2, MODULE_CONN[1] + MODULE_SIZE[1] / 2)  # x0, y0, x1, y1
+MODULE_CONN_ROT = 0.0
+# A PCB tongue from the tab under the pad's well, carrying its FFC connector J5
+# right under the pad's own connector. It stays inside the pad's footprint.
+PAD_TONGUE = (INNER_X[1], -16.5, INNER_X[1] + 20.5, -8.0)
 
 # Satellite only: the mouse column, in the inner column (Corne frame), in line
 # with column 5's rows: M1 (right click) beside T, M0 (left click) beside G, and
@@ -249,7 +254,7 @@ def frame_outline(side: str, with_tab: bool = True) -> Polygon:
     if side == SATELLITE_SIDE:
         extra.append(encoder_cell_left())
     if with_tab and side == MAIN_SIDE:
-        extra += [_box(*USB_EAR), _box(*MODULE_EAR)]
+        extra += [_box(*USB_EAR), _box(*PAD_TONGUE)]
     shape = _smooth(unary_union(cells + extra))
     # Closing grows into the daughterboard bay; cut it back out, then give the
     # bay's inside corners a router-friendly radius.

@@ -126,27 +126,28 @@ def qmk_host_test() -> bool:
 
 
 def module_connector(module: str) -> bool:
-    """Every module header pad must sit on the carrier socket pad carrying the same net."""
+    """Every castellated module pad must sit on the main-board landing pad with the same net.
+
+    Both boards are drawn in the main PCB's coordinates. A castellated pad's
+    position is its hole, on the module edge; the landing pad is centred on that
+    edge, so the two positions must coincide.
+    """
     import pcbnew
 
-    def pads(pcb: Path, ref: str) -> dict[tuple[float, int], str]:
-        """(row y, column side) -> net. SMD header and socket pads sit at different
-        outward offsets from the same pins, so compare rows and sides, not pad XY."""
+    def pads(pcb: Path, ref: str) -> dict[str, tuple[float, float, str]]:
         board = pcbnew.LoadBoard(str(pcb))
         fp = next(f for f in board.GetFootprints() if f.GetReference() == ref)
-        c = fp.GetPosition()
-        along_y = round(fp.GetOrientationDegrees()) % 180 == 0  # long axis along Y
-        out = {}
-        for p in fp.Pads():
-            d = p.GetPosition() - c
-            row, across = (d.y, d.x) if along_y else (d.x, d.y)
-            out[(round(pcbnew.ToMM(row + (c.y if along_y else c.x)), 2), 1 if across > 0 else -1)] = p.GetNetname()
-        return out
+        return {p.GetNumber(): (pcbnew.ToMM(p.GetPosition().x), pcbnew.ToMM(p.GetPosition().y), p.GetNetname())
+                for p in fp.Pads()}
 
     carrier = pads(KICAD / "main" / "vgacorne-main.kicad_pcb", "J4")
     mod = pads(KICAD / module / f"vgacorne-{module.replace('_', '-')}.kicad_pcb", "J1")
-    bad = [f"{xy}: module {n} / carrier {carrier.get(xy)}" for xy, n in mod.items() if carrier.get(xy) != n]
-    print(f"  {module:11} header vs main J4: {'all %d pads match' % len(mod) if not bad else 'MISMATCH ' + '; '.join(bad[:3])}")
+    bad = []
+    for n, (x, y, net) in mod.items():
+        cx, cy, cnet = carrier.get(n, (1e9, 1e9, None))
+        if abs(x - cx) > 0.05 or abs(y - cy) > 0.05 or cnet != net:
+            bad.append(f"pad {n}: module {net} at ({x:.2f}, {y:.2f}) / main {cnet} at ({cx:.2f}, {cy:.2f})")
+    print(f"  {module:11} edge pads vs main J4: {'all %d pads match' % len(mod) if not bad else 'MISMATCH ' + '; '.join(bad[:3])}")
     return not bad
 
 

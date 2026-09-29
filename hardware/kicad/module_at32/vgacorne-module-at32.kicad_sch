@@ -2644,7 +2644,7 @@
 			(embedded_fonts no)
 		)
 	)
-	(text "Module connector (header on the underside; pin n mates with J4 pin n)"
+	(text "Module edge pads (castellated; pad n is soldered to J4 pad n)"
 		(exclude_from_sim no)
 		(at 20.32 40.64 0)
 		(effects
@@ -2676,7 +2676,7 @@
 		(at 41.91 72.39 0)
 		(unit 1)
 		(exclude_from_sim no)
-		(in_bom yes)
+		(in_bom no)
 		(on_board yes)
 		(dnp no)
 		(uuid "ca0e87fc-ffc8-5342-8f80-3fd2f6544429")
@@ -2694,7 +2694,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_PinHeader_1.27mm:PinHeader_2x12_P1.27mm_Vertical_SMD"
+		(property "Footprint" "vgacorne:Module_Castellated_2x12_P1.27mm_19.4x25mm"
 			(at 41.91 72.39 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -2708,7 +2708,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "2x12 1.27 mm header on the underside; mates with J4 on the main PCB"
+		(property "Description" "2x12 castellated edge pads, 1.27 mm; soldered onto J4 on the main PCB (not a part)"
 			(at 41.91 72.39 0)
 			(effects
 				(font (size 1.27 1.27))

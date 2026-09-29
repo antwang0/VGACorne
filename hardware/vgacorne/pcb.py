@@ -301,18 +301,19 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
     b.face("J1", ux, uy + 3.6, (0, -1))
     lx, ly = geo.anchor("LINK", "left")
     b.face("J3", lx, ly, (0, -1))
-    # MCU module socket on the ear behind the trackpad; nothing else goes on top there.
+    # Landing pads for the castellated MCU module, on top of the tab under the
+    # trackpad; nothing else goes on top there.
     mx, my = geo.anchor("MODULE_CONN", "left")
     b.put("J4", mx, my, geo.MODULE_CONN_ROT, "F")
     b.occupied["F"].append(("module", geo.module_rect(b.side)))
     tx, ty = geo.anchor("TAB", "left")
     # Tag-Connect guide pins poke through the board: keep them out from under switches
-    # and the module socket (under the rest of the module there is 5 mm of air).
+    # and the soldered-down module.
     b.autoplace("J2", (tx - 3, ty + 2), 0, max_r=24,
                 avoid=switch_bodies(b) + [b.poly(b.fps["J4"], "F", grow=0.5)])
 
     # USB input on the ear, spilling under column 4; regulators under the tab,
-    # module decoupling under the socket.
+    # module decoupling right under the module.
     for ref, rot in (("U4", 0), ("R1", 90), ("R2", 90), ("F1", 0), ("C1", 0)):
         b.autoplace(ref, (ux, uy + 9), rot, max_r=26)
     for ref in ("U2", "U3", "C2", "C3", "C4", "C5"):
@@ -411,30 +412,33 @@ def build_link(c: Circuit, pcb_path: Path) -> Builder:
 
 
 def build_module(c: Circuit, pcb_path: Path) -> Builder:
-    """MCU module, drawn in the carrier's coordinates so its header lands on J4.
+    """MCU module, drawn in the carrier's coordinates so its edge pads land on J4.
 
-    The header is on the underside, inside the ~5.4 mm connector stack; the MCU
-    sits on top right over it (under the case roof, see mechanical.STACK), with
-    passives around it and, if the top runs out of room, beside the header.
+    A castellated "stamp" module: soldered flat onto the main PCB, so every part
+    is on top and the underside stays flat. It sits under the trackpad, which
+    leaves 4.3 mm above the PCB (see mechanical.STACK).
     """
     side = geo.MAIN_SIDE
     outline = geo.module_rect(side).buffer(-0.5).buffer(0.5)
     b = Builder(c, side, outline, pcb_path, has_keys=False)
     cx, cy, rot = geo.place(side, *geo.corne(*geo.MODULE_CONN), geo.MODULE_CONN_ROT)
-    # Underside, into the carrier's J4. A B.Cu footprint at 0 deg is KiCad's top-bottom
-    # mirror of the F.Cu one; 180 deg turns that into the left-right mirror a header
-    # plugged face-down actually is (checks.module_connector verifies pin n -> pin n).
-    b.put("J1", cx, cy, rot + 180, "B", mirror=False)
-    x0, y0, x1, y1 = outline.bounds
-    b.put("U1", cx, (y0 + y1) / 2, 0, "F", mirror=False)  # top side, over the connector
+    b.put("J1", cx, cy, rot, "F", mirror=False)  # same place and way round as J4 below it
+    # J1's courtyard is two strips along the edges; its bounding box would block the lot.
+    rows: dict[bool, list[Polygon]] = {}
+    for p in b.fps["J1"].Pads():
+        bb = p.GetBoundingBox()
+        rows.setdefault(bb.GetY() < mm(cy), []).append(
+            box(pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()), pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())))
+    b.occupied["F"] = [(r, g) for r, g in b.occupied["F"] if r != "J1"] + [
+        ("J1", box(*unary_union(row).bounds).buffer(0.35, join_style="mitre")) for row in rows.values()]
+    b.put("U1", cx, cy, 0, "F", mirror=False)
     for ref in ("Y1", *(r for r in b.fps if r not in ("J1", "U1", "Y1"))):
-        try:
-            b.autoplace(ref, (cx - 8, cy), 0, layer="F", max_r=10, mirror=False)
-        except RuntimeError:  # top side full: use the underside beside the header
-            b.autoplace(ref, (cx - 6, cy), 0, layer="B", max_r=12, mirror=False)
+        b.autoplace(ref, (cx, cy), 0, layer="F", max_r=14, mirror=False)
     b.edge(outline)
     b.ground_zones(outline)
-    b.text(c.part("U1").value, (x0 + x1) / 2, y1 - 1.0, pcbnew.F_SilkS, size=0.8)
+    # The chip's own marking names the module on top; label the flat underside too,
+    # for telling them apart before soldering.
+    b.text(c.part("U1").value, cx, cy, pcbnew.B_SilkS, size=1.2)
     return b
 
 

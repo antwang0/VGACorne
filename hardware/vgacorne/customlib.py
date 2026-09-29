@@ -5,7 +5,8 @@
   fabricated HE60 (peppapighs/HE60) reference board.
 * ``vgacorne.pretty`` -- Hall-effect MX switch footprints: two 1.75 mm NPTH
   side pegs, no centre post (the magnet lives there) and no pins. The sensor is
-  a separate SOT-23 on B.Cu directly under the switch centre.
+  a separate SOT-23 on B.Cu directly under the switch centre. Also the MCU
+  module's castellated edge and the matching landing pads on the main PCB.
 """
 
 from __future__ import annotations
@@ -230,6 +231,75 @@ def wire_pads_footprint(n: int = 10, pitch: float = 1.6) -> tuple[str, list]:
     return name, fp
 
 
+MODULE_PITCH = 1.27
+MODULE_PADS = 12        # per edge; odd pins along the top edge, even along the bottom
+CASTELLATION_DRILL = 0.6
+
+
+def _module_pad_x(i: int) -> float:
+    return (i - (MODULE_PADS - 1) / 2) * MODULE_PITCH
+
+
+def _module_pins():
+    """(pin, x, edge sign): pin 1 top-left, pins 1, 3 ... 23 along the top edge, 2 ... 24 below."""
+    for i in range(MODULE_PADS):
+        yield str(2 * i + 1), _module_pad_x(i), -1
+        yield str(2 * i + 2), _module_pad_x(i), 1
+
+
+def _module_header(name: str, descr: str, attrs: list) -> list:
+    return S("footprint", name, S("version", 20241229), S("generator", "vgacorne"),
+             S("generator_version", "1.0"), S("layer", "F.Cu"), S("descr", descr),
+             S("tags", "module castellated stamp"),
+             _text_prop("Reference", "REF**", 0, 0, "F.Fab"),
+             _text_prop("Value", name, 0, 1.5, "F.Fab", hidden=True),
+             _text_prop("Footprint", "", 0, 0, "F.Fab", hidden=True),
+             _text_prop("Datasheet", "", 0, 0, "F.Fab", hidden=True),
+             _text_prop("Description", "", 0, 0, "F.Fab", hidden=True),
+             S("attr", *[Sym(a) for a in attrs]))
+
+
+def module_edge_footprint(w: float, h: float) -> tuple[str, list]:
+    """The MCU module's own connector: 2 x 12 castellated half-holes on its top and
+    bottom edges (the board edge runs through the drill centres). Pads only, no parts."""
+    name = f"Module_Castellated_2x12_P1.27mm_{w:g}x{h:g}mm"
+    fp = _module_header(name, f"{w:g} x {h:g} mm MCU module edge: 2 x 12 castellated pads, 1.27 mm pitch, "
+                              "0.6 mm half-holes on the board edge", ["through_hole", "exclude_from_pos_files",
+                                                                      "exclude_from_bom"])
+    fp.append(_rect(-w / 2, -h / 2, w / 2, h / 2, "F.Fab", 0.1))
+    span = _module_pad_x(MODULE_PADS - 1) + 0.75
+    for sy in (-1, 1):
+        fp.append(_rect(-span, sy * (h / 2 + 0.3), span, sy * (h / 2 - 1.6), "F.CrtYd", 0.05))
+    for pin, x, sy in _module_pins():
+        # The hole sits on the edge line; the copper (offset from the hole) reaches
+        # 1.25 mm into the board.
+        fp.append(S("pad", pin, Sym("thru_hole"), Sym("oval"), S("at", x, sy * h / 2),
+                    S("size", 0.95, 1.8), S("drill", CASTELLATION_DRILL, S("offset", 0, -sy * 0.35)),
+                    S("property", Sym("pad_prop_castellated")), S("layers", "*.Cu", "*.Mask"),
+                    S("uuid", _uid())))
+    fp.append(S("embedded_fonts", Sym("no")))
+    return name, fp
+
+
+def module_landing_footprint(w: float, h: float) -> tuple[str, list]:
+    """Main-PCB pads the castellated module is soldered onto, top side. Each pad
+    runs 1.2 mm out from under the module edge for the iron."""
+    name = f"Module_Castellated_Landing_2x12_P1.27mm_{w:g}x{h:g}mm"
+    fp = _module_header(name, f"Landing pads for the {w:g} x {h:g} mm castellated MCU module (2 x 12, "
+                              "1.27 mm pitch); keep the area under the module clear on this side", ["smd"])
+    fp.append(_rect(-w / 2, -h / 2, w / 2, h / 2, "F.Fab", 0.1))
+    fp.append(_rect(-w / 2 - 0.3, -h / 2 - 1.5, w / 2 + 0.3, h / 2 + 1.5, "F.CrtYd", 0.05))
+    for sx in (-1, 1):  # module outline sides on silk (the pad rows are the top and bottom)
+        fp.append(_line(sx * (w / 2 + 0.2), -h / 2 + 0.6, sx * (w / 2 + 0.2), h / 2 - 0.6, "F.SilkS"))
+    x1 = _module_pad_x(0) - 1.0
+    fp.append(_line(x1, -h / 2 - 1.3, x1, -h / 2 + 0.2, "F.SilkS"))  # pin-1 marker
+    for pin, x, sy in _module_pins():
+        fp.append(S("pad", pin, Sym("smd"), Sym("roundrect"), S("at", x, sy * h / 2), S("size", 0.85, 2.4),
+                    S("layers", "F.Cu", "F.Paste", "F.Mask"), S("roundrect_rratio", 0.25), S("uuid", _uid())))
+    fp.append(S("embedded_fonts", Sym("no")))
+    return name, fp
+
+
 def write_footprints() -> Path:
     pretty = LIB_DIR / "vgacorne.pretty"
     pretty.mkdir(parents=True, exist_ok=True)
@@ -238,6 +308,10 @@ def write_footprints() -> Path:
         (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
     for make in (standoff_footprint, wire_pads_footprint):
         name, fp = make()
+        (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
+    from .geometry import MODULE_SIZE
+    for make in (module_edge_footprint, module_landing_footprint):
+        name, fp = make(*MODULE_SIZE)
         (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
     return pretty
 
