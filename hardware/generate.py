@@ -93,9 +93,9 @@ def do_bom(_force: bool) -> None:
         sch, _, name = paths(board)
         dest = out / f"{name}.csv"
         subprocess.run(["kicad-cli", "sch", "export", "bom", "-o", str(dest),
-                        "--fields", "Reference,Value,Footprint,MPN,${QUANTITY},${DNP}",
-                        "--labels", "Refs,Value,Footprint,MPN,Qty,DNP",
-                        "--group-by", "Value,Footprint,MPN,${DNP}", str(sch)],
+                        "--fields", "Reference,Value,Tolerance,Footprint,MPN,${QUANTITY},${DNP}",
+                        "--labels", "Refs,Value,Tolerance,Footprint,MPN,Qty,DNP",
+                        "--group-by", "Value,Tolerance,Footprint,MPN,${DNP}", str(sch)],
                        check=True, capture_output=True)
         print(f"  wrote {dest.relative_to(HERE)}")
 

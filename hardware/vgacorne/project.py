@@ -38,7 +38,12 @@ def _netclass(name, track, clearance=0.2, via=0.6, drill=0.3, dp_w=0.2, dp_gap=0
 NETCLASSES = [
     _netclass("Default", 0.2, prio=2147483647),
     _netclass("Power", 0.4, prio=0),
-    _netclass("USB", 0.2, clearance=0.15, dp_w=0.2, dp_gap=0.15, prio=1),
+    # USB D+/D-: 0.4 mm tracks 0.15 mm apart, with the ground pour 0.25 mm away on
+    # the same layer and the other layer poured, come out at ~97 ohm differential
+    # bare (a few ohm less under solder mask) on both the 1.6 mm main PCB and the
+    # 1.0 mm module: the coupling and the pour set it, not the far plane (2D
+    # field-solver estimate). USB 2.0 wants 90 ohm +/-15%. 0.2 mm tracks would be ~120.
+    _netclass("USB", 0.4, clearance=0.15, dp_w=0.4, dp_gap=0.15, prio=1),
     _netclass("Analog", 0.2, clearance=0.2, prio=2),
 ]
 # Net names from local labels carry the sheet path ("/HE_C0R0"); power symbols don't ("GND").

@@ -3168,7 +3168,7 @@
 		)
 		(uuid "8f55fd17-9721-54d4-94d0-8ce7ff19a0ea")
 	)
-	(label "I2C_SCL"
+	(label "NRST"
 		(at 34.29 59.69 180)
 		(fields_autoplaced yes)
 		(effects
@@ -3188,7 +3188,7 @@
 		)
 		(uuid "c4ab724b-88a9-5117-b85d-896a01475a83")
 	)
-	(label "I2C_SDA"
+	(label "MUX_S0"
 		(at 52.07 59.69 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3199,8 +3199,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 67.31)
-			(xy 34.29 67.31)
+			(xy 36.83 62.23)
+			(xy 34.29 62.23)
 		)
 		(stroke
 			(width 0)
@@ -3208,8 +3208,8 @@
 		)
 		(uuid "0c4b7ddf-aa33-5a96-9759-7f45609e4ed2")
 	)
-	(label "USB_DP"
-		(at 34.29 67.31 180)
+	(label "BOOT"
+		(at 34.29 62.23 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
@@ -3219,8 +3219,8 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 67.31)
-			(xy 52.07 67.31)
+			(xy 49.53 62.23)
+			(xy 52.07 62.23)
 		)
 		(stroke
 			(width 0)
@@ -3228,8 +3228,8 @@
 		)
 		(uuid "80111757-f7af-5e80-a8d9-0fbc543b51f4")
 	)
-	(label "USB_DN"
-		(at 52.07 67.31 0)
+	(label "MUX_S1"
+		(at 52.07 62.23 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
@@ -3239,8 +3239,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 72.39)
-			(xy 34.29 72.39)
+			(xy 36.83 64.77)
+			(xy 34.29 64.77)
 		)
 		(stroke
 			(width 0)
@@ -3248,14 +3248,54 @@
 		)
 		(uuid "87050967-8dc8-5967-9125-a7d14b33fe51")
 	)
-	(label "ADC_L_A"
-		(at 34.29 72.39 180)
+	(label "I2C_SDA"
+		(at 34.29 64.77 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
 		(uuid "aa6d9bad-e026-5d3e-b31e-b397d5b1da96")
+	)
+	(wire
+		(pts
+			(xy 49.53 64.77)
+			(xy 52.07 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5918bf86-368e-5945-b83a-e0c24ba1b6f6")
+	)
+	(label "MUX_S2"
+		(at 52.07 64.77 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
+		)
+		(uuid "67b25a8c-aa12-50de-842e-406cb94f9638")
+	)
+	(wire
+		(pts
+			(xy 36.83 67.31)
+			(xy 34.29 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "afbffe83-8e00-58ef-b2b2-e38256757a1a")
+	)
+	(label "I2C_SCL"
+		(at 34.29 67.31 180)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "8f60a517-7f35-5aa5-9945-e8d038c05082")
 	)
 	(wire
 		(pts
@@ -3266,16 +3306,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5918bf86-368e-5945-b83a-e0c24ba1b6f6")
+		(uuid "3002fbea-1b74-52f2-8e21-60575bb7cd36")
 	)
-	(label "ADC_L_B"
+	(label "ADC_L_A"
 		(at 52.07 72.39 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "67b25a8c-aa12-50de-842e-406cb94f9638")
+		(uuid "ca4bb535-9c73-585f-9f00-904afd8af97f")
 	)
 	(wire
 		(pts
@@ -3286,16 +3326,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "afbffe83-8e00-58ef-b2b2-e38256757a1a")
+		(uuid "f3f6a4bc-8841-52b3-b0d4-bf584e0fba4b")
 	)
-	(label "ADC_L_C"
+	(label "SWCLK"
 		(at 34.29 74.93 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "8f60a517-7f35-5aa5-9945-e8d038c05082")
+		(uuid "93503539-c17b-586a-9d6e-4ed3a2daf05a")
 	)
 	(wire
 		(pts
@@ -3306,16 +3346,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3002fbea-1b74-52f2-8e21-60575bb7cd36")
+		(uuid "9a2dfc64-a984-5367-9f63-caf41d5d4846")
 	)
-	(label "ADC_R_A"
+	(label "ADC_L_B"
 		(at 52.07 74.93 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "ca4bb535-9c73-585f-9f00-904afd8af97f")
+		(uuid "7f367ad0-9884-55c1-aa5a-aca9476f2853")
 	)
 	(wire
 		(pts
@@ -3326,16 +3366,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f3f6a4bc-8841-52b3-b0d4-bf584e0fba4b")
+		(uuid "333aaa83-ab2f-5031-b6a8-830e16360e38")
 	)
-	(label "ADC_R_B"
+	(label "SWDIO"
 		(at 34.29 77.47 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "93503539-c17b-586a-9d6e-4ed3a2daf05a")
+		(uuid "e36b6522-770c-5949-a757-2c860f5bbe69")
 	)
 	(wire
 		(pts
@@ -3346,36 +3386,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9a2dfc64-a984-5367-9f63-caf41d5d4846")
+		(uuid "152787b8-52f8-5e8b-8ecc-d3c7c7006b12")
 	)
-	(label "ADC_R_C"
+	(label "ADC_L_C"
 		(at 52.07 77.47 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "7f367ad0-9884-55c1-aa5a-aca9476f2853")
-	)
-	(wire
-		(pts
-			(xy 36.83 80.01)
-			(xy 34.29 80.01)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "333aaa83-ab2f-5031-b6a8-830e16360e38")
-	)
-	(label "MUX_S0"
-		(at 34.29 80.01 180)
-		(fields_autoplaced yes)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "e36b6522-770c-5949-a757-2c860f5bbe69")
+		(uuid "1a35b33a-c17a-5b77-bf41-44d63fbb9471")
 	)
 	(wire
 		(pts
@@ -3386,16 +3406,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "152787b8-52f8-5e8b-8ecc-d3c7c7006b12")
+		(uuid "382cd4c3-b29e-5cbf-9347-4b7a39d1b6d7")
 	)
-	(label "MUX_S1"
+	(label "ADC_R_A"
 		(at 52.07 80.01 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "1a35b33a-c17a-5b77-bf41-44d63fbb9471")
+		(uuid "08d9fdc3-1661-5e05-8abf-7a6ca208ad43")
 	)
 	(wire
 		(pts
@@ -3406,16 +3426,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "382cd4c3-b29e-5cbf-9347-4b7a39d1b6d7")
+		(uuid "eec69baf-9856-571a-ad3e-bba5143dffe5")
 	)
-	(label "MUX_S2"
+	(label "USB_DP"
 		(at 34.29 82.55 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "08d9fdc3-1661-5e05-8abf-7a6ca208ad43")
+		(uuid "f936c6d2-d16e-5903-be09-1ca3193376bc")
 	)
 	(wire
 		(pts
@@ -3426,16 +3446,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "eec69baf-9856-571a-ad3e-bba5143dffe5")
+		(uuid "84decf3f-edbd-5e76-8f66-0b8e35a255a3")
 	)
-	(label "DET"
+	(label "ADC_R_B"
 		(at 52.07 82.55 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "f936c6d2-d16e-5903-be09-1ca3193376bc")
+		(uuid "34436e02-f14a-5341-b491-c24620d34902")
 	)
 	(wire
 		(pts
@@ -3446,16 +3466,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "84decf3f-edbd-5e76-8f66-0b8e35a255a3")
+		(uuid "ac9cb833-2c63-5ad0-aa67-834dff147bfb")
 	)
-	(label "NRST"
+	(label "USB_DN"
 		(at 34.29 85.09 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "34436e02-f14a-5341-b491-c24620d34902")
+		(uuid "46c65e46-9129-56ed-bc50-d5046d753619")
 	)
 	(wire
 		(pts
@@ -3466,34 +3486,14 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ac9cb833-2c63-5ad0-aa67-834dff147bfb")
+		(uuid "53b796f4-bf77-597c-88ec-f8b9603d0693")
 	)
-	(label "BOOT"
+	(label "ADC_R_C"
 		(at 52.07 85.09 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
-		)
-		(uuid "46c65e46-9129-56ed-bc50-d5046d753619")
-	)
-	(wire
-		(pts
-			(xy 36.83 87.63)
-			(xy 34.29 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "53b796f4-bf77-597c-88ec-f8b9603d0693")
-	)
-	(label "SWDIO"
-		(at 34.29 87.63 180)
-		(fields_autoplaced yes)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
 		)
 		(uuid "f4c5c3b8-da55-55cf-83ba-a26edb475211")
 	)
@@ -3508,7 +3508,7 @@
 		)
 		(uuid "6849a06c-9cc0-5e29-96a4-37d4ab9d0cc0")
 	)
-	(label "SWCLK"
+	(label "DET"
 		(at 52.07 87.63 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3519,8 +3519,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 62.23)
-			(xy 34.29 62.23)
+			(xy 49.53 67.31)
+			(xy 52.07 67.31)
 		)
 		(stroke
 			(width 0)
@@ -3529,8 +3529,8 @@
 		(uuid "85a18abe-d3c8-5936-8f04-80348bd4d6c3")
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 34.29 62.23 90)
+		(lib_id "power:GND")
+		(at 52.07 67.31 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3538,36 +3538,36 @@
 		(dnp no)
 		(uuid "4a5f2702-e0c5-5069-a0a9-8f338cb1602f")
 		(property "Reference" "#PWR001"
-			(at 35.56 62.23 0)
+			(at 55.88 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 35.56 64.77 0)
+		(property "Value" "GND"
+			(at 55.88 69.85 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 34.29 62.23 0)
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 62.23 0)
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 34.29 62.23 0)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
@@ -3587,8 +3587,8 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 62.23)
-			(xy 52.07 62.23)
+			(xy 36.83 69.85)
+			(xy 34.29 69.85)
 		)
 		(stroke
 			(width 0)
@@ -3597,8 +3597,8 @@
 		(uuid "98580dbb-0765-5bad-8e52-62197dd6247c")
 	)
 	(symbol
-		(lib_id "power:+3.3VA")
-		(at 52.07 62.23 270)
+		(lib_id "power:+5V")
+		(at 34.29 69.85 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3606,278 +3606,6 @@
 		(dnp no)
 		(uuid "49e59480-3e75-5d64-9783-601a72af31c1")
 		(property "Reference" "#PWR002"
-			(at 55.88 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3VA"
-			(at 55.88 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "1fe9c95b-272b-55d2-8332-f69b3d1f7829")
-		)
-		(instances
-			(project "vgacorne-module-f446"
-				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR002")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 36.83 64.77)
-			(xy 34.29 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "0e7145ad-0439-52d0-9d6f-24fb11aa3183")
-	)
-	(symbol
-		(lib_id "power:+5V")
-		(at 34.29 64.77 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "81795310-ca07-5419-9190-8e98515cbf54")
-		(property "Reference" "#PWR003"
-			(at 35.56 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 35.56 67.31 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "ce1be5a8-c6fb-5a15-a113-e86881976de8")
-		)
-		(instances
-			(project "vgacorne-module-f446"
-				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR003")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 49.53 64.77)
-			(xy 52.07 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a9c52711-6997-5ea5-a639-7f3831e2d6a9")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 52.07 64.77 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "6d239e7c-2769-5b59-90fe-c76599c11793")
-		(property "Reference" "#PWR004"
-			(at 55.88 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 55.88 67.31 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6306b4f1-c149-5734-ba1b-097d89f60f43")
-		)
-		(instances
-			(project "vgacorne-module-f446"
-				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR004")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 49.53 69.85)
-			(xy 52.07 69.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "9d2b11c9-f649-57e4-a5fb-76e22e1f132a")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 52.07 69.85 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "745ccdbb-0152-5423-b324-72907af5fbb9")
-		(property "Reference" "#PWR005"
-			(at 55.88 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 55.88 72.39 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "f4e32f5a-aa6a-5192-92ce-777a85ed201e")
-		)
-		(instances
-			(project "vgacorne-module-f446"
-				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR005")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 36.83 69.85)
-			(xy 34.29 69.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ac27604d-ca41-5ebc-806e-d251689b2fe7")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 34.29 69.85 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "6fe67684-5eff-5570-9ca1-38fbe5e3a516")
-		(property "Reference" "#PWR006"
 			(at 35.56 69.85 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -3885,7 +3613,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "+5V"
 			(at 35.56 72.39 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -3906,8 +3634,280 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
 			(at 34.29 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "1fe9c95b-272b-55d2-8332-f69b3d1f7829")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 49.53 69.85)
+			(xy 52.07 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0e7145ad-0439-52d0-9d6f-24fb11aa3183")
+	)
+	(symbol
+		(lib_id "power:+3.3VA")
+		(at 52.07 69.85 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "81795310-ca07-5419-9190-8e98515cbf54")
+		(property "Reference" "#PWR003"
+			(at 55.88 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3VA"
+			(at 55.88 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "ce1be5a8-c6fb-5a15-a113-e86881976de8")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 72.39)
+			(xy 34.29 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a9c52711-6997-5ea5-a639-7f3831e2d6a9")
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 34.29 72.39 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "6d239e7c-2769-5b59-90fe-c76599c11793")
+		(property "Reference" "#PWR004"
+			(at 35.56 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 35.56 74.93 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6306b4f1-c149-5734-ba1b-097d89f60f43")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 80.01)
+			(xy 34.29 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d2b11c9-f649-57e4-a5fb-76e22e1f132a")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 34.29 80.01 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "745ccdbb-0152-5423-b324-72907af5fbb9")
+		(property "Reference" "#PWR005"
+			(at 35.56 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 35.56 82.55 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f4e32f5a-aa6a-5192-92ce-777a85ed201e")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 87.63)
+			(xy 34.29 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ac27604d-ca41-5ebc-806e-d251689b2fe7")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 34.29 87.63 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "6fe67684-5eff-5570-9ca1-38fbe5e3a516")
+		(property "Reference" "#PWR006"
+			(at 35.56 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 35.56 90.17 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 34.29 87.63 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
@@ -4214,96 +4214,88 @@
 		(uuid "54320149-6d9f-5c16-ba43-ffb46fd105fe")
 	)
 	(no_connect
-		(at 207.01 114.3)
+		(at 207.01 134.62)
 		(uuid "97491ae5-05cb-5800-bb37-96d2b1f118c9")
 	)
 	(no_connect
-		(at 207.01 134.62)
+		(at 207.01 137.16)
 		(uuid "9c78de97-4ad9-5658-b01c-48a96579e54d")
 	)
 	(no_connect
-		(at 207.01 137.16)
+		(at 207.01 139.7)
 		(uuid "66cfdcd3-1e3e-5990-a037-584e566ab663")
 	)
 	(no_connect
-		(at 207.01 139.7)
+		(at 207.01 142.24)
 		(uuid "d9089610-6da4-5bc3-8a68-ff9d771a11ba")
 	)
 	(no_connect
-		(at 207.01 142.24)
+		(at 207.01 144.78)
 		(uuid "d3ff28a9-f8ab-5894-99a0-38dadf97f403")
 	)
 	(no_connect
-		(at 207.01 144.78)
+		(at 166.37 104.14)
 		(uuid "5ed428a8-b14f-526e-bbc0-7f206afbe065")
 	)
 	(no_connect
-		(at 166.37 104.14)
+		(at 166.37 106.68)
 		(uuid "4a65a342-080d-5f16-b9e6-900248653cfb")
 	)
 	(no_connect
-		(at 166.37 106.68)
+		(at 166.37 109.22)
 		(uuid "15454c8f-2f12-59e2-8db8-e6cea1603b13")
 	)
 	(no_connect
-		(at 166.37 109.22)
+		(at 166.37 111.76)
 		(uuid "33059e41-b199-5eba-b9fc-0c930cf5e9f1")
 	)
 	(no_connect
-		(at 166.37 111.76)
+		(at 207.01 86.36)
 		(uuid "452d1f0c-4afc-5593-ac67-27be4b333e09")
 	)
 	(no_connect
-		(at 207.01 86.36)
+		(at 207.01 88.9)
 		(uuid "be710a18-4009-5d32-a233-7266a5ba0b45")
 	)
 	(no_connect
-		(at 207.01 88.9)
+		(at 207.01 104.14)
 		(uuid "7a729fd8-fd94-54e0-9aaa-8362f28c08d2")
 	)
 	(no_connect
-		(at 207.01 91.44)
+		(at 166.37 114.3)
 		(uuid "329dc4c6-ea25-54a8-9e47-5f2461d0a6e0")
 	)
 	(no_connect
-		(at 207.01 104.14)
+		(at 166.37 116.84)
 		(uuid "1940758b-e023-55a3-93ca-edb69b29287c")
 	)
 	(no_connect
-		(at 166.37 114.3)
+		(at 166.37 119.38)
 		(uuid "060ea31c-87c3-5ba6-a142-5372ae6e3e4d")
 	)
 	(no_connect
-		(at 166.37 116.84)
+		(at 166.37 83.82)
 		(uuid "7e8a0834-9c08-5c40-9345-e62827ad65de")
 	)
 	(no_connect
-		(at 166.37 119.38)
+		(at 207.01 116.84)
 		(uuid "fcfbf034-bf02-5e93-9c67-7aad9d6b8cd6")
 	)
 	(no_connect
-		(at 166.37 83.82)
+		(at 207.01 119.38)
 		(uuid "e1cd2d3b-8ee6-5c2f-b890-9c7ae15f0faa")
 	)
 	(no_connect
-		(at 207.01 116.84)
+		(at 207.01 121.92)
 		(uuid "11d031b4-a9e6-5a5c-a42e-7b4b15dff676")
 	)
 	(no_connect
-		(at 207.01 119.38)
+		(at 207.01 129.54)
 		(uuid "b3004bbf-9618-5372-a5e1-185b31873c23")
 	)
 	(no_connect
-		(at 207.01 121.92)
-		(uuid "ac3e1730-d1de-5f68-94ac-39da3c71431d")
-	)
-	(no_connect
-		(at 207.01 129.54)
-		(uuid "2a54a3a9-d8ce-5e74-ab2a-c739d92ed58c")
-	)
-	(no_connect
 		(at 207.01 132.08)
-		(uuid "d1f7d744-f562-5ddc-9a7f-5ded4c1aacf7")
+		(uuid "ac3e1730-d1de-5f68-94ac-39da3c71431d")
 	)
 	(wire
 		(pts
@@ -4314,7 +4306,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "41363b4f-86f8-5027-bc75-cee00a3658a8")
+		(uuid "d99af3e1-08f5-543f-99ba-856705f9b8f7")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -4362,7 +4354,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "980aebe9-575b-5253-b99b-f1130a55afc6")
+			(uuid "fdc93047-a46d-540d-975d-c88def4f8925")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -4382,7 +4374,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "63daa2b2-618b-508e-946f-480faccabeaf")
+		(uuid "41363b4f-86f8-5027-bc75-cee00a3658a8")
 	)
 	(label "HSE_IN"
 		(at 163.83 76.2 180)
@@ -4391,7 +4383,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "199b2d0c-f75e-5278-8cbb-163de4c27a5c")
+		(uuid "537fe348-9998-5d99-9b06-060341d74ff7")
 	)
 	(wire
 		(pts
@@ -4402,7 +4394,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4edbf15d-82ed-536f-a154-31969e8fcca6")
+		(uuid "63daa2b2-618b-508e-946f-480faccabeaf")
 	)
 	(label "HSE_OUT"
 		(at 163.83 78.74 180)
@@ -4411,7 +4403,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "fde976f7-a94b-5109-9dd7-7281745e5a36")
+		(uuid "199b2d0c-f75e-5278-8cbb-163de4c27a5c")
 	)
 	(wire
 		(pts
@@ -4422,7 +4414,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "17975c4d-8cdc-5df9-951d-3ae4acf7a107")
+		(uuid "4edbf15d-82ed-536f-a154-31969e8fcca6")
 	)
 	(label "NRST"
 		(at 163.83 66.04 180)
@@ -4431,7 +4423,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "4e874fc0-4b4a-53de-bdbf-ada2b4223b6a")
+		(uuid "fde976f7-a94b-5109-9dd7-7281745e5a36")
 	)
 	(wire
 		(pts
@@ -4442,7 +4434,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b3f91439-e8d2-542b-9359-42cdeb1487a2")
+		(uuid "17975c4d-8cdc-5df9-951d-3ae4acf7a107")
 	)
 	(label "MUX_S0"
 		(at 163.83 91.44 180)
@@ -4451,7 +4443,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "130fb977-bdb0-5425-85ab-e53d45390852")
+		(uuid "4e874fc0-4b4a-53de-bdbf-ada2b4223b6a")
 	)
 	(wire
 		(pts
@@ -4462,7 +4454,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "2123e51c-0ff7-59c9-8fb9-4e51f0238f3b")
+		(uuid "b3f91439-e8d2-542b-9359-42cdeb1487a2")
 	)
 	(label "MUX_S1"
 		(at 163.83 93.98 180)
@@ -4471,7 +4463,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "f8c09e28-5ca5-5017-8939-2328996e3fc9")
+		(uuid "130fb977-bdb0-5425-85ab-e53d45390852")
 	)
 	(wire
 		(pts
@@ -4482,7 +4474,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4b256c8c-1bbc-58d4-9050-18b34b967f9f")
+		(uuid "2123e51c-0ff7-59c9-8fb9-4e51f0238f3b")
 	)
 	(label "MUX_S2"
 		(at 163.83 96.52 180)
@@ -4491,7 +4483,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "50cf3309-66c0-5001-861b-8d230f7f0c95")
+		(uuid "f8c09e28-5ca5-5017-8939-2328996e3fc9")
 	)
 	(wire
 		(pts
@@ -4502,7 +4494,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "be84691a-f0e5-572a-b845-586ecb23152d")
+		(uuid "4b256c8c-1bbc-58d4-9050-18b34b967f9f")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -4550,7 +4542,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "6d512e51-086d-552c-a9cc-35ab036fc2e4")
+			(uuid "f34fc8f2-d586-5d41-90ca-66158034d5b5")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -4570,7 +4562,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "754a7508-afb6-5593-9c8b-4eb0b63dcfef")
+		(uuid "be84691a-f0e5-572a-b845-586ecb23152d")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
@@ -4618,7 +4610,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "67c75f1a-e329-58b0-8eab-5a8bfb2bc2a6")
+			(uuid "22ff8607-a165-5136-aa53-70765a676900")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -4638,7 +4630,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "aebbbd82-da71-50cd-8a8c-1d8cdcc0b92e")
+		(uuid "754a7508-afb6-5593-9c8b-4eb0b63dcfef")
 	)
 	(label "ADC_L_A"
 		(at 209.55 66.04 0)
@@ -4647,7 +4639,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "5e869cc1-40c2-5925-aa14-044ba470e4f3")
+		(uuid "5bdf3906-0328-5ac8-836a-2b4b612a8d0c")
 	)
 	(wire
 		(pts
@@ -4658,7 +4650,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ce54b5ea-9e7d-538c-a14f-88dc5ccdf6dd")
+		(uuid "aebbbd82-da71-50cd-8a8c-1d8cdcc0b92e")
 	)
 	(label "ADC_L_B"
 		(at 209.55 68.58 0)
@@ -4667,7 +4659,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "a2318ec3-c3ff-53e1-8975-643ae43051e4")
+		(uuid "5e869cc1-40c2-5925-aa14-044ba470e4f3")
 	)
 	(wire
 		(pts
@@ -4678,7 +4670,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "80424b50-cb6a-5da7-ae16-4fa33cc99681")
+		(uuid "ce54b5ea-9e7d-538c-a14f-88dc5ccdf6dd")
 	)
 	(label "ADC_L_C"
 		(at 209.55 71.12 0)
@@ -4687,7 +4679,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "5944f0a4-e761-55db-b866-d47e2b29f127")
+		(uuid "a2318ec3-c3ff-53e1-8975-643ae43051e4")
 	)
 	(wire
 		(pts
@@ -4698,7 +4690,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "01a116e3-2e47-54fd-accd-7adb23342106")
+		(uuid "80424b50-cb6a-5da7-ae16-4fa33cc99681")
 	)
 	(label "ADC_R_A"
 		(at 209.55 73.66 0)
@@ -4707,7 +4699,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "a2a31ffa-8c4b-5dc5-8fbd-c66895fa6b5e")
+		(uuid "5944f0a4-e761-55db-b866-d47e2b29f127")
 	)
 	(wire
 		(pts
@@ -4718,7 +4710,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "b47f9e79-36c5-57c3-a3c8-cc4839f6bd95")
+		(uuid "01a116e3-2e47-54fd-accd-7adb23342106")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -4766,7 +4758,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "0c46063a-11ae-5ac9-b7d5-c6b68e61fdb8")
+			(uuid "1b9fb7ab-1d66-589c-8916-c1597f30bf92")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -4786,7 +4778,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "868e0ac4-343c-51e1-846f-04d3536f0089")
+		(uuid "b47f9e79-36c5-57c3-a3c8-cc4839f6bd95")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -4834,7 +4826,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "6f6e72dd-4eab-5aee-80ad-3b2d10ce3343")
+			(uuid "94da41bf-eef5-5c8d-ab33-0cc45fff7642")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -4854,7 +4846,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f8784f37-d904-5be4-b625-739d1e40ce71")
+		(uuid "868e0ac4-343c-51e1-846f-04d3536f0089")
 	)
 	(label "ADC_R_B"
 		(at 209.55 76.2 0)
@@ -4863,7 +4855,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "f2822cd9-4bff-5023-b98f-7282a5eee1ab")
+		(uuid "c0780f46-cf14-51f9-9ff3-35b082ca5777")
 	)
 	(wire
 		(pts
@@ -4874,7 +4866,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1ea8eb29-3bc6-58ed-bd35-198952e49795")
+		(uuid "f8784f37-d904-5be4-b625-739d1e40ce71")
 	)
 	(label "ADC_R_C"
 		(at 209.55 78.74 0)
@@ -4883,7 +4875,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "417885ed-0c6e-5930-a3af-ff9a2de04146")
+		(uuid "f2822cd9-4bff-5023-b98f-7282a5eee1ab")
 	)
 	(wire
 		(pts
@@ -4894,7 +4886,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1c834a5a-5bda-56e7-8157-456afeea3e78")
+		(uuid "1ea8eb29-3bc6-58ed-bd35-198952e49795")
 	)
 	(label "DET"
 		(at 163.83 99.06 180)
@@ -4902,6 +4894,26 @@
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
+		)
+		(uuid "417885ed-0c6e-5930-a3af-ff9a2de04146")
+	)
+	(wire
+		(pts
+			(xy 207.01 114.3)
+			(xy 209.55 114.3)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1c834a5a-5bda-56e7-8157-456afeea3e78")
+	)
+	(label "BOOT1"
+		(at 209.55 114.3 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
 		)
 		(uuid "c5f92117-e148-5eb9-af78-5242ec0c2636")
 	)
@@ -4995,6 +5007,26 @@
 	)
 	(wire
 		(pts
+			(xy 207.01 91.44)
+			(xy 209.55 91.44)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "64fbe838-47b5-5f6a-a977-05eb5d65362e")
+	)
+	(label "USART1_RX"
+		(at 209.55 91.44 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
+		)
+		(uuid "e9790c3c-e160-5ff3-875e-21cf14d0c405")
+	)
+	(wire
+		(pts
 			(xy 207.01 93.98)
 			(xy 209.55 93.98)
 		)
@@ -5002,7 +5034,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "64fbe838-47b5-5f6a-a977-05eb5d65362e")
+		(uuid "45d6d2e9-d926-5cb9-9f90-81bb40f3b05c")
 	)
 	(label "USB_DN"
 		(at 209.55 93.98 0)
@@ -5011,7 +5043,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "e9790c3c-e160-5ff3-875e-21cf14d0c405")
+		(uuid "9a2ad79f-ae50-5a9c-8281-7a8597f64036")
 	)
 	(wire
 		(pts
@@ -5022,7 +5054,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "45d6d2e9-d926-5cb9-9f90-81bb40f3b05c")
+		(uuid "f8dd9cf8-37e1-5e00-b87f-ff1ccf4f9fb3")
 	)
 	(label "USB_DP"
 		(at 209.55 96.52 0)
@@ -5031,7 +5063,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "9a2ad79f-ae50-5a9c-8281-7a8597f64036")
+		(uuid "535c6ba0-b440-5f0f-9a63-cc64d91cce56")
 	)
 	(wire
 		(pts
@@ -5042,7 +5074,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "f8dd9cf8-37e1-5e00-b87f-ff1ccf4f9fb3")
+		(uuid "a5fc6eb0-e354-57e3-b439-ac1d07c8a814")
 	)
 	(label "SWDIO"
 		(at 209.55 99.06 0)
@@ -5051,7 +5083,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "535c6ba0-b440-5f0f-9a63-cc64d91cce56")
+		(uuid "79280acc-dcce-5e3e-adeb-4b018912d6b9")
 	)
 	(wire
 		(pts
@@ -5062,7 +5094,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a5fc6eb0-e354-57e3-b439-ac1d07c8a814")
+		(uuid "53cfc791-c73d-5d66-9ab3-cd8a61e44d4a")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5110,7 +5142,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "891909e0-f99e-56e2-8f7a-17f7aa59a143")
+			(uuid "46b4d826-fc68-5e2a-9746-1d79acf6a47c")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5130,7 +5162,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "53cfc791-c73d-5d66-9ab3-cd8a61e44d4a")
+		(uuid "8926bffd-1adc-5eec-8155-b9c00c999ae5")
 	)
 	(label "SWCLK"
 		(at 209.55 101.6 0)
@@ -5139,7 +5171,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "81e84a8d-de1d-55a9-bd8b-4ea62c54dfc6")
+		(uuid "f9cfdf56-2699-5888-8dc9-2d21d6b7eb10")
 	)
 	(wire
 		(pts
@@ -5150,7 +5182,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8926bffd-1adc-5eec-8155-b9c00c999ae5")
+		(uuid "a964636a-3fea-5a7c-8f9a-26c95c30844b")
 	)
 	(label "I2C_SCL"
 		(at 209.55 124.46 0)
@@ -5159,7 +5191,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "f9cfdf56-2699-5888-8dc9-2d21d6b7eb10")
+		(uuid "2baa4871-ac47-5081-8637-61a931bd2849")
 	)
 	(wire
 		(pts
@@ -5170,7 +5202,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "a964636a-3fea-5a7c-8f9a-26c95c30844b")
+		(uuid "9c3b63b6-e954-5da2-8ca8-cddcd807403b")
 	)
 	(label "I2C_SDA"
 		(at 209.55 127 0)
@@ -5179,7 +5211,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "2baa4871-ac47-5081-8637-61a931bd2849")
+		(uuid "055e1814-6512-5062-b616-bff2188ce995")
 	)
 	(wire
 		(pts
@@ -5190,7 +5222,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9c3b63b6-e954-5da2-8ca8-cddcd807403b")
+		(uuid "d4a50101-fb1a-54e9-98c5-e722270bafdc")
 	)
 	(label "BOOT"
 		(at 163.83 71.12 180)
@@ -5199,7 +5231,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "055e1814-6512-5062-b616-bff2188ce995")
+		(uuid "d1ad9d8f-e078-59b6-a360-dc5951dc37e2")
 	)
 	(wire
 		(pts
@@ -5210,7 +5242,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d4a50101-fb1a-54e9-98c5-e722270bafdc")
+		(uuid "c2d6d212-6307-55b7-89e5-d569b76a2c13")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5258,7 +5290,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "8a83ccb6-2f90-521c-b990-ab4a9c7ffb20")
+			(uuid "7ac042a0-2929-5ba3-bed5-565c8120327e")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5314,10 +5346,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "996872e0-0cde-5b80-ab11-25830dce686d")
+			(uuid "2f37f4c1-f715-5d5a-bd10-d7672e002448")
 		)
 		(pin "2"
-			(uuid "f6e632df-964d-5518-9b1f-d7161d8aad28")
+			(uuid "f65623e0-0167-5b56-b032-b417fa0e94b0")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5337,7 +5369,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e2540a4a-02b2-5d60-a423-32f6f951b936")
+		(uuid "e65447e1-e58a-52b0-b053-0ce0cba661d9")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5385,7 +5417,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "6b234731-1a86-5147-835e-b086a27cc84f")
+			(uuid "eae9df46-cde2-53be-9da2-78bc00c9d9a2")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5405,7 +5437,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e65447e1-e58a-52b0-b053-0ce0cba661d9")
+		(uuid "82e2a42e-a9c7-58ef-823e-73176401b1c5")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -5453,7 +5485,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "14e578cc-217e-5db3-8e99-d71505e21e42")
+			(uuid "ea638edc-374c-5e74-858e-b1373490f5a3")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5509,10 +5541,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "352e3327-73d6-5ae5-987e-2ef453fef8d5")
+			(uuid "3e9863cd-692f-525e-b43a-b136f71b5c12")
 		)
 		(pin "2"
-			(uuid "868f380b-97fd-5da2-a9f3-9f6fd2b91703")
+			(uuid "02e4d3db-ce9b-579d-955b-ee58cf0112e8")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5532,7 +5564,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "2988d0fb-0b91-5a22-8689-e7849072a1f3")
+		(uuid "571d9d04-6103-5f19-9a3e-27c63c48ef4e")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5580,7 +5612,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "37e20e91-e815-5ec4-bccf-3f9e329a6247")
+			(uuid "fd829825-e789-5fd0-a365-6464ceaf414c")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5600,7 +5632,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "571d9d04-6103-5f19-9a3e-27c63c48ef4e")
+		(uuid "ae9468ac-88ea-553d-880f-1dd46bdda4e3")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -5648,7 +5680,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "cb1cc8a1-e8be-5667-baf5-3b052ba3d777")
+			(uuid "e6871c0a-5c63-5c59-82be-a23d4cc91184")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5704,10 +5736,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "bdf64d15-7b39-5f9d-b2ff-56ced157ccff")
+			(uuid "b4f19d44-ec20-5356-bd11-0499f769bfc9")
 		)
 		(pin "2"
-			(uuid "b87ddc88-1a6d-5418-8227-ded1040f1a5c")
+			(uuid "db282973-e510-565b-b447-a592bc5be0c8")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5727,7 +5759,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "0fa6c17b-e95a-5e94-a17a-c7ed24e24528")
+		(uuid "6fcc8197-dffc-5268-b9d7-8116734f3b30")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5775,7 +5807,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "4d2f3e7a-09c9-5b45-8c78-c483a4b2a928")
+			(uuid "c8d24872-9c0c-5876-b5df-5415a4b5240a")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5795,7 +5827,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "6fcc8197-dffc-5268-b9d7-8116734f3b30")
+		(uuid "fa010ad3-a38f-584d-995c-c9d91d416b6c")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -5843,7 +5875,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "292ed524-b015-5ced-91c3-e043687e953d")
+			(uuid "2e725d02-d289-5029-aada-84b27a3da985")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5899,10 +5931,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "57d4fc04-ec25-5270-829a-ee735436265f")
+			(uuid "0a11ec62-b459-5cd9-b1f6-f3267c62dd6b")
 		)
 		(pin "2"
-			(uuid "c4fa3716-6014-50a6-9285-f98754d97991")
+			(uuid "d7120b53-3b13-566e-966e-0fda6cc69410")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5922,7 +5954,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "72cc4a36-baa6-5c5d-9354-e3ecfdf78a88")
+		(uuid "20c7592c-d9d8-500b-ba80-2a4f09573b74")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -5970,7 +6002,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "15600a98-6c9f-5ab6-b397-9081f903b08f")
+			(uuid "49a5e3fd-3ad7-525c-a93c-7af2196b3d6d")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -5990,7 +6022,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "20c7592c-d9d8-500b-ba80-2a4f09573b74")
+		(uuid "3e7ed546-c9b1-58be-b904-5440a5a7dacd")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6038,7 +6070,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "e4394b10-c8a3-5c54-b78e-1996b984999a")
+			(uuid "77d2a53e-64c4-5c76-80d8-9e4b9a2691f6")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6094,10 +6126,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "2e86c4fe-2728-5315-87b5-e99495b43529")
+			(uuid "4ab268c8-c5d2-59c9-ac07-04175eae573c")
 		)
 		(pin "2"
-			(uuid "0bc12636-8209-5b52-bd7a-85321fc90aed")
+			(uuid "4772845a-16ee-5038-bec9-9297b7c408fc")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6117,7 +6149,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4f8adb2c-5a33-556e-8bce-5de2d22807ba")
+		(uuid "13dc0aee-2cae-574f-86f8-20205ffd7399")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -6165,7 +6197,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "c8c29e12-4e75-5e1c-8337-6845af0ccde4")
+			(uuid "6c8431e7-b8a2-55c5-89c3-0207b28493c7")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6185,7 +6217,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "13dc0aee-2cae-574f-86f8-20205ffd7399")
+		(uuid "d841f5ce-828a-5764-93b3-b021494b03e1")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6233,7 +6265,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "3c299813-5232-5c09-9e6a-bdbed3ddcc6c")
+			(uuid "fcf7a591-c33c-50ce-b4ff-f21d8d324577")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6289,10 +6321,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "3d336826-8824-5fc3-85a4-487dd10f892c")
+			(uuid "b14f8e1a-a0db-511c-8146-b17e30f1c734")
 		)
 		(pin "2"
-			(uuid "bf16b6d5-9809-59c6-bc3d-3d72b931a9d3")
+			(uuid "f890cf73-bb38-5441-8d24-2ae9d2cd7b9f")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6312,7 +6344,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d7c8c21e-6843-5ed3-bb48-a6f2031c7d63")
+		(uuid "88b0c83a-67bd-50bd-860a-774675ea8107")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
@@ -6360,7 +6392,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "b86e72eb-1240-59b1-a490-8958517dca25")
+			(uuid "e72f9c7b-04a4-5265-9702-9dbee050f0fc")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6380,7 +6412,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "88b0c83a-67bd-50bd-860a-774675ea8107")
+		(uuid "20abbd31-cfca-5d55-b717-5c7fcc15073d")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6428,7 +6460,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "0ff859bc-f33c-590c-839b-4aee22cabe0f")
+			(uuid "8d2e3274-6f67-55cc-ae2b-6e91bcb15f6a")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6484,10 +6516,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "7b13b0ae-9aec-54d2-b2a2-7d3f8e50b193")
+			(uuid "f9d6a7dd-0d0b-57b3-acd2-6bb500233799")
 		)
 		(pin "2"
-			(uuid "04be3982-f378-51d9-9572-ee5319aa86a7")
+			(uuid "353c52f2-e7a9-5ea4-bd81-aa3bbec09eb0")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6507,7 +6539,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3cd5769e-e68b-5575-9888-b3a465aefcde")
+		(uuid "3ce4e6dc-71c1-54ec-b84e-a23355241bc3")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
@@ -6555,7 +6587,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "6a5227a4-08ea-5a63-844c-6e3f051d4457")
+			(uuid "37773baf-05bb-537c-b2c7-36d1e631a98e")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6575,7 +6607,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3ce4e6dc-71c1-54ec-b84e-a23355241bc3")
+		(uuid "a6d1e295-7529-5eaa-a621-2c54354b23f8")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6623,7 +6655,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "1ffe0de6-4f34-5641-9221-bf5aa1809eb6")
+			(uuid "fb3a7975-3aaa-501a-9aa8-dad03c1b8e33")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6679,10 +6711,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "e267d297-bbf3-56cc-9b43-ebce38a9f006")
+			(uuid "1ec5b3c3-00e6-5ba7-a524-97fbe6d669c7")
 		)
 		(pin "2"
-			(uuid "89bbffa1-3252-5612-9795-225bb2b14ab4")
+			(uuid "dadfc5de-f1dd-5a56-bc51-5e41dd15d838")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6702,7 +6734,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1e02563d-0df8-530a-83d3-23a557c7998c")
+		(uuid "9df69d10-6565-5ddd-856c-6c2765f165ef")
 	)
 	(label "VCAP"
 		(at 377.19 55.88 90)
@@ -6711,7 +6743,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "ddaae19d-938b-5c7c-8615-d7b9c7087a0c")
+		(uuid "1507df08-133c-523b-9c61-dd499958b036")
 	)
 	(wire
 		(pts
@@ -6722,7 +6754,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9df69d10-6565-5ddd-856c-6c2765f165ef")
+		(uuid "b6b2f408-369c-5be9-8640-eabf74873a91")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6770,7 +6802,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "85905fc2-e413-5341-b9b1-42c3e1ffef71")
+			(uuid "0a2d37c8-09cd-59f6-a393-47b62bfb640f")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6825,17 +6857,24 @@
 				(hide yes)
 			)
 		)
+		(property "MPN" "X32258MSB4SI"
+			(at 170.18 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
 		(pin "1"
-			(uuid "3b930739-9280-5624-8cb5-52f7ab577527")
+			(uuid "167d7569-927f-57fc-9748-f605e1e2c266")
 		)
 		(pin "2"
-			(uuid "fa9ab5d6-6001-5a4a-8803-2e0b2d54cf2f")
+			(uuid "09a87ffb-30e3-5f2a-98c6-0430c4cef321")
 		)
 		(pin "3"
-			(uuid "e62657fd-dbc7-5613-8130-9edf258799b0")
+			(uuid "f1beb425-3faf-5b25-adde-1377548917f8")
 		)
 		(pin "4"
-			(uuid "0f238e1a-a581-5e10-9e4d-2ac2c5befad8")
+			(uuid "45286929-fcb6-5fd6-8d5f-a1c7b1231371")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6855,7 +6894,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7b14c5f9-044c-5d4f-abad-e192ed52ccc6")
+		(uuid "8d7a43e6-28ad-566d-b11e-623e6a2e9b5c")
 	)
 	(label "HSE_IN"
 		(at 163.83 176.53 180)
@@ -6864,7 +6903,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "a8f13a91-cf8c-5879-b403-45e67efdbf14")
+		(uuid "c15e0010-72b8-51b5-be7e-f735a5d8e25d")
 	)
 	(wire
 		(pts
@@ -6875,7 +6914,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8d7a43e6-28ad-566d-b11e-623e6a2e9b5c")
+		(uuid "1cffb755-c526-5c51-923e-0ee1e844de80")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -6923,7 +6962,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "9dae5529-1101-5800-9d55-52296b9b21f0")
+			(uuid "156e7f05-0b83-561c-a8aa-42e5ccd0a10f")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -6943,7 +6982,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1cffb755-c526-5c51-923e-0ee1e844de80")
+		(uuid "4ca982ca-1447-57a3-994c-9d2767b43924")
 	)
 	(label "HSE_OUT"
 		(at 176.53 176.53 0)
@@ -6952,7 +6991,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "75b9ad7e-4422-59c4-bbfe-273c025988d7")
+		(uuid "98e9ce9e-5369-550e-b6da-187acc771dc6")
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -6999,10 +7038,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "ae92c386-4aff-5d35-9f40-d441734c6778")
+			(uuid "fb270a49-9889-5319-98b9-0a538ed68eaa")
 		)
 		(pin "2"
-			(uuid "f69e6c59-69bb-52f7-8836-dda62340d5e9")
+			(uuid "eb4e38dc-bd0e-5851-ab06-2d5acaf1ad70")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7022,7 +7061,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "bc878d04-da33-5c9e-851f-339510eef42c")
+		(uuid "4beb9820-b4be-5154-8cba-15d523274262")
 	)
 	(label "HSE_IN"
 		(at 203.2 170.18 90)
@@ -7031,7 +7070,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "377245f0-c35a-54f9-9d5f-78e9a02b2647")
+		(uuid "40d79295-2be0-52da-8330-b3d18c60505c")
 	)
 	(wire
 		(pts
@@ -7042,7 +7081,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "4beb9820-b4be-5154-8cba-15d523274262")
+		(uuid "5e985525-6754-5493-9714-faa0e92483e7")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -7090,7 +7129,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "16f7ab3b-93db-5005-984c-fbbd63c23694")
+			(uuid "40bb7ea3-ac65-590d-9354-d7464bf7f576")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7146,10 +7185,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "3c0ca0ef-0b58-561f-b50a-7a65e7c5b21f")
+			(uuid "31d41dd4-9612-51e8-8328-02e0ac3b9b82")
 		)
 		(pin "2"
-			(uuid "6eebe4ca-4b2f-534c-804b-c61887750562")
+			(uuid "62756d37-0528-52b5-8f7a-ee4ce4d474b4")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7169,7 +7208,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "62c186f6-c164-5df1-b684-c8479462f334")
+		(uuid "ca5a1f77-9a08-5515-b435-cbffdb1de17a")
 	)
 	(label "HSE_OUT"
 		(at 223.52 170.18 90)
@@ -7178,7 +7217,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "18415ff3-417c-5747-ae1f-b09b7a677909")
+		(uuid "209fba00-17cf-5d4d-82d6-d8f0b6fd82ee")
 	)
 	(wire
 		(pts
@@ -7189,7 +7228,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ca5a1f77-9a08-5515-b435-cbffdb1de17a")
+		(uuid "2216a6b4-fa47-5a24-ab65-c4c7872ca72a")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -7237,7 +7276,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "bd174b0b-18a4-509a-9355-34b7995f658f")
+			(uuid "54793358-0354-538b-8a27-c9f3bac3ab3b")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7293,10 +7332,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "a8d4d9cc-5530-5d31-9bb4-8800ed9f470a")
+			(uuid "f7654ab9-8eb1-5c6c-b9c0-d305c6a972a1")
 		)
 		(pin "2"
-			(uuid "aa9469f7-2752-5897-bcfb-e6d92029f46e")
+			(uuid "be6ee833-7181-5c90-afa3-4ad12cf654cb")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7316,7 +7355,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "65837bd5-5276-5afa-8d38-cfa64fbcb6a7")
+		(uuid "7763ae1f-8741-5877-8968-133cb6d44f84")
 	)
 	(label "BOOT"
 		(at 242.57 170.18 90)
@@ -7325,7 +7364,7 @@
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "60723636-3654-5f77-b9a5-1d5483fca286")
+		(uuid "0707d463-3b9f-5e0e-a96e-cadd540bd2ad")
 	)
 	(wire
 		(pts
@@ -7336,7 +7375,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "7763ae1f-8741-5877-8968-133cb6d44f84")
+		(uuid "75d4ad45-48b4-5f01-bcb2-d784fea18a29")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -7384,7 +7423,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "3d4709fd-647e-529d-b3f5-3149966d4b2d")
+			(uuid "79d751d0-6757-5dc0-a02d-3a15850b1844")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7396,8 +7435,302 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:R")
+		(at 260.35 176.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "44b31818-aae8-5653-b44c-00e68d45bf2e")
+		(property "Reference" "R2"
+			(at 262.89 173.99 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 262.89 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 260.35 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 260.35 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "PB2/BOOT1 pull-down: BOOT0 = 1 only reaches the DFU bootloader with BOOT1 = 0 (RM0390)"
+			(at 260.35 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "78391d92-0bb8-5583-8a2d-d5f8b406b235")
+		)
+		(pin "2"
+			(uuid "d332f406-87ec-5fdd-a50a-1209f9cc2bde")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "R2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 260.35 172.72)
+			(xy 260.35 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8c785650-4325-570c-b300-a9ed5245a639")
+	)
+	(label "BOOT1"
+		(at 260.35 170.18 90)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
+		)
+		(uuid "ac26565f-936d-54e9-ae9a-b8edd17ffe7a")
+	)
+	(wire
+		(pts
+			(xy 260.35 180.34)
+			(xy 260.35 182.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "5dd8e21f-77f8-5ef8-92f1-16bd1b0b7307")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 260.35 182.88 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "9a01dba8-53ec-5bae-8e37-f7d6d6cf571b")
+		(property "Reference" "#PWR034"
+			(at 262.89 184.15 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 262.89 186.69 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 260.35 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 260.35 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 260.35 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "08a89227-60dc-5b68-ab07-fa8e96f45fdf")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR034")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 278.13 176.53 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "e3e4f327-c805-5005-baba-ec086bd436e0")
+		(property "Reference" "R3"
+			(at 280.67 173.99 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Value" "10k"
+			(at 280.67 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 278.13 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 278.13 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Holds the bootloader's unused USART1 RX (PA10) idle so noise can't select it (AN2606)"
+			(at 278.13 176.53 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8e459eb8-f374-5d4e-b485-39a14c20243e")
+		)
+		(pin "2"
+			(uuid "1716fab9-7280-54b8-aa5f-98d0f81e6b2d")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 278.13 172.72)
+			(xy 278.13 170.18)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4dd4cae8-ee42-58b4-8296-19ba94079cc7")
+	)
+	(label "USART1_RX"
+		(at 278.13 170.18 90)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
+		)
+		(uuid "eb7d8873-7ae8-58c8-906e-fe29f3b2c170")
+	)
+	(wire
+		(pts
+			(xy 278.13 180.34)
+			(xy 278.13 182.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "bcf39810-a84c-5dd8-93ee-b02e8dcecf03")
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 278.13 182.88 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "b8bf8933-e0d7-5505-a37a-965ef4143003")
+		(property "Reference" "#PWR035"
+			(at 280.67 184.15 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 280.67 186.69 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 278.13 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 278.13 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 278.13 182.88 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "14c1fe56-c1f2-5aca-a934-6670a5a542b5")
+		)
+		(instances
+			(project "vgacorne-module-f446"
+				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
+					(reference "#PWR035")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:C")
-		(at 261.62 176.53 0)
+		(at 297.18 176.53 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -7405,45 +7738,45 @@
 		(dnp no)
 		(uuid "adf487a3-0cbd-58f4-9a1f-9ae8f76ab5e0")
 		(property "Reference" "C11"
-			(at 265.43 173.99 0)
+			(at 300.99 173.99 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "100n"
-			(at 265.43 176.53 0)
+			(at 300.99 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 261.62 176.53 0)
+			(at 297.18 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 261.62 176.53 0)
+			(at 297.18 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 261.62 176.53 0)
+			(at 297.18 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "2078a525-90d9-5aa2-a6eb-3e3c578e610f")
+			(uuid "fc15647d-fe24-5f0c-b4b5-c1dbd07c4bbc")
 		)
 		(pin "2"
-			(uuid "cb4de084-4da4-57b0-9fb4-44cc3688008d")
+			(uuid "e047e141-eaa1-54b1-96a3-0a39abd2f1b0")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7456,46 +7789,46 @@
 	)
 	(wire
 		(pts
-			(xy 261.62 172.72)
-			(xy 261.62 170.18)
+			(xy 297.18 172.72)
+			(xy 297.18 170.18)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "91ef941f-b2e6-5b89-9953-d985ffe45678")
+		(uuid "5413585d-b274-576b-852e-0055641c46d2")
 	)
 	(label "NRST"
-		(at 261.62 170.18 90)
+		(at 297.18 170.18 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "5d674031-055c-5485-a7f5-76fe99505ecf")
+		(uuid "ce75f2ec-0294-5a12-a580-13aac269ed31")
 	)
 	(wire
 		(pts
-			(xy 261.62 180.34)
-			(xy 261.62 182.88)
+			(xy 297.18 180.34)
+			(xy 297.18 182.88)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "8c785650-4325-570c-b300-a9ed5245a639")
+		(uuid "d636395d-cd52-5bce-8889-31ee72d96a05")
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 261.62 182.88 0)
+		(at 297.18 182.88 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "9a01dba8-53ec-5bae-8e37-f7d6d6cf571b")
-		(property "Reference" "#PWR034"
-			(at 264.16 184.15 0)
+		(uuid "5484d4b5-653d-5b69-bfbf-581f436f2d94")
+		(property "Reference" "#PWR036"
+			(at 299.72 184.15 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
@@ -7503,40 +7836,40 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 264.16 186.69 0)
+			(at 299.72 186.69 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 261.62 182.88 0)
+			(at 297.18 182.88 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 261.62 182.88 0)
+			(at 297.18 182.88 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 261.62 182.88 0)
+			(at 297.18 182.88 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "ebc07d4c-c4ac-51bf-a389-8c815627b453")
+			(uuid "1b9e7b57-b01b-5a8b-b813-5bd94c26ac60")
 		)
 		(instances
 			(project "vgacorne-module-f446"
 				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR034")
+					(reference "#PWR036")
 					(unit 1)
 				)
 			)
@@ -7549,7 +7882,7 @@
 			(font (size 1.8 1.8))
 			(justify left bottom)
 		)
-		(uuid "54ac53ee-b18e-5cd2-acbe-a4e717aec4ea")
+		(uuid "3ea884b9-f1de-51c9-9151-1cacafcf4dc2")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -7597,7 +7930,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "77a4c0fc-ca98-5bc1-aef8-0bcb5538f0fd")
+			(uuid "a5a9e1f7-df19-5ebc-921b-1a8d876ae235")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7617,7 +7950,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "1c1d4d33-6b5e-546c-a589-76ebbd623f63")
+		(uuid "df3ee40a-087f-5b1c-8ebf-fb1d61ed6638")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
@@ -7627,8 +7960,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "b8bf8933-e0d7-5505-a37a-965ef4143003")
-		(property "Reference" "#PWR035"
+		(uuid "effe5d42-30d7-52c3-816f-c8398429021e")
+		(property "Reference" "#PWR037"
 			(at 27.94 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -7665,12 +7998,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "d43702f3-2c59-520d-bf78-231e3fe27a2f")
+			(uuid "69f3422b-968c-5023-ba49-fabb3ba2dc30")
 		)
 		(instances
 			(project "vgacorne-module-f446"
 				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR035")
+					(reference "#PWR037")
 					(unit 1)
 				)
 			)
@@ -7722,7 +8055,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "45033534-b0e9-5948-a107-69a9d266e7fd")
+			(uuid "242af3a6-4935-568c-b9c4-9275a65d1e2d")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7742,7 +8075,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3d92c93a-1626-5ac8-9b02-4a09c3c92c04")
+		(uuid "573da595-bc96-5aa1-b789-fc65d918ae7e")
 	)
 	(symbol
 		(lib_id "power:+3V3")
@@ -7752,8 +8085,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "5484d4b5-653d-5b69-bfbf-581f436f2d94")
-		(property "Reference" "#PWR036"
+		(uuid "41ec6c76-98ec-5f67-934c-60e1e444f15e")
+		(property "Reference" "#PWR038"
 			(at 45.72 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -7790,12 +8123,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "5d42dc4f-77b7-50c8-acc1-20634301464e")
+			(uuid "e12a3aed-2175-5c45-b3d2-be738659ea9a")
 		)
 		(instances
 			(project "vgacorne-module-f446"
 				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR036")
+					(reference "#PWR038")
 					(unit 1)
 				)
 			)
@@ -7847,7 +8180,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "3ae5dab6-f94e-50f0-b8f6-b0d1857f2e43")
+			(uuid "ec1c7efd-86da-5ad3-8326-44603d00d6e3")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7867,7 +8200,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "99c9ae80-8056-5a62-82ab-c88150aa49c1")
+		(uuid "42f5bef6-7073-57ce-958c-b7cfa4ffd3b6")
 	)
 	(symbol
 		(lib_id "power:+5V")
@@ -7877,8 +8210,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "effe5d42-30d7-52c3-816f-c8398429021e")
-		(property "Reference" "#PWR037"
+		(uuid "d322aa03-32b4-584c-869b-f98dc6b47253")
+		(property "Reference" "#PWR039"
 			(at 63.5 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -7915,12 +8248,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "d7f19dc7-a6c1-518e-b83d-15d62e7d9522")
+			(uuid "d765cf09-9d39-53fe-b5f9-485d3aeb3800")
 		)
 		(instances
 			(project "vgacorne-module-f446"
 				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR037")
+					(reference "#PWR039")
 					(unit 1)
 				)
 			)
@@ -7972,7 +8305,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "a833696a-aa88-5803-ab57-c30610477980")
+			(uuid "3381af79-36e8-578b-94c1-dca63deb23f9")
 		)
 		(instances
 			(project "vgacorne-module-f446"
@@ -7992,7 +8325,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "20274da0-2db8-58d9-a5d5-1fc0d5659bd1")
+		(uuid "b748a369-fc2e-52d3-a400-30b49f9fbac1")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -8002,8 +8335,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "41ec6c76-98ec-5f67-934c-60e1e444f15e")
-		(property "Reference" "#PWR038"
+		(uuid "ebba0a9f-386b-514c-be19-0f9aa4d91afe")
+		(property "Reference" "#PWR040"
 			(at 81.28 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -8040,12 +8373,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "65e5d94d-3bc5-526a-8417-18ee832975a6")
+			(uuid "c10acd65-c5eb-5df1-a9c3-f14afe12c8d6")
 		)
 		(instances
 			(project "vgacorne-module-f446"
 				(path "/abcb7172-efc7-5255-851d-24f488c5cf57"
-					(reference "#PWR038")
+					(reference "#PWR040")
 					(unit 1)
 				)
 			)

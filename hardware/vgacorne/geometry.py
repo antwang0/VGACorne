@@ -106,6 +106,7 @@ INNER_BOTTOM = 34.5
 # beside the DE-15.
 USB_X = _COLUMNS[4][0]
 USB_EAR = (USB_X - 6.5, BACK, USB_X + 6.5, _COLUMNS[4][1][0] - U / 2)
+USB_OVERHANG = 0.46  # receptacle face past the ear's edge (HRO TYPE-C-31-M-12 drawing)
 
 # The optional trackpad on the main half is described in trackpad.py; it sits
 # over the tab, beside Y/H/N.
@@ -129,13 +130,19 @@ PAD_TONGUE = (INNER_X[1], -16.5, INNER_X[1] + 20.5, -8.0)
 # with column 5's rows: M1 (right click) beside T, M0 (left click) beside G, and
 # a rotary encoder with a knob beside B. The encoder is a Bourns
 # PEC12R-4220F-N0024 (upright, 20 mm shaft, 24 detents, no push switch); its
-# 12.4 x 13.4 mm body sits in a normal 14 mm switch cutout in the plate.
+# 12.4 x 13.4 mm body sits in a normal 14 mm switch cutout in the plate. Heights
+# above the PCB top, from Bourns' drawing: body 5.1 mm, a ~7 mm collar to
+# 10.1 mm, the 6 mm D-flat from 13.0 mm to the shaft end at 20.0 mm.
 MOUSE_X = _COLUMNS[5][0] + U
 MOUSE_KEYS = (("M0", 1), ("M1", 0))  # (name, row beside column 5)
 ENCODER_ROW = 2
 ENCODER = (MOUSE_X, _COLUMNS[5][1][ENCODER_ROW])  # shaft centre
 ENCODER_SHAFT = 20.0            # shaft top above the PCB top
-KNOB_D, KNOB_H = 16.0, 14.0     # knob, pushed on to leave its top 2 mm above the shaft
+ENCODER_COLLAR = 10.1           # top of the collar round the shaft: a plain knob can't go lower
+# Knob: 16 mm across, 11.5 mm tall, its top 2 mm above the shaft end, so its
+# underside clears the collar by 0.4 mm and its D-bore (>= 9.5 mm deep) grips
+# the whole flat. A taller knob needs a recess of >= 7.5 mm under it for the collar.
+KNOB_D, KNOB_H = 16.0, 11.5
 
 
 def _c(x: float, y: float) -> tuple[float, float]:

@@ -1,14 +1,14 @@
 """Electrical design of the VGACorne boards.
 
 * ``main``      -- right half (geometry.MAIN_SIDE): 21 HE sensors, 3 muxes, the
-                   MCU module socket, USB-C, the optional trackpad, link port.
+                   MCU module's landing pads, USB-C, the optional trackpad, link port.
 * ``satellite`` -- left half: 23 HE sensors (the Corne's 21 and two mouse
                    buttons), a rotary encoder, 3 muxes, cable buffer, LDO,
                    link port.
 * ``link``      -- VGA daughterboard (one per half, identical): vertical DE-15
                    socket screwed to the case wall, wired to the half's PCB
                    with a 10-pin JST-SH pigtail.
-* ``module_*``  -- the plug-in MCU modules.
+* ``module_*``  -- the castellated MCU modules, soldered onto the main PCB.
 
 Only the main half has a microcontroller. The satellite's three mux outputs
 travel to the MCU's ADC over the VGA cable's three 75-ohm coax pairs; the three
@@ -119,7 +119,7 @@ ENCODER_SUM = {"A": 47e3, "B": 100e3}
 
 
 def key_index(name: str) -> int:
-    """1-based per-half index used for SWn / HEn / C1nn / C2nn."""
+    """1-based per-half index used for SWn / HEn / C1nn / R3nn / C2nn."""
     return KEY_ORDER.index(name) + 1
 
 
@@ -135,9 +135,12 @@ def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str], si
             Part(f"SW{n}", "Mechanical:MountingHole", f"{key.name}", fp, {}, "keys", key=key.name,
                  description="Hall-effect switch position (plate-mounted, not soldered)"),
             Part(f"HE{n}", SENSOR.lib_id, SENSOR.mpn, "Package_TO_SOT_SMD:SOT-23",
-                 {"1": "+3.3VA", "2": net, "3": "GND"}, "keys", key=key.name,
+                 {"1": "+3.3VA", "2": f"{net}_OUT", "3": "GND"}, "keys", key=key.name,
                  fields={"MPN": SENSOR.mpn}),
             C(f"C{100 + n}", "100n", "+3.3VA", "GND", "keys", key=key.name),
+            # TI: no capacitor straight on the DRV5055 output, it can oscillate.
+            # The 4.7 nF stays on the mux side as the charge reservoir it samples.
+            R(f"R{300 + n}", "1k", f"{net}_OUT", net, "keys", key=key.name),
             C(f"C{200 + n}", "4.7n", net, "GND", "keys", key=key.name),
         ]
     for mux, names in MUX_KEYS.items():
@@ -196,21 +199,25 @@ CASTELLATED_FP = f"vgacorne:Module_Castellated_2x12_P1.27mm_{_MW:g}x{_MH:g}mm"
 
 # The module connector: 2 x 12 castellated pads on the module, soldered onto the
 # landing pads J4 on the main PCB. Numbered as on J4; net names are the same on
-# both boards. USB sits between grounds; the analog inputs are grouped away from
-# the select lines.
+# both boards. Odd pins run along the module's back edge (towards the link
+# connector and, on the right half, the USB-C), even pins along its front edge,
+# each left to right. Only pads beside each other on the same edge are
+# neighbours, and each edge follows the order of the LQFP pins that reach it:
+# - back: reset/boot, the trackpad bus, supplies, SWD, then the USB pair
+#   between grounds at the corner nearest the USB-C;
+# - front: the select lines, a ground, the analog supply (the module's VDDA and
+#   ADC reference), the six ADC inputs together, then cable detect.
 MODULE_PINS = {
-    "1": "I2C_SCL", "2": "I2C_SDA",  # trackpad bus; pulled up on the carrier
-    "3": "+3V3", "4": "+3.3VA",  # digital supply; analog rail = the module's ADC reference
-    "5": "+5V", "6": "GND",
-    "7": "USB_DP", "8": "USB_DN",
-    "9": "GND", "10": "GND",
-    "11": "ADC_L_A", "12": "ADC_L_B",
-    "13": "ADC_L_C", "14": "ADC_R_A",
-    "15": "ADC_R_B", "16": "ADC_R_C",
-    "17": "MUX_S0", "18": "MUX_S1",
-    "19": "MUX_S2", "20": "DET",
-    "21": "NRST", "22": "BOOT",  # BOOT: carrier button pulls it to +3V3; the module decides what that means
-    "23": "SWDIO", "24": "SWCLK",
+    "1": "NRST", "3": "BOOT",  # BOOT: carrier button pulls it to +3V3; the module decides what that means
+    "5": "I2C_SDA", "7": "I2C_SCL",  # trackpad bus; pulled up on the carrier
+    "9": "+5V", "11": "+3V3",
+    "13": "SWCLK", "15": "SWDIO",
+    "17": "GND", "19": "USB_DP", "21": "USB_DN", "23": "GND",
+    "2": "MUX_S0", "4": "MUX_S1", "6": "MUX_S2",
+    "8": "GND", "10": "+3.3VA",
+    "12": "ADC_L_A", "14": "ADC_L_B", "16": "ADC_L_C",
+    "18": "ADC_R_A", "20": "ADC_R_B", "22": "ADC_R_C",
+    "24": "DET",
 }
 
 
@@ -254,25 +261,28 @@ def main() -> Circuit:
              fields={"MPN": "HRO TYPE-C-31-M-12"}),
         R("R1", "5.1k", "CC1", "GND", "power"),
         R("R2", "5.1k", "CC2", "GND", "power"),
-        Part("F1", "Device:Polyfuse", "500mA", PTC_FP, {"1": "VBUS", "2": "+5V"}, "power",
-             fields={"MPN": "BSMD0805-050-24V"}),
+        # 750 mA hold: 44 sensors at the DRV5055's older 6 mA typical already draw
+        # ~0.36 A with the MCU, and a 500 mA part derates to ~0.4 A in a warm case.
+        Part("F1", "Device:Polyfuse", "750mA", PTC_FP, {"1": "VBUS", "2": "+5V"}, "power",
+             fields={"MPN": "SMD0805-075"}),
         Part("U4", "Power_Protection:USBLC6-2SC6", "USBLC6-2SC6", "Package_TO_SOT_SMD:SOT-23-6",
              {"1": "USB_CONN_DN", "6": "USB_DN", "3": "USB_CONN_DP", "4": "USB_DP", "2": "GND",
               "5": "+5V"}, "power", fields={"MPN": "USBLC6-2SC6"}),
         Part("U2", "Regulator_Linear:TLV75733PDBV", "TLV75733PDBVR", "Package_TO_SOT_SMD:SOT-23-5",
              {"IN": "+5V", "EN": "+5V", "GND": "GND", "OUT": "+3.3VA"}, "power",
              fields={"MPN": "TLV75733PDBVR"}, description="Analog 3.3 V: sensors, muxes, module VDDA (ADC reference)"),
-        Part("U3", "Regulator_Linear:XC6206PxxxMR", "XC6206P332MR", "Package_TO_SOT_SMD:SOT-23-3",
-             {"VI": "+5V", "VO": "+3V3", "GND": "GND"}, "power",
-             fields={"MPN": "XC6206P332MR-G"}, description="Digital 3.3 V: MCU module"),
+        Part("U3", "Regulator_Linear:TLV75733PDBV", "TLV75733PDBVR", "Package_TO_SOT_SMD:SOT-23-5",
+             {"IN": "+5V", "EN": "+5V", "GND": "GND", "OUT": "+3V3"}, "power",
+             fields={"MPN": "TLV75733PDBVR"},
+             description="Digital 3.3 V: MCU module and trackpad (the AT32 with its USB HS PHY draws up to ~0.1 A)"),
         C("C1", "2.2u", "+5V", "GND", "power", fp=C0603),
         C("C2", "2.2u", "+5V", "GND", "power", fp=C0603),
         C("C3", "2.2u", "+3.3VA", "GND", "power", fp=C0603),
         C("C4", "10u", "+3.3VA", "GND", "power", fp=C0805),
         C("C5", "2.2u", "+3V3", "GND", "power", fp=C0603),
     ]
-    # MCU module socket. Boot/reset buttons and SWD stay on the carrier, reachable
-    # from under the case; everything MCU-specific lives on the module.
+    # MCU module landing pads. Boot/reset buttons and SWD stay on the carrier (the
+    # buttons through the case floor); everything MCU-specific lives on the module.
     p += [
         Part("J4", "Connector_Generic:Conn_02x12_Odd_Even", "MCU module", LANDING_FP, dict(MODULE_PINS), "mcu",
              description="Landing pads for the castellated MCU module (2x12, 1.27 mm), top side under "
@@ -304,8 +314,12 @@ def main() -> Circuit:
     pull_up = SENSOR.invert_adc  # pull toward "released" when the cable is absent
     p += [
         link_connector(),
-        Part("F2", "Device:Polyfuse", "500mA", PTC_FP, {"1": "+5V", "2": "LINK_5V_F"}, "link",
-             fields={"MPN": "BSMD0805-050-24V"}, description="Limits current into the VGA cable"),
+        Part("U8", "Power_Management:TPS2051CDBV", "TPS2051CDBVR", "Package_TO_SOT_SMD:SOT-23-5",
+             {"IN": "+5V", "EN": "+5V", "GND": "GND", "OUT": "LINK_5V_F"}, "link",
+             fields={"MPN": "TPS2051CDBVR"},
+             description="Satellite supply switch: 0.55 ms soft start and a 0.65-1.05 A limit, so plugging "
+                         "in the VGA cable can't drag +5V down (and brown out the MCU)"),
+        C("C18", "100n", "+5V", "GND", "link"),
         Part("D1", "Device:D_Schottky", "B5819W", "Diode_SMD:D_SOD-123",
              {"A": "LINK_5V_F", "K": "+5V_LINK"}, "link", fields={"MPN": "B5819W"},
              description="Blocks back-feed if the port meets a PC's VGA +5 V"),
@@ -331,7 +345,7 @@ def main() -> Circuit:
     p += standoffs(MAIN_SIDE)
     blocks = [
         ("power", "USB-C, protection, regulators", (20.32, 38.1), 260),
-        ("mcu", "MCU module socket, boot/reset, SWD", (292.1, 38.1), 290),
+        ("mcu", "MCU module landing pads, boot/reset, SWD", (292.1, 38.1), 290),
         ("link", "Link to the satellite half (VGA daughterboard)", (596.9, 38.1), 225),
         ("trackpad", "Trackpad (optional)", (292.1, 130.0), 290),
         ("mux", "Analog muxes (select lines shared with the right half)", (20.32, 205.74), 560),
@@ -471,7 +485,8 @@ def module_at32() -> Circuit:
              {"1": "HSE_IN", "3": "HSE_OUT", "2": "GND", "4": "GND"}, "mcu",
              fields={"MPN": "X322512MSB4SI"}, description="12 MHz, CL 20 pF (libhmk's AT32 port requires 12 MHz)"),
         C("C7", "30p", "HSE_IN", "GND", "mcu"), C("C8", "30p", "HSE_OUT", "GND", "mcu"),
-        R("R1", "12k", "OTGHS_R", "GND", "mcu", description="USB HS PHY reference resistor (1%)"),
+        R("R1", "12k", "OTGHS_R", "GND", "mcu", description="USB HS PHY reference resistor",
+          fields={"Tolerance": "1%"}),
         R("R2", "10k", "BOOT", "GND", "mcu", description="BOOT0 pull-down"),
         C("C9", "100n", "NRST", "GND", "mcu"),
     ]
@@ -485,7 +500,8 @@ def module_f446() -> Circuit:
     pins = {**MCU_SIGNAL_PINS,
             "1": "+3V3", "19": "+3V3", "32": "+3V3", "48": "+3V3", "64": "+3V3", "13": "+3.3VA",
             "18": "GND", "31": "GND", "47": "GND", "63": "GND", "12": "GND",
-            "30": "VCAP", "5": "HSE_IN", "6": "HSE_OUT", "44": "USB_DN", "45": "USB_DP"}
+            "30": "VCAP", "5": "HSE_IN", "6": "HSE_OUT", "44": "USB_DN", "45": "USB_DP",
+            "28": "BOOT1", "43": "USART1_RX"}
     mcu = Part("U1", "MCU_ST_STM32F4:STM32F446RETx", "STM32F446RET6", "Package_QFP:LQFP-64_10x10mm_P0.5mm",
                pins, "mcu", fields={"MPN": "STM32F446RET6"})
     parts = [
@@ -497,9 +513,14 @@ def module_f446() -> Circuit:
           description="VCAP_1: low-ESR ceramic, value per ST datasheet for single-VCAP packages"),
         Part("Y1", "Device:Crystal_GND24", "8MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
              {"1": "HSE_IN", "3": "HSE_OUT", "2": "GND", "4": "GND"}, "mcu",
+             fields={"MPN": "X32258MSB4SI"},
              description="8 MHz, CL 20 pF: matches QMK's generic STM32F446 clock tree; libhmk takes any whole MHz"),
         C("C9", "30p", "HSE_IN", "GND", "mcu"), C("C10", "30p", "HSE_OUT", "GND", "mcu"),
         R("R1", "10k", "BOOT", "GND", "mcu", description="BOOT0 pull-down"),
+        R("R2", "10k", "BOOT1", "GND", "mcu",
+          description="PB2/BOOT1 pull-down: BOOT0 = 1 only reaches the DFU bootloader with BOOT1 = 0 (RM0390)"),
+        R("R3", "10k", "USART1_RX", "+3V3", "mcu",
+          description="Holds the bootloader's unused USART1 RX (PA10) idle so noise can't select it (AN2606)"),
         C("C11", "100n", "NRST", "GND", "mcu"),
     ]
     return _module("vgacorne-module-f446", "VGACorne MCU module - STM32F446RET6 (QMK / libhmk, USB FS)", mcu, parts,

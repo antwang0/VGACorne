@@ -34,15 +34,18 @@ Heights are from the underside of the case.
 | z (mm) | Surface |
 |---|---|
 | 0.0 | case underside |
+| 2.0 – 3.0 | floor pockets under the USB-C and the encoder's pins (`FLOOR_POCKETS`) |
 | 3.0 | floor top (3.0 mm floor) |
-| 3.0 – 6.5 | case foam, 3.5 mm (poron sheet or silicone pad) |
-| 7.0 | PCB underside (tallest part below it: USB-C, 3.3 mm) |
+| 3.0 – 5.0 | case foam, 2 mm (poron sheet or silicone pad) |
+| 5.5 | underside of the parts over the foam: sensors, muxes, regulators (up to 1.45 mm) |
+| 7.0 | PCB underside (the USB-C hangs 3.26 mm below it, over a foam relief and a floor pocket) |
 | 8.6 | PCB top |
 | 12.1 | plate underside (MX spec: plate top is 5.0 mm above the PCB top) |
 | 13.6 | plate top |
 | 12.9 – 17.6 | trackpad module, its connector and the FFC fold, in their well (right half) |
 | 8.6 – 11.3 | MCU module (under the trackpad): soldered flat, 1.0 mm board, 1.6 mm LQFP |
-| 16.6 – 30.6 | encoder knob (left half): 3 mm above the plate, top about 2 mm above the keycaps |
+| 13.7 – 18.7 | encoder body top (flush with the plate) and the ~7 mm collar round its shaft (left half) |
+| 19.1 – 30.6 | encoder knob (left half): clears the collar, top about 2 mm above the keycaps |
 | 17.1 | underside of the 1.5 mm roof over the VGA bay and USB-C ear |
 | 17.6 – 18.6 | trackpad overlay, flush with the top (right half) |
 | 18.6 | top of case (frame 5 mm above the plate) |
@@ -61,13 +64,15 @@ silicone is springier, poron is more muted.
 | Layer | File | Poron | Silicone |
 |---|---|---|---|
 | Gaskets (above and below each plate tab) | tabs in `plate-*.dxf`, pockets in `case-plan-*.dxf` | 3 mm PORON strips, 10 mm wide | 3 mm silicone strip or "sock" (≈ Shore 30–40A) |
-| Case foam (under the PCB) | `foam-case-*.dxf` | 3.5 mm PORON sheet | 3.5–4 mm poured or cut silicone pad (≈ Shore 10–20A) |
+| Case foam (under the PCB) | `foam-case-*.dxf` | 2 mm PORON sheet | 2 mm poured or cut silicone pad (≈ Shore 10–20A) |
 | Plate foam (optional, between plate and PCB) | `foam-plate-*.dxf` | 3.5 mm PORON | 3.5 mm silicone |
 
 - Aim for about 25 % gasket compression when the case is closed. Tune it with
   strip thickness, not by changing the pockets.
-- Leave the 0.5 mm air gap above the case foam (`foam_gap`). Foam that
-  touches the PCB preloads the gaskets and kills the flex.
+- Leave the 0.5 mm air gap between the case foam and the parts over it
+  (`foam_gap`). The parts under the PCB are up to 1.45 mm tall (`bottom_parts`).
+  Foam that touches the PCB or its parts preloads the gaskets and kills the
+  flex, so thicker foam needs a taller case.
 - The case foam has reliefs for the connectors and buttons (read from the PCB
   file) and for the standoff screw heads.
 - **Magnetics:** foams, silicone, aluminium, brass and FR4 are all fine.
@@ -80,7 +85,7 @@ silicone is springier, poron is more muted.
 - `plate-left.dxf` / `plate-right.dxf`: 14.0 mm switch cutouts (0.3 mm
   corner radius), 2.2 mm standoff holes, eight 10 × 4.5 mm gasket tabs. On the
   right half the plate stops at the keys: the trackpad sits over the inner
-  column beside it, and the VGA bay and MCU module are behind. On the left half
+  column beside it, with the MCU module under it and the VGA bay behind. On the left half
   it covers the mouse column too, including a switch cutout for the rotary
   encoder.
 - Aluminium 5052 or 6061 at 1.5 mm, waterjet/laser. POM or PC for a softer
@@ -105,6 +110,7 @@ silicone is springier, poron is more muted.
 | `PORTS` | DE-15 shell cutout and USB-C opening (right half), through the back face |
 | `JACKSCREWS` | two Ø3.2 mm holes through the back face for the 4-40 screwlocks, 24.99 mm apart |
 | `FLOOR_ACCESS` | Ø3 mm floor holes under the BOOT and RESET buttons (right half) |
+| `FLOOR_POCKETS` | 1 mm pockets in the floor top under the USB-C (right half) and the encoder's pins (left half) |
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
 | `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
 
@@ -152,8 +158,12 @@ Milling:
 - The back face is 1.6 mm thick here, so the plug mates fully without a relief.
 - Centre the shell about 7 mm above the floor top: the flange (12.55 mm) sits
   between the floor and the roof, with 14.1 mm clear.
-- Use the panel cutout from your connector's datasheet. `PORTS` is a
-  19.2 mm-wide placeholder for shell size E.
+- `PORTS` has the standard rear-mount cutout for shell size E, 20.5 × 11.4 mm
+  (CECC 75 301-802); check it against your connector's datasheet.
+- At full mating the plug's shell reaches about 1 mm into the 1.6 mm wall.
+  That is the most D-sub makers allow with standard hardware, so use 4-40
+  jackscrews whose hex is no taller than 4.8 mm (0.189"), or the plug won't
+  seat.
 
 ### Trackpad (right half)
 
@@ -165,8 +175,8 @@ principle.
   index finger slides straight onto it. It spans the three rows: the moved VGA
   bay sets how far back it can go and the tilted 1.5u thumb key how low, which
   puts its middle about 3 mm behind the H row. It keeps 3 mm of aluminium to
-  the keys, the VGA bay and the outside edge, and its well clears the MCU
-  module behind it by 0.9 mm.
+  the keys, the VGA bay and the outside edge. The MCU module sits partly under
+  its well, 1.6 mm below it.
 - **Stack:**
   - The top is a 1 mm glass or acrylic overlay, 71 × 55 mm (the module plus
     3 mm all round) with about 7 mm corner radii. It sits flush in the
@@ -179,7 +189,9 @@ principle.
 - **Cable:** the module's ZIF connector is 9.2 mm in from a long edge and
   25.3 mm from an end. Turn the module so that is the back edge and the end
   nearer the keys: the connector then sits right over J5 on a PCB tongue,
-  and a short 6-pin 0.5 mm same-side FFC folds down into it.
+  and a short 6-pin 0.5 mm FFC folds down into it.
+- J5 is bottom-contact and Azoteq doesn't say which side the pad's contacts are
+  on. A paper mock-up decides between a same-side and an opposite-side FFC.
 - **Case:** the outside profile wraps the pad with the same 25 mm minimum
   concave radius. The pad is why the right half is 51 mm wider than the left.
 
@@ -191,13 +203,25 @@ principle.
 - **Encoder:** a Bourns PEC12R-4220F-N0024, upright with a 20 mm shaft, 24
   detents, no bushing and no push switch. Its 12.4 × 13.4 mm body stands on
   the PCB through an ordinary 14 mm switch cutout in the plate, like a key.
-  KiCad's footprint for the bushing version (`-3x17F`) has the same pads.
-- **Knob:** 16 mm across, 14 mm tall, on the 6 mm flatted shaft. Pushed on to
-  leave 2 mm above the shaft end, it spans 3 mm above the plate to about 2 mm
-  above the keycaps, and clears the left-click and B keycaps by 2 mm and the
-  1.5u thumb key by 6 mm. Any knob up to about 18 mm across fits.
-- **Foam:** the plate foam has a switch-sized cut at the encoder, and the case
-  foam a relief under its legs.
+  Its body top is flush with the plate top.
+  - KiCad's footprint for the bushing version (`-3x17F`) has the same pads.
+    The `-4`'s mounting legs are narrower than the footprint's slots, so the
+    signal pins locate it.
+  - Its pins and legs come through about 3 mm: trim them to about 2 mm after
+    soldering.
+- **Knob:** 16 mm across and 11.5 mm tall, on the 6 mm D-flat shaft, pushed on
+  to leave 2 mm above the shaft end.
+  - Above the body, a ~7 mm collar round the shaft rises to 10.1 mm above the
+    PCB. The flat runs from 13 mm to the shaft end at 20 mm.
+  - The knob's underside clears the collar by 0.4 mm, and its D-bore (at least
+    9.5 mm deep) grips the whole flat. Its top is about 2 mm above the keycaps.
+  - A taller knob needs a recess at least 7.5 mm across underneath for the
+    collar, or it sits higher.
+  - It clears the left-click and B keycaps by 2 mm and the 1.5u thumb keycap by
+    1.5 mm. A knob up to 17 mm across still leaves 1 mm.
+- **Foam:** the plate foam has a switch-sized cut at the encoder, plus its
+  pins. The case foam has a relief under its pins and legs, and the floor a
+  1 mm pocket (`FLOOR_POCKETS`).
 - **Standoff:** one extra M2 standoff between G, B, left click and the encoder,
   since the mouse column's plate would otherwise hang 20 mm off column 5.
 
@@ -215,17 +239,25 @@ principle.
 ### USB-C (right half)
 
 The receptacle is on the PCB underside, on a small ear of the PCB that
-reaches the back face behind column 4, beside the DE-15. Its centre is about
-5.4 mm above the case underside. The opening in `PORTS` is 11 × 6 mm through the
-1.6 mm back face, so the floating sandwich can move ±0.5 mm. The overmould
-sits against the flat face, so no recess is needed.
+reaches the back face behind column 4, beside the DE-15.
+- **Position:** it overhangs the ear's edge by 0.46 mm, as HRO's drawing
+  intends (`geometry.USB_OVERHANG`). That puts its face 1.9 mm inside the back
+  face and its centre about 5.3 mm above the case underside (`USB_Z`).
+- **Opening:** a fully seated plug's overmould stops about 0.45 mm short of
+  the receptacle face (USB Type-C R2.5: a 6.65 mm plug in a 6.20 mm
+  receptacle), so it goes ~1.4 mm into the 1.6 mm wall. The opening in `PORTS`
+  is therefore 13.95 × 8.1 mm: the largest overmould the spec allows
+  (12.85 × 7.0 mm) plus 0.55 mm all round for the floating sandwich. It is a
+  plain through-cut.
+- **Floor:** the shell hangs to 0.74 mm above the floor top, so the floor has a
+  1 mm pocket under it (`FLOOR_POCKETS`), and gasket travel can't bottom it out.
 
 ## What to model next
 
 A parametric 3D case (e.g. build123d or FreeCAD) can extrude the case-plan
 layers directly:
 
-1. Floor: `OUTER_WALL`, 3 mm, minus `FLOOR_ACCESS`.
+1. Floor: `OUTER_WALL`, 3 mm, minus `FLOOR_ACCESS` and 1 mm deep `FLOOR_POCKETS`.
 2. Walls: `OUTER_WALL` − `INNER_WALL`, up to 18.6 mm.
 3. Tab pockets at the plate height, split between tray and frame.
 4. 1.5 mm roof over `ROOF`. Port and screwlock through-cuts in the back face.

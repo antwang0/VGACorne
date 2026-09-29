@@ -6,13 +6,15 @@
       it must show 0 DRC errors, and after routing `unconnected_items` should
       reach 0 too.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.
-- [ ] Check the AT32F405RCT7 pinout against Artery's datasheet (it was taken
-      from the HE60 reference board), and the STM32F446RET6 module against ST's
-      (VCAP value in particular).
 - [ ] Pick a vertical DE-15F with 4-40 inserts that matches
-      `DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles`.
+      `DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles`. Check its panel
+      cutout against `PORTS` (20.5 × 11.4 mm). Use jackscrews with a hex no
+      taller than 4.8 mm.
 - [ ] Check stock for the DRV5055A3QDBZR (or an HE60-proven alternative:
       MT9102ET, SS39ET, GH39FKSW; see *Sensor polarity* below).
+- [ ] Measure the supply current of a few sensors before buying all 44. TI's
+      datasheets disagree (2 mA or 6 mA typical); see the
+      [power budget](architecture.md#power-budget-usb-500-ma).
 
 ## What to order
 
@@ -25,13 +27,13 @@
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
 | HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
 | Bourns PEC12R-4220F-N0024 encoder | 1 | knob beside B (left half) |
-| Knob, ~16 mm across, 14 mm tall, 6 mm D-shaft | 1 | any keyboard/audio knob up to ~18 mm across |
+| Knob, ~16 mm across, ~11.5 mm tall, 6 mm D-shaft bore ≥ 9.5 mm deep | 1 | up to 17 mm across; a taller knob needs a ≥ 7.5 mm recess underneath for the encoder's collar ([mechanical.md](mechanical.md#mouse-column-and-rotary-encoder-left-half)) |
 | M2 hex standoffs 3.5 mm, brass | 15 | plus 30 × M2 × 3 mm screws |
 | 10-pin JST-SH pigtail, ~5 cm, single-ended | 2 | plugs into J3, right in front of the daughterboard |
 | VGA cable, male–male | 1 | the classic blue monitor cable is fine. It needs pins 1–3, 5–10 and 12–15 (check pin 9, see JP1/JP2 below). Both ends plug into the back of the case, so ~30 cm reaches round behind the gap |
 | Azoteq TPS65-201A-S trackpad (optional) | 1 | end-of-life at Azoteq and out of stock at LCSC; Keycapsss still sells it. GR-Trackpad65 is an open clone |
 | Trackpad overlay, 1 mm glass or acrylic, 71 × 55 mm, ~7 mm corners | 1 | non-metal, matte/etched top; laser-cut black acrylic works |
-| 6-pin 0.5 mm FFC, same-side contacts, ~30 mm | 1 | trackpad to J5 (Jushuo AFC07-S06FCA-00, LCSC C262553) |
+| 6-pin 0.5 mm FFC, ~30 mm | 1 | trackpad to J5 (Jushuo AFC07-S06FCA-00, LCSC C262553, bottom contact). Same-side or opposite-side contacts: decide with the paper mock-up (*Trackpad*, step 2) |
 | Poron/silicone gaskets, case foam, plate foam | | see [mechanical.md](mechanical.md) |
 
 BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
@@ -48,13 +50,19 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 
 ## First power-up (main half alone)
 
-1. **Before soldering the module:** plug in USB and measure +5V, +3V3 (U3)
-   and +3.3VA (U2), both also on J4 pads 3 and 4.
+1. **Before soldering the module:** plug in USB through a USB meter and
+   measure +5V, +3V3 (U3) and +3.3VA (U2). Both 3.3 V rails are also on J4
+   pads 11 and 10.
+   - The current now is almost all the 21 sensors. Divide it by 21: about
+     2 mA each is TI's current datasheet, about 6 mA the original.
+   - Much more than 6 mA each means the [power budget](architecture.md#power-budget-usb-500-ma)
+     needs another look.
 2. Solder the module on: tack two opposite corner pads, check it sits flat and
-   square on J4, then solder the rest along both edges. Plug in again with a
-   USB meter. Expect about 60–90 mA with no satellite.
+   square on J4, then solder the rest along both edges. Plug in again: expect
+   the step 1 current plus 50–90 mA for the MCU.
 3. Hold **BOOT** while plugging in. The factory DFU bootloader (AT32 or STM32)
-   should enumerate.
+   should enumerate. SWD (Tag-Connect J2) is the fallback; it needs the bottom
+   tray off.
 
 ## Flashing
 
@@ -96,15 +104,17 @@ bootloader.
 
 ## Rotary encoder (left half, QMK)
 
-1. With the satellite powered, measure the `ENC` node (C5) while turning the
+1. After soldering ENC1, trim its pins and mounting legs to about 2 mm below
+   the PCB. They come through about 3 mm, close to the floor.
+2. With the satellite powered, measure the `ENC` node (C5) while turning the
    shaft slowly: it should step between about 0, 1.0, 2.1 and 3.3 V. A level
    that never appears means a contact or one of R21-R24 is off.
-2. In QMK the knob scrolls on the base layer, scrolls sideways on lower and
+3. In QMK the knob scrolls on the base layer, scrolls sideways on lower and
    changes the volume on raise. If it turns the wrong way, add
    `#define ENCODER_DIRECTION_FLIP` to `config.h`. One step per detent is the
    default (`ENCODER_RESOLUTION 4`); set it to 2 if an encoder gives two steps
    per detent.
-3. libhmk has no encoder support: the two mouse keys work there, the knob
+4. libhmk has no encoder support: the two mouse keys work there, the knob
    doesn't.
 
 ## Trackpad (optional, QMK)
@@ -135,7 +145,7 @@ version (`-2024-`). Check 3.3 V on its FFC pin 12.
 
 | Symptom | Likely cause |
 |---|---|
-| Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or F2 tripped |
+| Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or U8 in current limit (a short on `+5V_LINK`) |
 | Left half keys stuck pressed after plugging the cable in late | rest values were learned with the cable out: recalibrate in hmkconf or re-plug USB |
 | One column on the left dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
 | Keys fine, trackpad dead | FFC reversed or folded the wrong way, the FFC seated after power-up (QMK only looks at boot), or, for a Cirque, an SPI pad with R1 still fitted |

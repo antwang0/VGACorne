@@ -33,9 +33,10 @@ OUT = HARDWARE / "mechanical"
 class Stack:
     """Z stack-up in mm, measured up from the outside of the case floor."""
     floor: float = 3.0            # bottom tray floor thickness
-    case_foam: float = 3.5        # poron 3.5 mm, or a 3-4 mm silicone pad
-    foam_gap: float = 0.5         # air between foam and PCB components
-    component_max: float = 3.3    # tallest B-side part (USB-C receptacle)
+    case_foam: float = 2.0        # poron 2 mm, or a 2 mm silicone pad
+    foam_gap: float = 0.5         # air between the foam and the lowest parts over it
+    bottom_parts: float = 1.5     # B-side parts over the foam: SOT-23-5/6 1.45 mm max, sensors 1.12 mm
+    component_max: float = 3.3    # tallest B-side part (USB-C receptacle, 3.26 mm), over a foam relief
     pcb: float = 1.6
     plate_gap: float = 3.5        # MX standard: plate top is 5.0 mm above PCB top
     plate: float = 1.5
@@ -45,7 +46,7 @@ class Stack:
 
     @property
     def pcb_bottom(self) -> float:
-        return self.floor + max(self.case_foam + self.foam_gap, self.component_max + 0.5)
+        return self.floor + max(self.case_foam + self.foam_gap + self.bottom_parts, self.component_max + 0.5)
 
     @property
     def plate_bottom(self) -> float:
@@ -82,6 +83,17 @@ class Stack:
 
 STACK = Stack()
 
+# USB-C (main half). The receptacle's mating centreline is ~1.69 mm under the
+# PCB (HRO TYPE-C-31-M-12 drawing). Fully seated, a plug's overmould stops
+# 6.65 - 6.20 = 0.45 mm short of the receptacle face (USB Type-C R2.5, figs 3-1
+# and 3-3), and that face is WALL_CLEARANCE + PORT_WALL - geometry.USB_OVERHANG =
+# 1.89 mm inside the back face, so the overmould goes ~1.4 mm into the wall. The
+# opening takes the largest overmould the spec allows plus 0.55 mm all round for
+# the floating sandwich.
+USB_Z = STACK.pcb_bottom - 1.69            # opening centre above the case underside
+USB_OVERMOLD = (12.85, 7.0)                # spec maximum, width x height
+USB_OPENING = (USB_OVERMOLD[0] + 1.1, USB_OVERMOLD[1] + 1.1)
+
 SWITCH_CUTOUT = 14.0
 SWITCH_CUTOUT_R = 0.3
 STANDOFF_HOLE = 2.2
@@ -91,6 +103,7 @@ WALL_CLEARANCE = 0.75  # plate/PCB edge to inner wall
 MIN_WALL = 3.0         # thinnest wall: behind the gasket pockets
 WALL = TAB_L + 0.5 - WALL_CLEARANCE + MIN_WALL  # walls thick enough to hold the gasket pockets
 PORT_WALL = 1.6        # flat back face at the connectors: plugs only mate fully through a thin panel
+FLOOR_POCKET = 1.0     # extra depth in the floor under the USB-C and the encoder's pins
 OUTSIDE_R = 25.0       # smallest concave radius on the outside: one smooth profile, big cutter
 CORNER_R = 6.0         # convex corners where the flat port face meets the sides (< WALL keeps PORT_WALL)
 TOOL_R = 1.5           # smallest radius inside the cavity (3 mm end mill)
@@ -157,13 +170,24 @@ def plate(side: str) -> tuple[Polygon, list[Polygon], list[Polygon]]:
     return outline, cutouts, holes
 
 
+def encoder_pins(side: str) -> Polygon | None:
+    """Satellite: the encoder's A/C/B pins, 7.5 mm to one side of the shaft, with 1.5 mm round them."""
+    if side != geo.SATELLITE_SIDE:
+        return None
+    x, y, rot = geo.encoder_placement(side)  # pin A; C and B follow 2.5 and 5 mm along the footprint's Y
+    return affinity.rotate(box(x - 1.5, y - 1.5, x + 1.5, y + 6.5), -rot, origin=(x, y))
+
+
 def plate_foam(side: str) -> tuple[Polygon, list[Polygon]]:
     outline = plate_outline(side).buffer(-0.5)
     cut = [k.square(PLATE_FOAM_SWITCH) for k in geo.keys_for(side)]
     cut += [Point(x, y).buffer(2.75, 32) for x, y in geo.standoffs(side)]
     enc = encoder_square(side, PLATE_FOAM_SWITCH)
     if enc is not None:
-        cut.append(enc)
+        cut += [enc, encoder_pins(side)]
+    if side == geo.MAIN_SIDE:
+        # The module's outer edge runs just under column 5's plate edge.
+        cut.append(geo.module_rect(side).buffer(0.5, join_style="mitre"))
     return outline, cut
 
 
@@ -176,7 +200,7 @@ def case_foam(side: str, board_pcb: Path | None) -> tuple[Polygon, list[Polygon]
     return outline, cut
 
 
-# Bottom-side parts taller than the ~1.1 mm sensors get a relief in the case
+# Bottom-side parts taller than STACK.bottom_parts get a relief in the case
 # foam, and so do the rotary encoder's through-hole legs.
 TALL_PARTS = {"J1", "J2", "J3", "SW22", "SW23", "ENC1"}
 
@@ -209,7 +233,10 @@ def _tall_parts(pcb_path: Path) -> list[Polygon]:
 # Case planning
 # ---------------------------------------------------------------------------
 
-DE15_CUTOUT = (19.2, 11.1)    # typical D-shaped panel cutout, shell size E (check the datasheet)
+# Rear-mount D cutout for shell size E (CECC 75 301-802, as in Harting's catalogue):
+# the plug's shell reaches ~1 mm into the 1.6 mm wall. That wall is at the limit
+# for full mating, so the 4-40 jackscrews outside it must have hexes <= 4.8 mm tall.
+DE15_CUTOUT = (20.5, 11.4)
 DB_WIDTH = 33.0                # pcb.LINK_W
 DB_DEPTH = 13.0                # flange + 4.3 mm body + 1.6 mm PCB + pads + wire bend room
 
@@ -231,6 +258,30 @@ def access_holes(pcb_path: Path) -> list[Polygon]:
     board = pcbnew.LoadBoard(str(pcb_path))
     return [Point(pcbnew.ToMM(fp.GetPosition().x), pcbnew.ToMM(fp.GetPosition().y)).buffer(1.5, 24)
             for fp in board.GetFootprints() if fp.GetReference() in ("SW22", "SW23")]
+
+
+def floor_pockets(pcb_path: Path) -> list[Polygon]:
+    """FLOOR_POCKET-deep pockets in the floor top under the parts that come closest
+    to it: the USB-C shell (0.7 mm above the floor otherwise) and the encoder's
+    pins and legs (trim them to ~2 mm after soldering)."""
+    import pcbnew
+
+    if not pcb_path.exists():
+        return []
+    out = []
+    for fp in pcbnew.LoadBoard(str(pcb_path)).GetFootprints():
+        ref = fp.GetReference()
+        if ref == "ENC1":
+            pads = [p.GetBoundingBox() for p in fp.Pads()]
+            out.append(box(min(pcbnew.ToMM(b.GetX()) for b in pads), min(pcbnew.ToMM(b.GetY()) for b in pads),
+                           max(pcbnew.ToMM(b.GetRight()) for b in pads),
+                           max(pcbnew.ToMM(b.GetBottom()) for b in pads)).buffer(1.0))
+        elif ref == "J1" and fp.GetLayer() == pcbnew.B_Cu and fp.GetFPID().GetLibItemName().wx_str().startswith("USB_C"):
+            fp.BuildCourtyardCaches()
+            bb = fp.GetCourtyard(pcbnew.B_CrtYd).BBox()
+            out.append(box(pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()),
+                           pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())).buffer(0.5))
+    return out
 
 
 def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
@@ -271,7 +322,7 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     jackscrews = [box(x - 1.6, through[0], x + 1.6, through[1]) for x in (cx - 12.5, cx + 12.5)]
     if main:
         ux, _ = geo.anchor("USB", side)
-        ports.append(box(ux - 5.5, through[0], ux + 5.5, through[1]))
+        ports.append(box(ux - USB_OPENING[0] / 2, through[0], ux + USB_OPENING[0] / 2, through[1]))
     # The top frame is a thin roof wherever the cavity isn't under the plate
     # opening: over the MCU module, the bay and the USB ear.
     opening = plate_outline(side).buffer(WALL_CLEARANCE, join_style="round")
@@ -284,8 +335,12 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     if trackpad:
         layers["TRACKPAD"] = trackpad[:1]
         layers["TRACKPAD_WELL"] = trackpad[1:]
-    if main and floor_access:
-        layers["FLOOR_ACCESS"] = access_holes(HARDWARE / "kicad" / "main" / "vgacorne-main.kicad_pcb")
+    if floor_access:
+        board = "main" if main else "satellite"
+        pcb_path = HARDWARE / "kicad" / board / f"vgacorne-{board}.kicad_pcb"
+        if main:
+            layers["FLOOR_ACCESS"] = access_holes(pcb_path)
+        layers["FLOOR_POCKETS"] = [p.intersection(inner_wall) for p in floor_pockets(pcb_path)]
     return layers
 
 

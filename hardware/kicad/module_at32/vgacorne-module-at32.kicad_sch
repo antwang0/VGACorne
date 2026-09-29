@@ -2807,7 +2807,7 @@
 		)
 		(uuid "d3e96cb6-3a85-5f93-a276-920af7c77a50")
 	)
-	(label "I2C_SCL"
+	(label "NRST"
 		(at 34.29 59.69 180)
 		(fields_autoplaced yes)
 		(effects
@@ -2827,7 +2827,7 @@
 		)
 		(uuid "278f804e-a653-594a-b0b5-f75eb19f45ea")
 	)
-	(label "I2C_SDA"
+	(label "MUX_S0"
 		(at 52.07 59.69 0)
 		(fields_autoplaced yes)
 		(effects
@@ -2838,8 +2838,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 67.31)
-			(xy 34.29 67.31)
+			(xy 36.83 62.23)
+			(xy 34.29 62.23)
 		)
 		(stroke
 			(width 0)
@@ -2847,8 +2847,8 @@
 		)
 		(uuid "2da4f770-54db-5b20-9629-3494a7af6e42")
 	)
-	(label "USB_DP"
-		(at 34.29 67.31 180)
+	(label "BOOT"
+		(at 34.29 62.23 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
@@ -2858,8 +2858,8 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 67.31)
-			(xy 52.07 67.31)
+			(xy 49.53 62.23)
+			(xy 52.07 62.23)
 		)
 		(stroke
 			(width 0)
@@ -2867,8 +2867,8 @@
 		)
 		(uuid "25e916e4-6931-5bc3-bbce-fa655ae0131d")
 	)
-	(label "USB_DN"
-		(at 52.07 67.31 0)
+	(label "MUX_S1"
+		(at 52.07 62.23 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
@@ -2878,8 +2878,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 72.39)
-			(xy 34.29 72.39)
+			(xy 36.83 64.77)
+			(xy 34.29 64.77)
 		)
 		(stroke
 			(width 0)
@@ -2887,14 +2887,54 @@
 		)
 		(uuid "b0072209-f2cd-5d7a-91dc-7bc7c5ac834c")
 	)
-	(label "ADC_L_A"
-		(at 34.29 72.39 180)
+	(label "I2C_SDA"
+		(at 34.29 64.77 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
 		(uuid "1cbe603b-4ccb-51fd-867b-a7e914593853")
+	)
+	(wire
+		(pts
+			(xy 49.53 64.77)
+			(xy 52.07 64.77)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3ed49206-dbf8-5171-8d3a-8f4048f64f36")
+	)
+	(label "MUX_S2"
+		(at 52.07 64.77 0)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify left bottom)
+		)
+		(uuid "e6b30952-139b-5dcf-9fed-55c9483103f9")
+	)
+	(wire
+		(pts
+			(xy 36.83 67.31)
+			(xy 34.29 67.31)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "77deeb4a-e285-550e-be40-18a8c3197540")
+	)
+	(label "I2C_SCL"
+		(at 34.29 67.31 180)
+		(fields_autoplaced yes)
+		(effects
+			(font (size 1.27 1.27))
+			(justify right bottom)
+		)
+		(uuid "770cf495-5261-5313-bd9e-226d84e320a8")
 	)
 	(wire
 		(pts
@@ -2905,16 +2945,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "3ed49206-dbf8-5171-8d3a-8f4048f64f36")
+		(uuid "659d0592-b9b5-5357-9eee-78393ef72c9b")
 	)
-	(label "ADC_L_B"
+	(label "ADC_L_A"
 		(at 52.07 72.39 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "e6b30952-139b-5dcf-9fed-55c9483103f9")
+		(uuid "257a0f3c-c87f-5057-be87-6abd87d137c4")
 	)
 	(wire
 		(pts
@@ -2925,16 +2965,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "77deeb4a-e285-550e-be40-18a8c3197540")
+		(uuid "c9a03d00-2138-5da9-bf98-b7229c73923e")
 	)
-	(label "ADC_L_C"
+	(label "SWCLK"
 		(at 34.29 74.93 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "770cf495-5261-5313-bd9e-226d84e320a8")
+		(uuid "f6295229-c6d3-55b1-bf86-4ed4c33fa873")
 	)
 	(wire
 		(pts
@@ -2945,16 +2985,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "659d0592-b9b5-5357-9eee-78393ef72c9b")
+		(uuid "11ec7e53-8a30-5557-8ce4-7a1a53f4ccec")
 	)
-	(label "ADC_R_A"
+	(label "ADC_L_B"
 		(at 52.07 74.93 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "257a0f3c-c87f-5057-be87-6abd87d137c4")
+		(uuid "93fad944-2bbc-52e5-9fd9-0a54a6386774")
 	)
 	(wire
 		(pts
@@ -2965,16 +3005,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "c9a03d00-2138-5da9-bf98-b7229c73923e")
+		(uuid "7032a295-f8b9-51eb-849b-5cfc3b26227a")
 	)
-	(label "ADC_R_B"
+	(label "SWDIO"
 		(at 34.29 77.47 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "f6295229-c6d3-55b1-bf86-4ed4c33fa873")
+		(uuid "25050027-db68-5436-9b06-2c0b7355e9e7")
 	)
 	(wire
 		(pts
@@ -2985,36 +3025,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "11ec7e53-8a30-5557-8ce4-7a1a53f4ccec")
+		(uuid "d3713e81-7448-538e-a1eb-51dfce2bf343")
 	)
-	(label "ADC_R_C"
+	(label "ADC_L_C"
 		(at 52.07 77.47 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "93fad944-2bbc-52e5-9fd9-0a54a6386774")
-	)
-	(wire
-		(pts
-			(xy 36.83 80.01)
-			(xy 34.29 80.01)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "7032a295-f8b9-51eb-849b-5cfc3b26227a")
-	)
-	(label "MUX_S0"
-		(at 34.29 80.01 180)
-		(fields_autoplaced yes)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
-		)
-		(uuid "25050027-db68-5436-9b06-2c0b7355e9e7")
+		(uuid "48dd0370-c184-52c2-84b9-18f24c41b4ca")
 	)
 	(wire
 		(pts
@@ -3025,16 +3045,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "d3713e81-7448-538e-a1eb-51dfce2bf343")
+		(uuid "9f39ae1d-ef0e-5aac-8ddf-1d321a31345d")
 	)
-	(label "MUX_S1"
+	(label "ADC_R_A"
 		(at 52.07 80.01 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "48dd0370-c184-52c2-84b9-18f24c41b4ca")
+		(uuid "640a769d-20eb-541a-867b-c15022608246")
 	)
 	(wire
 		(pts
@@ -3045,16 +3065,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "9f39ae1d-ef0e-5aac-8ddf-1d321a31345d")
+		(uuid "e76a9490-68b6-5408-9064-c924a5a59ba6")
 	)
-	(label "MUX_S2"
+	(label "USB_DP"
 		(at 34.29 82.55 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "640a769d-20eb-541a-867b-c15022608246")
+		(uuid "13d5700c-7f93-580a-ba78-6228b4c9b36f")
 	)
 	(wire
 		(pts
@@ -3065,16 +3085,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "e76a9490-68b6-5408-9064-c924a5a59ba6")
+		(uuid "5f303a15-f817-526f-926c-6baa75487d6d")
 	)
-	(label "DET"
+	(label "ADC_R_B"
 		(at 52.07 82.55 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "13d5700c-7f93-580a-ba78-6228b4c9b36f")
+		(uuid "60bdbbdb-2d4a-55b7-9be5-cb04e8b8acbd")
 	)
 	(wire
 		(pts
@@ -3085,16 +3105,16 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "5f303a15-f817-526f-926c-6baa75487d6d")
+		(uuid "ccf73d9e-ac58-5324-8a1c-f624832a496d")
 	)
-	(label "NRST"
+	(label "USB_DN"
 		(at 34.29 85.09 180)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "60bdbbdb-2d4a-55b7-9be5-cb04e8b8acbd")
+		(uuid "23f432c7-0c3e-59d0-91bc-bbb44c7c0f90")
 	)
 	(wire
 		(pts
@@ -3105,34 +3125,14 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ccf73d9e-ac58-5324-8a1c-f624832a496d")
+		(uuid "ca7897a6-bd42-53ac-8453-cae7bf8aa373")
 	)
-	(label "BOOT"
+	(label "ADC_R_C"
 		(at 52.07 85.09 0)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
-		)
-		(uuid "23f432c7-0c3e-59d0-91bc-bbb44c7c0f90")
-	)
-	(wire
-		(pts
-			(xy 36.83 87.63)
-			(xy 34.29 87.63)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ca7897a6-bd42-53ac-8453-cae7bf8aa373")
-	)
-	(label "SWDIO"
-		(at 34.29 87.63 180)
-		(fields_autoplaced yes)
-		(effects
-			(font (size 1.27 1.27))
-			(justify right bottom)
 		)
 		(uuid "efccfad6-b3d6-5300-95bf-684af600e206")
 	)
@@ -3147,7 +3147,7 @@
 		)
 		(uuid "ca4ab4a6-a206-5ada-b5f0-4e90751d8349")
 	)
-	(label "SWCLK"
+	(label "DET"
 		(at 52.07 87.63 0)
 		(fields_autoplaced yes)
 		(effects
@@ -3158,8 +3158,8 @@
 	)
 	(wire
 		(pts
-			(xy 36.83 62.23)
-			(xy 34.29 62.23)
+			(xy 49.53 67.31)
+			(xy 52.07 67.31)
 		)
 		(stroke
 			(width 0)
@@ -3168,8 +3168,8 @@
 		(uuid "24e8a678-804e-53b5-80fc-05bde417ef53")
 	)
 	(symbol
-		(lib_id "power:+3V3")
-		(at 34.29 62.23 90)
+		(lib_id "power:GND")
+		(at 52.07 67.31 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3177,36 +3177,36 @@
 		(dnp no)
 		(uuid "a4cd0f0e-fca4-528b-a5d1-5cfe705d5d92")
 		(property "Reference" "#PWR001"
-			(at 35.56 62.23 0)
+			(at 55.88 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 				(hide yes)
 			)
 		)
-		(property "Value" "+3V3"
-			(at 35.56 64.77 0)
+		(property "Value" "GND"
+			(at 55.88 69.85 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 34.29 62.23 0)
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 34.29 62.23 0)
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"+3V3\""
-			(at 34.29 62.23 0)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 52.07 67.31 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
@@ -3226,8 +3226,8 @@
 	)
 	(wire
 		(pts
-			(xy 49.53 62.23)
-			(xy 52.07 62.23)
+			(xy 36.83 69.85)
+			(xy 34.29 69.85)
 		)
 		(stroke
 			(width 0)
@@ -3236,8 +3236,8 @@
 		(uuid "ea6b27fb-d4ed-51c2-95f1-7a9f5d8ed00b")
 	)
 	(symbol
-		(lib_id "power:+3.3VA")
-		(at 52.07 62.23 270)
+		(lib_id "power:+5V")
+		(at 34.29 69.85 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -3245,278 +3245,6 @@
 		(dnp no)
 		(uuid "b03a5341-3955-5b59-9f24-a50b21fa8d25")
 		(property "Reference" "#PWR002"
-			(at 55.88 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+3.3VA"
-			(at 55.88 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
-			(at 52.07 62.23 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "8f7b5bb4-23b5-52a6-9020-bccbea23c307")
-		)
-		(instances
-			(project "vgacorne-module-at32"
-				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
-					(reference "#PWR002")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 36.83 64.77)
-			(xy 34.29 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "811c05ed-48c7-582b-8f11-196a7195ead7")
-	)
-	(symbol
-		(lib_id "power:+5V")
-		(at 34.29 64.77 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "4b2013e1-57cd-58f2-ae50-1c5a6eca7bd1")
-		(property "Reference" "#PWR003"
-			(at 35.56 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "+5V"
-			(at 35.56 67.31 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"+5V\""
-			(at 34.29 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "6c6d8627-e368-528d-8fe1-17df79730e56")
-		)
-		(instances
-			(project "vgacorne-module-at32"
-				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
-					(reference "#PWR003")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 49.53 64.77)
-			(xy 52.07 64.77)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "45ac7b83-2072-5606-9197-32e407620cd2")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 52.07 64.77 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "303dbf54-f99e-5b4d-aa34-97c8d5f8c3ac")
-		(property "Reference" "#PWR004"
-			(at 55.88 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 55.88 67.31 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 52.07 64.77 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "d329472b-ee7d-50d4-bec1-c97eec531dc7")
-		)
-		(instances
-			(project "vgacorne-module-at32"
-				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
-					(reference "#PWR004")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 49.53 69.85)
-			(xy 52.07 69.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "a981098b-670e-5c9b-a1b2-61bb877d5c1f")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 52.07 69.85 90)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "b57ac647-4bb4-5a34-b9ca-2b300113a5a8")
-		(property "Reference" "#PWR005"
-			(at 55.88 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Value" "GND"
-			(at 55.88 72.39 0)
-			(effects
-				(font (size 1.27 1.27))
-				(justify left)
-			)
-		)
-		(property "Footprint" ""
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Datasheet" ""
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 52.07 69.85 0)
-			(effects
-				(font (size 1.27 1.27))
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "007dc0b4-28c0-5b08-bc93-63eb73273671")
-		)
-		(instances
-			(project "vgacorne-module-at32"
-				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
-					(reference "#PWR005")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(wire
-		(pts
-			(xy 36.83 69.85)
-			(xy 34.29 69.85)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "71cf8a1b-1a65-51e4-bba4-c75efa3105e7")
-	)
-	(symbol
-		(lib_id "power:GND")
-		(at 34.29 69.85 270)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom no)
-		(on_board no)
-		(dnp no)
-		(uuid "e8cad041-7bac-5d48-bc4e-6dc83e2b2a06")
-		(property "Reference" "#PWR006"
 			(at 35.56 69.85 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -3524,7 +3252,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "+5V"
 			(at 35.56 72.39 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -3545,8 +3273,280 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+		(property "Description" "Power symbol creates a global label with name \"+5V\""
 			(at 34.29 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8f7b5bb4-23b5-52a6-9020-bccbea23c307")
+		)
+		(instances
+			(project "vgacorne-module-at32"
+				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
+					(reference "#PWR002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 49.53 69.85)
+			(xy 52.07 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "811c05ed-48c7-582b-8f11-196a7195ead7")
+	)
+	(symbol
+		(lib_id "power:+3.3VA")
+		(at 52.07 69.85 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "4b2013e1-57cd-58f2-ae50-1c5a6eca7bd1")
+		(property "Reference" "#PWR003"
+			(at 55.88 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3.3VA"
+			(at 55.88 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
+			(at 52.07 69.85 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "6c6d8627-e368-528d-8fe1-17df79730e56")
+		)
+		(instances
+			(project "vgacorne-module-at32"
+				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
+					(reference "#PWR003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 72.39)
+			(xy 34.29 72.39)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "45ac7b83-2072-5606-9197-32e407620cd2")
+	)
+	(symbol
+		(lib_id "power:+3V3")
+		(at 34.29 72.39 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "303dbf54-f99e-5b4d-aa34-97c8d5f8c3ac")
+		(property "Reference" "#PWR004"
+			(at 35.56 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "+3V3"
+			(at 35.56 74.93 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"+3V3\""
+			(at 34.29 72.39 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "d329472b-ee7d-50d4-bec1-c97eec531dc7")
+		)
+		(instances
+			(project "vgacorne-module-at32"
+				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
+					(reference "#PWR004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 80.01)
+			(xy 34.29 80.01)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a981098b-670e-5c9b-a1b2-61bb877d5c1f")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 34.29 80.01 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "b57ac647-4bb4-5a34-b9ca-2b300113a5a8")
+		(property "Reference" "#PWR005"
+			(at 35.56 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 35.56 82.55 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 34.29 80.01 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "007dc0b4-28c0-5b08-bc93-63eb73273671")
+		)
+		(instances
+			(project "vgacorne-module-at32"
+				(path "/7f69d43f-f854-512c-94e3-a017516225e6"
+					(reference "#PWR005")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 36.83 87.63)
+			(xy 34.29 87.63)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "71cf8a1b-1a65-51e4-bba4-c75efa3105e7")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 34.29 87.63 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "e8cad041-7bac-5d48-bc4e-6dc83e2b2a06")
+		(property "Reference" "#PWR006"
+			(at 35.56 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 35.56 90.17 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 34.29 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 34.29 87.63 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 34.29 87.63 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
@@ -6399,7 +6399,14 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "USB HS PHY reference resistor (1%)"
+		(property "Description" "USB HS PHY reference resistor"
+			(at 196.85 189.23 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Tolerance" "1%"
 			(at 196.85 189.23 0)
 			(effects
 				(font (size 1.27 1.27))

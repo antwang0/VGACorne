@@ -1,4 +1,4 @@
-"Refs","Value","Footprint","MPN","Qty","DNP"
-"C1","100n","Capacitor_SMD:C_0402_1005Metric","","1",""
-"J1","DE-15F (VGA)","Connector_Dsub:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles","","1",""
-"J2","JST-SH pigtail","vgacorne:WirePads_1x10_P1.6mm","","1",""
+"Refs","Value","Tolerance","Footprint","MPN","Qty","DNP"
+"C1","100n","","Capacitor_SMD:C_0402_1005Metric","","1",""
+"J1","DE-15F (VGA)","","Connector_Dsub:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles","","1",""
+"J2","JST-SH pigtail","","vgacorne:WirePads_1x10_P1.6mm","","1",""

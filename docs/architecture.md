@@ -13,8 +13,8 @@
    │             │  STM32F446 (QMK / libhmk)     │ ─ MUX_S ─► 470 Ω ─┐  │      │          │ 75 Ω
    │             └───────────────────────────────┘                   │  │      │          │
    ├─► TLV75733 ─► +3.3VA (sensors, muxes, module VDDA)              ▼  │      │          ▼
-   ├─► XC6206   ─► +3V3   (module)                          J3 (JST-SH 10) ··· J3 ─► TLV75733 ─► +3.3VA
-   └─► PTC ─► Schottky ─► +5V_LINK ──────────────────────────────►  │                 ▲
+   ├─► TLV75733 ─► +3V3   (module)                          J3 (JST-SH 10) ··· J3 ─► TLV75733 ─► +3.3VA
+   └─► TPS2051C ─► Schottky ─► +5V_LINK ─────────────────────────►  │                 ▲
                                     pigtail ─► VGA daughterboard ═══ VGA cable ═══ VGA daughterboard
 
  I2C1 (PB6/PB7) ─► 4.7 kΩ pull-ups ─► J5 ─ FFC ─► trackpad          rotary encoder ─► R ladder ─► mux C ch 7
@@ -79,15 +79,22 @@ Never set JP1 and JP2 to the same pin.
 
 **Plugged into a PC or monitor by mistake:** the analog lines see 75 Ω
 terminations, the logic lines meet sync/DDC pins, and +5 V meets +5 V. The
-Schottky D1 stops back-feeding and F2 limits current. Nothing is at risk.
+Schottky D1 stops back-feeding and the power switch U8 limits current. Nothing
+is at risk.
 
 ## Signal chain details
 
-**Sensors.** DRV5055A3 (ratiometric, SOT-23) at 3.3 V: 15 mV/mT, 20 kHz bandwidth,
-2 mA typ / 4 mA max supply current (TI datasheet SBAS640C). Each sensor sits on
-B.Cu directly under its switch centre, with a 100 nF supply cap and a 4.7 nF
-output cap, copied from the HE60. The output cap also acts as the charge
-reservoir the mux samples from.
+**Sensors.** DRV5055A3 (ratiometric, SOT-23) at 3.3 V: 15 mV/mT, 20 kHz bandwidth.
+Each sensor sits on B.Cu directly under its switch centre, with a 100 nF
+supply cap. Its output goes through 1 kΩ (R3nn) to a 4.7 nF cap (C2nn): TI says
+not to put a capacitor straight on the output, since it can make it unstable.
+The cap is the charge reservoir the mux samples from, and the 34 kHz RC corner
+sits above the sensor's bandwidth.
+
+The supply current is uncertain. TI's current datasheet (SBAS640C) says
+2 mA typ / 4 mA max, but the original (SBAS640) said 6 / 10 mA, and Rev C's own
+supply-current graph still shows 5–6.6 mA. The power budget below allows for
+both; measure your sensors at bring-up.
 
 **Local ADC path.** Mux outputs go straight to PA0–PA2, as on the HE60. On
 the main half, VDDA (the ADC reference) is the same +3.3VA rail that feeds the
@@ -121,22 +128,35 @@ settles in about 1 µs, so the delay can be reduced after measuring.
 
 ## Power budget (USB 500 mA)
 
+Two figures per line where the DRV5055's datasheet revisions disagree (Rev C / original):
+
 | Load | Typical | Worst case |
 |---|---|---|
-| 44 × DRV5055 at 3.3 V | 88 mA | 176 mA |
-| AT32F405 with USB HS PHY | ~60 mA (estimate) | ~100 mA |
+| 44 × DRV5055 at 3.3 V | 88 / 264 mA | 176 / 440 mA |
+| AT32F405 at 216 MHz, USB HS PHY on (57 mA + ~30 mA for the PHY) | ~65–87 mA | ~100 mA |
 | 6 × SN74LV4051A, TLV9064 | ~3 mA | ~5 mA |
 | Trackpad (optional) | 2–4 mA | 5 mA |
-| **Total** | **≈ 155 mA** | **≈ 285 mA** |
+| **Total** | **≈ 180 / 360 mA** | **≈ 290 / 550 mA** |
 
-The satellite takes about 50 mA typ / 95 mA max through VGA pin 9. F2 is a
-500 mA PTC; a lower hold current (200–350 mA) would also do. No RGB, so the
-budget has plenty of margin.
+- **USB:** only a board with every part at its maximum under the old figures
+  goes past the 500 mA a USB 2.0 port must supply. F1 is a 750 mA-hold PTC so it
+  doesn't trip at the old typical figure in a warm case.
+- **Satellite:** it takes 50–140 mA typ, 95–235 mA max through VGA pin 9. U8, a
+  TPS2051C power switch, feeds it: it soft-starts in 0.55 ms and limits at
+  0.65–1.05 A, so plugging the cable in with USB live can't pull +5V down far
+  enough to brown out the MCU. It also keeps the satellite's capacitance off
+  VBUS when USB is plugged in.
+- **Regulators:** both 3.3 V rails use a TLV75733 (1 A, SOT-23-5). With the old
+  sensor figure the main half's analog one drops 1.7 V at ~0.2 A, about 0.36 W:
+  that is ~125 °C at the junction at 40 °C ambient with minimal copper (JEDEC,
+  231 °C/W), but about 75 °C with a generous copper pour (TI's EVM, 101 °C/W).
+  Pour copper round U2 and U3.
+- No RGB.
 
 ## Trackpad (optional)
 
 The trackpad sits flush in the main (right) half's case top, right beside
-Y/H/N over the inner column, with the MCU module behind it (see
+Y/H/N over the inner column, with the MCU module under it (see
 [mechanical.md](mechanical.md#trackpad-right-half)). It is an ordinary
 on-board I2C device, which is why the MCU lives on this half. The VGA cable
 carries only the keyboard link.
@@ -147,7 +167,7 @@ driver settings (generated into `he_wiring.h` and `rules.mk`) all follow it.
 To switch, change `MODEL`, then run `generate.py --force schematics pcbs` and
 `generate.py firmware mechanical bom`.
 
-Both pads share the same bus: I2C1 on PB6/PB7 (module pins 1/2) at 400 kHz,
+Both pads share the same bus: I2C1 on PB6/PB7 (module pins 7/5) at 400 kHz,
 4.7 kΩ pull-ups (R19/R20) and the digital +3V3 with 1 µF (C16). Both are
 **QMK only**, since libhmk has no pointing-device support. Without a pad
 fitted, QMK's init fails once at boot and it stops polling.
@@ -156,14 +176,18 @@ fitted, QMK's init fails once at boot and it stops polling.
 - **Gestures** (QMK `azoteq_iqs5xx`): tap for left click, two-finger tap for
   right click, two-finger scroll. Swipe and zoom can be turned on.
 - **Connector:** a 6-pin 0.5 mm ZIF (J1) on the module's back.
-  - Pinout: 1 RDY, 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA.
+  - Pinout: 1 RDY, 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA (Azoteq's trackpad
+    module datasheet, table 3.1).
   - RDY is left unconnected; QMK polls.
   - NRST has an internal pull-up and gets the recommended 100 nF (C17).
-  - On the main PCB it goes to J5, a Jushuo AFC07-S06FCA-00 (LCSC C262553),
-    on a PCB tongue right under the pad's own connector.
-- **I2C:** address 0x74. The module very likely carries its own 4.7 kΩ
-  pull-ups (seen on real units); together with R19/R20 that makes about
-  2.35 kΩ, which is fine.
+  - On the main PCB it goes to J5, a bottom-contact Jushuo AFC07-S06FCA-00
+    (LCSC C262553), on a PCB tongue right under the pad's own connector.
+    Azoteq doesn't say which side the pad's connector contacts are on, so
+    whether the FFC needs same-side or opposite-side contacts comes from a
+    paper mock-up ([bring-up](bring-up.md#trackpad-optional-qmk)).
+- **I2C:** address 0x74. Azoteq doesn't document pull-ups on the module (the
+  GR-Trackpad65 clone has 4.7 kΩ); if it has them, together with R19/R20 that
+  makes about 2.35 kΩ, which is fine.
 - **Overlay:** the `-201A` module has no overlay of its own, only adhesive. It
   is bonded under a 1 mm non-metal overlay (glass or acrylic) 3 mm bigger all
   round. Azoteq warns that grounded metal within 5 mm of the electrodes costs
@@ -235,31 +259,38 @@ pitch) along its top and bottom edges, every part on its top side and a flat
 underside. It is soldered flat onto the landing pads J4 on top of the main
 PCB's tab, under the trackpad and beside Y/H/N. Solder, a 1.0 mm board and the
 1.6 mm LQFP make it ~2.7 mm tall, which leaves 1.6 mm under the trackpad's
-well, so it needs no space of its own in the case. The module is larger than
-the old plug-in one (19.4 × 25 mm) because nothing can go on its underside.
-Everything else stays on the carrier: USB-C and its ESD, both regulators, and
-the BOOT/RESET buttons and SWD pads, reachable from under the case.
+well, so it needs no space of its own in the case. It is larger than the old
+plug-in module because nothing can go on its underside. Everything else stays
+on the carrier: USB-C and its ESD, both regulators, the BOOT/RESET buttons
+(pressed through holes in the case floor) and the SWD pads (bottom tray off).
 
 Changing module later means desoldering it with hot air. The main PCB is the
 same for both, so the choice is made per build.
 
 **Connector pinout.** Numbered as on the landing pads J4; module pad *n* is
-soldered to J4 pad *n*, and `generate.py check` verifies it pad by pad.
+soldered to J4 pad *n*, and `generate.py check` verifies it pad by pad. Odd
+pads run along the module's back edge and even pads along its front edge, both
+left to right seen from above on the right half. Only pads beside each other
+on one edge are neighbours, and each edge follows the order of the LQFP pins
+that reach it:
+- The USB pair sits together between grounds at the corner nearest the USB-C.
+- The six ADC inputs run together beside the analog supply, with a ground
+  between them and the select lines.
 
-| Pin | Signal | Pin | Signal |
+| Pad | Back edge | Pad | Front edge |
 |---|---|---|---|
-| 1 | I2C_SCL (trackpad; pulled up on the carrier) | 2 | I2C_SDA |
-| 3 | +3V3 (MCU supply) | 4 | +3.3VA (module VDDA = ADC reference) |
-| 5 | +5V | 6 | GND |
-| 7 | USB D+ | 8 | USB D− |
-| 9 | GND | 10 | GND |
-| 11 | ADC_L_A | 12 | ADC_L_B |
-| 13 | ADC_L_C | 14 | ADC_R_A |
-| 15 | ADC_R_B | 16 | ADC_R_C |
-| 17 | MUX_S0 | 18 | MUX_S1 |
-| 19 | MUX_S2 | 20 | DET (low = satellite connected) |
-| 21 | NRST | 22 | BOOT (carrier button pulls to +3V3) |
-| 23 | SWDIO | 24 | SWCLK |
+| 1 | NRST | 2 | MUX_S0 |
+| 3 | BOOT (carrier button pulls to +3V3) | 4 | MUX_S1 |
+| 5 | I2C_SDA (trackpad; pulled up on the carrier) | 6 | MUX_S2 |
+| 7 | I2C_SCL | 8 | GND |
+| 9 | +5V | 10 | +3.3VA (module VDDA = ADC reference) |
+| 11 | +3V3 (MCU supply) | 12 | ADC_L_A |
+| 13 | SWCLK | 14 | ADC_L_B |
+| 15 | SWDIO | 16 | ADC_L_C |
+| 17 | GND | 18 | ADC_R_A |
+| 19 | USB D+ | 20 | ADC_R_B |
+| 21 | USB D− | 22 | ADC_R_C |
+| 23 | GND | 24 | DET (low = satellite connected) |
 
 A new module only has to supply 6 ADC inputs, 3 GPIO outputs and 1 GPIO input,
 USB device, and some boot-mode entry driven by `BOOT`, plus an optional I2C
@@ -280,11 +311,22 @@ numbers for every keyboard signal, so both modules share one map:
 | 7, 60 | NRST, BOOT0 | reset / boot (buttons on the carrier) | factory DFU |
 | 46, 49 | PA13, PA14 | SWD | |
 
-They differ only in supplies and USB. The AT32 has 12 kΩ on OTGHS1_R and USB
-on OTGHS1_D−/D+ (pins 34/35). The F446 has VBAT, a VCAP capacitor on pin 30,
-and USB on PA11/PA12 (pins 44/45). The AT32 pinout was taken from the
-fabricated HE60 board; cross-check both against the vendors' datasheets before
-ordering.
+They differ in supplies, USB and boot:
+- **AT32:** 12 kΩ 1% on OTGHS1_R and USB on OTGHS1_D−/D+ (pins 34/35).
+  - BOOT0 high enters the ROM bootloader, which does DFU on this port, as long
+    as the nBOOT1 user option bit stays erased.
+  - Firmware must never clear nBOOT1 or set the boot memory to "flash
+    extension" mode: that disables BOOT0 DFU for good.
+- **F446:** VBAT, a 4.7 µF VCAP capacitor on pin 30, and USB on PA11/PA12
+  (pins 44/45).
+  - Its bootloader needs BOOT1 (PB2) low as well as BOOT0 high, so PB2 has a
+    10 kΩ pull-down.
+  - The bootloader's unused USART1 RX (PA10) is pulled up, so noise can't
+    select it instead of DFU.
+
+Both pin maps were checked pin by pin against the datasheets: Artery
+DS_AT32F405_402 table 9 and ST DS10693 table 10. The AT32 module's MCU wiring
+also matches the fabricated HE60's.
 
 ## Firmware
 
@@ -334,11 +376,19 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
 1. **Route the PCBs.** The USB-C sits on an ear behind column 4 so it can
    share the back face with the DE-15, and the module sits on the tab beyond
-   column 5. D+/D− therefore run about 50 mm to the module's pads, across the
-   top of column 5: route them as a tight 90 Ω pair
-   over unbroken ground, which matters for the AT32's high-speed USB (2-layer is
-   what the HE60 uses; 4-layer would give cleaner USB and analog ground). Route analog
-   nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the select lines.
+   column 5. D+/D− therefore run about 50 mm to the module's back-corner pads,
+   across the top of column 5.
+   - This matters for the AT32's high-speed USB. Route D+/D− as a pair with the
+     `USB` net class: 0.4 mm tracks 0.15 mm apart, the ground pour beside them,
+     and unbroken ground on the other layer.
+   - That comes to about 97 Ω differential as bare copper and a few ohms less
+     under solder mask (2D field-solver estimate), inside USB's 90 Ω ±15%.
+     This holds on the 1.6 mm main board and the 1.0 mm module alike.
+   - 2-layer is what the HE60 uses; 4-layer would give cleaner USB and analog
+     ground.
+
+   Route analog nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the
+   select lines.
 2. **Hot-plugging.** libhmk calibrates each key's rest value only during the
    first 500 ms after boot. Connect the VGA cable *before* USB, or recalibrate
    from hmkconf. A small libhmk patch could use `DET` (PC4) to ignore remote
@@ -346,10 +396,13 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 3. **Sensor polarity and calibration.** `invert_adc` and the initial
    rest/bottom-out values are copied from HE60 practice. Confirm them in
    hmkconf's debug view at bring-up ([bring-up.md](bring-up.md)).
-4. **Parts to confirm at ordering:** a vertical DE-15F with 4-40 inserts that
-   matches the KiCad footprint; LCSC stock for the TLV9064, SRV05-4 and
-   DRV5055A3. Alternative sensors used on the HE60: MT9102ET, SS39ET,
-   GH39FKSW.
+4. **Parts to confirm at ordering:**
+   - A vertical DE-15F with 4-40 inserts that matches the KiCad footprint, and
+     jackscrews with a hex no taller than 4.8 mm
+     ([mechanical.md](mechanical.md#vga-daughterboard)).
+   - LCSC stock for the TLV9064, SRV05-4 and DRV5055A3.
+   - The DRV5055's real supply current (see [signal chain](#signal-chain-details)).
+   - Alternative sensors used on the HE60: MT9102ET, SS39ET, GH39FKSW.
 5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes
    test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real

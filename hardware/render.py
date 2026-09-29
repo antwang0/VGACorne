@@ -26,7 +26,7 @@ from pathlib import Path
 import bpy  # first: it provides bmesh and mathutils
 import bmesh
 from mathutils import Matrix, Vector
-from shapely.geometry import box
+from shapely.geometry import Point, box
 from shapely.ops import unary_union
 
 HERE = Path(__file__).resolve().parent
@@ -44,7 +44,7 @@ GAP = 100.0     # between the two inner walls
 SPLAY = 8.0     # each half turned this many degrees, tops inward
 KEYCAP_Z = ST.plate_top + 7.0  # keycap skirt above the plate, MX stem at rest
 VGA_Z = ST.floor + 7.0         # DE-15 shell centre (docs/mechanical.md)
-USB_Z = 5.4                    # USB-C centre above the case underside
+USB_Z = mech.USB_Z             # USB-C centre above the case underside
 CASE_EDGE_R = 1.2
 
 # Cherry-like sculpt: (height at the dish edge, tilt in degrees; + faces the typist).
@@ -399,7 +399,8 @@ class Half:
         vga, *usb = self.layers["PORTS"]
         cutters = [slab("cut_vga", vga, VGA_Z - 5.55, VGA_Z + 5.55, 0.0, xy, None, root)]
         for i, u in enumerate(usb):
-            cutters.append(slab(f"cut_usb{i}", u, USB_Z - 3.0, USB_Z + 3.0, 1.0, xy, None, root))
+            h = mech.USB_OPENING[1] / 2
+            cutters.append(slab(f"cut_usb{i}", u, USB_Z - h, USB_Z + h, 1.0, xy, None, root))
         seam = self.outer.buffer(1.0).difference(self.outer.buffer(-0.35))
         cutters.append(slab("cut_seam", seam, ST.plate_bottom - 0.15, ST.plate_bottom + 0.15, 0.0, xy, None, root))
         for pad in self.layers.get("TRACKPAD", []):
@@ -421,11 +422,17 @@ class Half:
         obj.active_material = self.mats["etch"]
 
     def _knob(self) -> None:
-        """Aluminium knob on the rotary encoder's shaft (PEC12R-4220F: shaft top 20 mm above the PCB)."""
+        """Aluminium knob on the rotary encoder's shaft (PEC12R-4220F: shaft top 20 mm above the PCB),
+        over the encoder's body (flush with the plate top) and the collar round its shaft."""
         x, y = geo.corne(*geo.ENCODER)
         if self.side == "right":
             x, y = geo.mirror_point(x, y)
-        top = ST.pcb_bottom + ST.pcb + geo.ENCODER_SHAFT + 2.0
+        pcb_top = ST.pcb_bottom + ST.pcb
+        slab("encoder_body", box(x - 6.2, y - 6.7, x + 6.2, y + 6.7), pcb_top, pcb_top + 5.1, 0.3,
+             self.xy, self.mats["plug"], self.root)
+        slab("encoder_collar", Point(x, y).buffer(3.5, 48), pcb_top + 5.1, pcb_top + geo.ENCODER_COLLAR, 0.2,
+             self.xy, self.mats["nickel"], self.root)
+        top = pcb_top + geo.ENCODER_SHAFT + 2.0
         r, h = geo.KNOB_D / 2, geo.KNOB_H
 
         def frame(u, v, w):  # w: up from the knob's top face, downwards negative
@@ -501,7 +508,8 @@ class Half:
 
     def _usb_plug(self) -> None:
         ux, _ = geo.anchor("USB", self.side)
-        y0 = self.port_face() - 0.3
+        # Fully seated, the overmould sits 0.45 mm in front of the receptacle face, inside the wall.
+        y0 = geo.anchor("USB", self.side)[1] - geo.USB_OVERHANG - 0.45
 
         def frame(u, v, w):
             return (*self.xy(ux + u, y0 - w), (USB_Z + v) * MM)

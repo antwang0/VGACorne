@@ -2,8 +2,8 @@
 
 The mux matrix is *traced from the netlists* rather than copied from
 circuits.py. The boards form one graph: nets are joined through series
-resistors, the satellite's buffer op-amps, the MCU-module connector (module
-pin n mates with carrier pin n+/-1) and the 1:1 link cable. From each MCU ADC
+resistors, the satellite's buffer op-amps, the MCU module's edge pads (module
+pad n is soldered to carrier pad n) and the 1:1 link cable. From each MCU ADC
 pin we search to a mux common pin, then map every mux channel to the switch
 whose sensor drives it. Swap mux channels in KiCad to ease routing, re-run
 ``generate.py firmware`` and the firmware follows.

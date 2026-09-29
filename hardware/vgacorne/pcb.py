@@ -254,9 +254,10 @@ class Builder:
 # ---------------------------------------------------------------------------
 
 def place_keys(b: Builder) -> None:
-    """Switch pegs on F.Cu; sensor + its two caps on B.Cu under the switch centre.
+    """Switch pegs on F.Cu; sensor, its two caps and output resistor on B.Cu under the switch centre.
 
-    The sensor/cap arrangement matches the proven HE60 layout.
+    The sensor/cap arrangement matches the proven HE60 layout; the output
+    resistor sits in line below the output cap.
     """
     for key in geo.keys_for(b.side):
         n = key_index(key.name)
@@ -266,7 +267,9 @@ def place_keys(b: Builder) -> None:
         b.put(f"C{100 + n}", x, y, key.rot - 90, "B", mirror=False)
         x, y = key.local(2.6, -0.8)
         b.put(f"C{200 + n}", x, y, key.rot + 90, "B", mirror=False)
-        for ref in (f"HE{n}", f"C{100 + n}", f"C{200 + n}"):
+        x, y = key.local(2.6, 1.35)
+        b.put(f"R{300 + n}", x, y, key.rot + 90, "B", mirror=False)
+        for ref in (f"HE{n}", f"C{100 + n}", f"R{300 + n}", f"C{200 + n}"):
             b.fps[ref].Reference().SetVisible(False)
 
 
@@ -297,8 +300,10 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
     place_muxes(b)
 
     # USB-C on the ear behind column 4, J3 at the top of the tab: both face the back wall.
+    # The footprint's body front is 3.65 mm from its origin; HRO's drawing puts
+    # it USB_OVERHANG past the board edge.
     ux, uy = geo.anchor("USB", "left")
-    b.face("J1", ux, uy + 3.6, (0, -1))
+    b.face("J1", ux, uy + 3.65 - geo.USB_OVERHANG, (0, -1))
     lx, ly = geo.anchor("LINK", "left")
     b.face("J3", lx, ly, (0, -1))
     # Landing pads for the castellated MCU module, on top of the tab under the
@@ -323,7 +328,7 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
     for ref in ("SW22", "SW23"):
         b.autoplace(ref, (tx - 12, ty + 5), 0, max_r=24)
     # Link: between the JST and the module socket.
-    for ref in ("F2", "D1", "C15", "U6", "U7"):
+    for ref in ("U8", "C18", "D1", "C15", "U6", "U7"):
         b.autoplace(ref, (lx - 4, ly + 3), 0, max_r=26)
     for ref in ("R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16",
                 "R17", "R18"):
