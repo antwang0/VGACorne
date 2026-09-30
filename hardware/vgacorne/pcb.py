@@ -63,15 +63,15 @@ def netlist_pins(sch: Path) -> dict[tuple[str, str], str]:
 
 class Builder:
     def __init__(self, circuit: Circuit, side: str, outline: Polygon, pcb_path: Path,
-                 has_keys: bool = True):
+                 has_keys: bool = True, layers: int = 2, thickness: float = 1.6):
         self.c = circuit
         self.pin_nets = netlist_pins(pcb_path.with_suffix(".kicad_sch"))
         self.has_keys = has_keys
         self.side = side
         self.outline = outline
         self.board = pcbnew.NewBoard(str(pcb_path))
-        self.board.GetDesignSettings().SetCopperLayerCount(2)
-        self.board.GetDesignSettings().SetBoardThickness(mm(1.6))
+        self.board.GetDesignSettings().SetCopperLayerCount(layers)
+        self.board.GetDesignSettings().SetBoardThickness(mm(thickness))
         self.nets: dict[str, pcbnew.NETINFO_ITEM] = {}
         self.fps: dict[str, pcbnew.FOOTPRINT] = {}
         self.occupied = {"F": [], "B": []}
@@ -108,6 +108,7 @@ class Builder:
             fp.SetField("Description", part.description or sym.properties.get("Description", ""))
             for k, v in part.fields.items():
                 fp.SetField(k, v)
+                fp.GetField(k).SetVisible(False)  # MPN, tolerance: BOM data, not silkscreen
             for pad in fp.Pads():
                 n = self.pin_nets.get((part.ref, pad.GetNumber()))
                 if n is not None:
@@ -216,11 +217,12 @@ class Builder:
                 s.SetWidth(mm(0.1))
                 self.board.Add(s)
 
-    def ground_zones(self, poly: Polygon) -> None:
-        for layer in (pcbnew.F_Cu, pcbnew.B_Cu):
+    def ground_zones(self, poly: Polygon, planes: dict | None = None) -> None:
+        """GND pours on both outer layers, plus any inner planes ({layer: net})."""
+        for layer, net in [(pcbnew.F_Cu, "GND"), (pcbnew.B_Cu, "GND"), *(planes or {}).items()]:
             z = pcbnew.ZONE(self.board)
             z.SetLayer(layer)
-            z.SetNet(self.net("GND"))
+            z.SetNet(self.net(net))
             z.SetLocalClearance(mm(0.25))
             z.SetMinThickness(mm(0.2))
             z.SetPadConnection(pcbnew.ZONE_CONNECTION_THERMAL)
@@ -421,6 +423,66 @@ def build_link(c: Circuit, pcb_path: Path) -> Builder:
     return b
 
 
+def place_beside_pins(b: Builder, cx: float, cy: float) -> None:
+    """Put each MCU support part just outside the LQFP pin it serves.
+
+    The crystal goes at the oscillator pins with its load caps beside its pads;
+    parts on one MCU signal (reference resistor, boot and reset parts) at that
+    pin; supply caps shared out over the supply pins of their rail, smallest
+    value first, so each supply pin gets its own 100 nF.
+    """
+    u1 = b.fps["U1"]
+    net_pads: dict[str, list] = {}
+    for p in u1.Pads():
+        net_pads.setdefault(p.GetNetname(), []).append(p)
+
+    def outside(pad, dist=2.1):
+        px, py = pcbnew.ToMM(pad.GetPosition().x), pcbnew.ToMM(pad.GetPosition().y)
+        dx, dy = px - cx, py - cy
+        if abs(dx) > abs(dy):
+            return px + math.copysign(dist, dx), py
+        return px, py + math.copysign(dist, dy)
+
+    def nets_of(ref):
+        return [p.GetNetname() for p in b.fps[ref].Pads() if p.GetNetname() not in ("GND", "")]
+
+    def value(ref):
+        v = b.fps[ref].GetValue().lower().replace("u", "e-6").replace("n", "e-9").replace("p", "e-12")
+        try:
+            return float(v)
+        except ValueError:
+            return 0.0
+
+    rest = [r for r in b.fps if r not in ("J1", "U1")]
+    crystal = [r for r in rest if r.startswith("Y")]
+    for ref in crystal:
+        pads = [p for n in nets_of(ref) for p in net_pads.get(n, [])]
+        x = sum(outside(p, 3.2)[0] for p in pads) / len(pads)
+        y = sum(outside(p, 3.2)[1] for p in pads) / len(pads)
+        b.autoplace(ref, (x, y), 0, layer="F", max_r=8, mirror=False)
+    xpads = {p.GetNetname(): p for r in crystal for p in b.fps[r].Pads()}
+    load = [r for r in rest if r not in crystal and any(n in xpads for n in nets_of(r))]
+    for ref in load:
+        p = xpads[next(n for n in nets_of(ref) if n in xpads)]
+        b.autoplace(ref, (pcbnew.ToMM(p.GetPosition().x), pcbnew.ToMM(p.GetPosition().y)), 0,
+                    layer="F", max_r=8, mirror=False)
+    power = {"+3V3", "+3.3VA", "/VCAP"}
+    single = [r for r in rest if r not in crystal + load and any(n not in power for n in nets_of(r))]
+    for ref in single:
+        pads = [p for n in nets_of(ref) if n not in power for p in net_pads.get(n, [])]
+        target = outside(pads[0]) if pads else (cx, cy)
+        b.autoplace(ref, target, 0, layer="F", max_r=10, mirror=False)
+    used: dict[str, int] = {}
+    for ref in sorted((r for r in rest if r not in crystal + load + single), key=value):
+        pads = [p for n in nets_of(ref) for p in net_pads.get(n, [])]
+        if not pads:
+            b.autoplace(ref, (cx, cy), 0, layer="F", max_r=14, mirror=False)
+            continue
+        pad = min(pads, key=lambda p: (used.get(p.GetNumber(), 0), int(p.GetNumber())))
+        used[pad.GetNumber()] = used.get(pad.GetNumber(), 0) + 1
+        b.autoplace(ref, outside(pad), 0, layer="F", max_r=10, mirror=False)
+
+
 def build_module(c: Circuit, pcb_path: Path) -> Builder:
     """MCU module, drawn in the carrier's coordinates so its edge pads land on J4.
 
@@ -430,7 +492,7 @@ def build_module(c: Circuit, pcb_path: Path) -> Builder:
     """
     side = geo.MAIN_SIDE
     outline = geo.module_rect(side).buffer(-0.5).buffer(0.5)
-    b = Builder(c, side, outline, pcb_path, has_keys=False)
+    b = Builder(c, side, outline, pcb_path, has_keys=False, layers=4, thickness=1.0)
     cx, cy, rot = geo.place(side, *geo.corne(*geo.MODULE_CONN), geo.MODULE_CONN_ROT)
     b.put("J1", cx, cy, rot, "F", mirror=False)  # same place and way round as J4 below it
     # J1's courtyard is two strips along the edges; its bounding box would block the lot.
@@ -442,10 +504,11 @@ def build_module(c: Circuit, pcb_path: Path) -> Builder:
     b.occupied["F"] = [(r, g) for r, g in b.occupied["F"] if r != "J1"] + [
         ("J1", box(*unary_union(row).bounds).buffer(0.35, join_style="mitre")) for row in rows.values()]
     b.put("U1", cx, cy, 0, "F", mirror=False)
-    for ref in ("Y1", *(r for r in b.fps if r not in ("J1", "U1", "Y1"))):
-        b.autoplace(ref, (cx, cy), 0, layer="F", max_r=14, mirror=False)
+    place_beside_pins(b, cx, cy)
     b.edge(outline)
-    b.ground_zones(outline)
+    # Four layers: solid GND and +3V3 planes under everything, so every cap and
+    # supply pin drops a via and the signals route over unbroken ground.
+    b.ground_zones(outline, planes={pcbnew.In1_Cu: "GND", pcbnew.In2_Cu: "+3V3"})
     # The chip's own marking names the module on top; label the flat underside too,
     # for telling them apart before soldering.
     b.text(c.part("U1").value, cx, cy, pcbnew.B_SilkS, size=1.2)

@@ -36,7 +36,7 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 |---|---|
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
-| PCBs | Placed, nets assigned, DRC clean apart from unrouted nets; module edge pads verified pin-for-pin against the landing pads. **Routing is still to do.** |
+| PCBs | All placed with nets assigned and DRC clean. Module edge pads verified pin-for-pin against the landing pads. VGA daughterboard and both (4-layer) MCU modules **routed**. **Main and satellite still to route** |
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no rotary encoder under libhmk |
 | QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |

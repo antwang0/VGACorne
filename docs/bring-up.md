@@ -2,9 +2,10 @@
 
 ## Before ordering
 
-- [ ] Route the main and satellite PCBs. Run `hardware/generate.py check`:
-      it must show 0 DRC errors, and after routing `unconnected_items` should
-      reach 0 too.
+- [ ] Route the main and satellite PCBs; the daughterboard and modules are
+      done (`hardware/route.py`, see hardware/README.md). Run
+      `hardware/generate.py check`: it must show 0 DRC errors, and
+      `unconnected_items` must reach 0 on every board.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.
 - [ ] The VGA socket is the Amphenol FCI 10090929-S154XLF (the daughterboard
       footprint has its 1.2 mm pin holes), with Keystone 7229 jackscrews.
@@ -24,7 +25,7 @@
 | Item | Qty | Notes |
 |---|---|---|
 | Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the trackpad FFC connector J5 on top (hand-solderable); J4 is bare landing pads for the module |
-| MCU module, 2-layer **1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order with JLC's castellated-hole option |
+| MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. JLC's standard 1.0 mm 4-layer stack-up (the USB pair assumes ~0.1 mm to the In1 ground plane), with the castellated-hole option |
 | Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the rotary encoder ENC1 on top (hand-solder) |
 | VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |

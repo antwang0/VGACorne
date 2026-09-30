@@ -91,6 +91,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "a2d29736-ee7b-54aa-bd99-d89491eb5325")
 	)
 	(pad "2" thru_hole oval
@@ -101,6 +102,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "7c385693-6b31-5fd9-a0be-85ee7a94224b")
 	)
 	(pad "3" thru_hole oval
@@ -111,6 +113,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "cd9fe42d-4cb5-5b88-8ba0-0241e8061ef3")
 	)
 	(pad "4" thru_hole oval
@@ -121,6 +124,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "9661eb35-7e8d-5344-9905-d46190550e32")
 	)
 	(pad "5" thru_hole oval
@@ -131,6 +135,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "3147c33e-08d2-58ce-b9f8-3edb12ebc9a8")
 	)
 	(pad "6" thru_hole oval
@@ -141,6 +146,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "dd4603c3-4f93-5215-856f-145745a43565")
 	)
 	(pad "7" thru_hole oval
@@ -151,6 +157,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "a3d02d96-7959-50e0-87eb-4f3de88d1fbd")
 	)
 	(pad "8" thru_hole oval
@@ -161,6 +168,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "145409f1-55d9-5a05-87ef-93f78e9153db")
 	)
 	(pad "9" thru_hole oval
@@ -171,6 +179,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "b9e4f837-bed9-502e-9eee-fcd2a1f7af4d")
 	)
 	(pad "10" thru_hole oval
@@ -181,6 +190,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "2960e750-01f7-5e90-800b-9a715ef83c16")
 	)
 	(pad "11" thru_hole oval
@@ -191,6 +201,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "f5293b02-0248-5f41-91bd-b68af4cdf188")
 	)
 	(pad "12" thru_hole oval
@@ -201,6 +212,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "e9eb46c2-8bb7-59da-9497-9dedea89a18b")
 	)
 	(pad "13" thru_hole oval
@@ -211,6 +223,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "a7991640-87f0-50db-a37a-0e4898f59f0e")
 	)
 	(pad "14" thru_hole oval
@@ -221,6 +234,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "fe9f6500-98f8-52c8-b726-a87c4642b62c")
 	)
 	(pad "15" thru_hole oval
@@ -231,6 +245,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "73cbf46c-4253-53f1-8646-f949ef7ee28d")
 	)
 	(pad "16" thru_hole oval
@@ -241,6 +256,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "f5af8cb7-4596-5d37-b34e-51d942cc4a40")
 	)
 	(pad "17" thru_hole oval
@@ -251,6 +267,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "d763ffd1-af1f-552a-bc8d-682c437d2357")
 	)
 	(pad "18" thru_hole oval
@@ -261,6 +278,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "73efa6ac-b296-5343-b9c4-37ad411debe6")
 	)
 	(pad "19" thru_hole oval
@@ -271,6 +289,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "abaf4b18-f9f4-54a5-981d-421b73a948bc")
 	)
 	(pad "20" thru_hole oval
@@ -281,6 +300,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "5cb6ada9-a635-5a09-91cf-e41bc738db01")
 	)
 	(pad "21" thru_hole oval
@@ -291,6 +311,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "16836ea5-b211-55ff-9793-427ac791c32f")
 	)
 	(pad "22" thru_hole oval
@@ -301,6 +322,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "963567ea-5179-57c1-8955-0281979ed74b")
 	)
 	(pad "23" thru_hole oval
@@ -311,6 +333,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "bcf5ac6c-0a09-58f9-b503-50b35da66892")
 	)
 	(pad "24" thru_hole oval
@@ -321,6 +344,7 @@
 		)
 		(property pad_prop_castellated)
 		(layers "*.Cu" "*.Mask")
+		(zone_connect 2)
 		(uuid "934fb41b-cc01-57a8-b74e-553f4436504a")
 	)
 	(embedded_fonts no)

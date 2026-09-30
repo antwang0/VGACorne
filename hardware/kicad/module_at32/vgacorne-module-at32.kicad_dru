@@ -1,0 +1,4 @@
+(version 1)
+(rule "module: pads reach the planes by via"
+   (condition "A.Type == 'Pad'")
+   (constraint min_resolved_spokes (min 0)))

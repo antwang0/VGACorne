@@ -276,10 +276,12 @@ def module_edge_footprint(w: float, h: float) -> tuple[str, list]:
     for pin, x, sy in _module_pins():
         # The hole sits on the edge line; the copper (offset from the hole) reaches
         # 1.25 mm into the board.
+        # Solid to the pours and planes: at the board edge a thermal relief can
+        # only get spokes in from one side.
         fp.append(S("pad", pin, Sym("thru_hole"), Sym("oval"), S("at", x, sy * h / 2),
                     S("size", 0.95, 1.8), S("drill", CASTELLATION_DRILL, S("offset", 0, -sy * 0.35)),
                     S("property", Sym("pad_prop_castellated")), S("layers", "*.Cu", "*.Mask"),
-                    S("uuid", _uid())))
+                    S("zone_connect", 2), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 

@@ -56,14 +56,27 @@ It needs Java 25 or newer and the Freerouting 2.4 jar (`FREEROUTING_JAR`, defaul
 cp -r kicad/link /tmp/link && ../.venv/bin/python route.py /tmp/link/vgacorne-link.kicad_pcb /tmp/link/vgacorne-link.kicad_pcb
 ```
 
+**2-layer boards:**
 1. It routes the signals first, with the ground pours standing in as planes.
 2. It locks those tracks, takes the pours off and routes GND as tracks, so no
    ground pad depends on a pour the signals have cut up.
-3. It puts the pours back and adds ground stitching vias wherever both layers
-   are poured, and into every pour island.
+3. If that leaves anything unconnected, it also tries every net in one run and
+   keeps whichever connects more.
+
+**Boards with inner planes (the 4-layer MCU modules):**
+1. Every outer-layer SMD pad on a plane net gets its own via on a short track,
+   placed clear of other nets' copper, or else a track to the nearest via of
+   its net. Freerouting doesn't reliably connect pads to inner planes itself.
+2. One run then routes the signals, with no tracks on the planes.
+
+**Either way:** it puts the pours back and adds ground stitching vias
+wherever both outer layers are poured, and into every pour island.
+
+**Castellated edge pads:** the routing area grows past the board edge so
+their outer halves count, and keepouts stop any track leaving the board.
 
 Route on a copy, then copy the board back and run `generate.py check`. The
-VGA daughterboard is routed this way.
+VGA daughterboard and both MCU modules are routed this way.
 
 Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the
@@ -101,7 +114,7 @@ constants at the top of the script.
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |
-| `route.py` | Freerouting autorouting: signals, then ground, then stitching vias |
+| `route.py` | Freerouting autorouting: plane fan-out, signals, ground, stitching vias |
 
 Common changes:
 - **Different sensor:** edit `SENSOR` in `circuits.py`, then regenerate

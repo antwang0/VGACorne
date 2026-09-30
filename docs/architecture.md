@@ -264,7 +264,11 @@ modules.
 
 **Mechanics.** The module is a "stamp": 2 × 12 castellated half-holes (1.27 mm
 pitch) along its top and bottom edges, every part on its top side and a flat
-underside. It is soldered flat onto the landing pads J4 on top of the main
+underside. It is a 1.0 mm **4-layer** board:
+- **Planes:** In1 is solid ground and In2 is +3V3. Every cap and supply pin
+  drops a via, and the signals, USB included, run over unbroken ground.
+- **Placement:** each decoupling cap sits beside its supply pin, and the
+  crystal at the oscillator pins. It is soldered flat onto the landing pads J4 on top of the main
 PCB's tab, under the trackpad and beside Y/H/N. Solder, a 1.0 mm board and the
 1.6 mm LQFP make it ~2.7 mm tall, which leaves 1.6 mm under the trackpad's
 well, so it needs no space of its own in the case. It is larger than the old
@@ -382,18 +386,20 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
 ## Open items
 
-1. **Route the PCBs.** The USB-C sits on an ear behind column 4 so it can
-   share the back face with the DE-15, and the module sits on the tab beyond
-   column 5. D+/D− therefore run about 50 mm to the module's back-corner pads,
-   across the top of column 5.
+1. **Route the main and satellite PCBs.** The VGA daughterboard and both MCU
+   modules are routed (`hardware/route.py`).
+   - The USB-C sits on an ear behind column 4 so it can share the back face
+     with the DE-15, and the module sits on the tab beyond column 5. D+/D−
+     therefore run about 50 mm to the module's back-corner pads, across the
+     top of column 5.
    - This matters for the AT32's high-speed USB. Route D+/D− as a pair with the
      `USB` net class: 0.4 mm tracks 0.15 mm apart, the ground pour beside them,
      and unbroken ground on the other layer.
-   - That comes to about 97 Ω differential as bare copper and a few ohms less
-     under solder mask (2D field-solver estimate), inside USB's 90 Ω ±15%.
-     This holds on the 1.6 mm main board and the 1.0 mm module alike.
-   - 2-layer is what the HE60 uses; 4-layer would give cleaner USB and analog
-     ground.
+   - On the 1.6 mm 2-layer main board that comes to about 97 Ω differential as
+     bare copper, a few ohms less under solder mask (2D field-solver estimate).
+     That is inside USB's 90 Ω ±15%.
+   - On the 4-layer module the pair is 0.2 mm tracks 0.15 mm apart over the
+     ground plane, about 91 Ω.
 
    Route analog nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the
    select lines.

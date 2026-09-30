@@ -152,6 +152,7 @@
 		(property "MPN" "Amphenol FCI 10090929-S154XLF"
 			(at 0 0 0)
 			(layer "F.SilkS")
+			(hide yes)
 			(uuid "e1d191f5-2b53-49f5-9ee7-acfb839fc6ea")
 			(effects
 				(font
