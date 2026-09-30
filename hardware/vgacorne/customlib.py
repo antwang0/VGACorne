@@ -225,11 +225,11 @@ def wire_pads_footprint(n: int = 10, pitch: float = 1.6) -> tuple[str, list]:
            _text_prop("Datasheet", "", 0, 0, "F.Fab", hidden=True),
            _text_prop("Description", "", 0, 0, "F.Fab", hidden=True),
            S("attr", Sym("smd")))
-    fp.append(_rect(-w / 2 - 0.9, -1.6, w / 2 + 0.9, 1.6, "F.CrtYd", 0.05))
-    fp.append(_line(-w / 2 - 0.9, 1.5, -w / 2 - 0.9, -1.5, "F.SilkS"))  # pin-1 side marker
+    fp.append(_rect(-w / 2 - 0.9, -1.2, w / 2 + 0.9, 1.2, "F.CrtYd", 0.05))
+    fp.append(_line(-w / 2 - 0.9, 1.1, -w / 2 - 0.9, -1.1, "F.SilkS"))  # pin-1 side marker
     for i in range(n):
         fp.append(S("pad", str(i + 1), Sym("smd"), Sym("rect"), S("at", -w / 2 + i * pitch, 0),
-                    S("size", 1.0, 2.6), S("layers", "F.Cu", "F.Paste", "F.Mask"), S("uuid", _uid())))
+                    S("size", 1.0, 1.8), S("layers", "F.Cu", "F.Paste", "F.Mask"), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 
@@ -310,7 +310,8 @@ DSUB_NAME = "DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_Amphenol_10090929"
 
 def dsub_amphenol_footprint() -> tuple[str, str]:
     """KiCad's vertical HD-15 socket with the holes the Amphenol FCI 10090929-S154XLF
-    asks for: 1.2 mm pin holes (1.8 mm pads) and 3.1 mm board-lock holes."""
+    asks for: 1.2 mm pin holes and 3.1 mm board-lock holes. The pads stay 1.6 mm
+    (a 0.2 mm ring), so a track still fits between neighbouring pins."""
     text = (STOCK_FP / DSUB_STOCK).read_text()
     head = text.split("\n", 1)
     text = f'(footprint "{DSUB_NAME}"\n' + head[1]
@@ -318,7 +319,7 @@ def dsub_amphenol_footprint() -> tuple[str, str]:
                   '(descr "15-pin HD D-Sub socket (female), vertical, THT, pitch 2.29x1.98mm, 4-40 clinch '
                   'nuts with board locks 25mm apart, for Amphenol FCI 10090929-S154XLF: 1.2mm pin holes, '
                   '3.1mm board-lock holes; https://www.digikey.com/en/products/detail/amphenol-fci/10090929-S154XLF/2350302")', text)
-    text, pins = re.subn(r"\(size 1\.6 1\.6\)(\s*)\(drill 1\)", r"(size 1.8 1.8)\1(drill 1.2)", text)
+    text, pins = re.subn(r"\(size 1\.6 1\.6\)(\s*)\(drill 1\)", r"(size 1.6 1.6)\1(drill 1.2)", text)
     text, locks = re.subn(r"\(drill 3\.2\)", "(drill 3.1)", text)
     assert (pins, locks) == (15, 2), (pins, locks)
     return DSUB_NAME, text

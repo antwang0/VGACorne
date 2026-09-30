@@ -22,7 +22,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 |---|---|---|
 | `lib` | `lib/vgacorne.kicad_sym`, `lib/vgacorne.pretty/` | yes (generated library) |
 | `schematics` | `kicad/*/…kicad_sch`, project files | **only with `--force`** |
-| `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`** |
+| `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board |
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
@@ -45,6 +45,29 @@ because they're read back from the schematics.
   test (needs a host C compiler)
 
 Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
+
+## Routing
+
+`route.py` autoroutes a board with [Freerouting](https://github.com/freerouting/freerouting).
+It needs Java 25 or newer and the Freerouting 2.4 jar (`FREEROUTING_JAR`, default
+`~/.kicad-mcp/freerouting.jar`).
+
+```sh
+cp -r kicad/link /tmp/link && ../.venv/bin/python route.py /tmp/link/vgacorne-link.kicad_pcb /tmp/link/vgacorne-link.kicad_pcb
+```
+
+1. It routes the signals first, with the ground pours standing in as planes.
+2. It locks those tracks, takes the pours off and routes GND as tracks, so no
+   ground pad depends on a pour the signals have cut up.
+3. It puts the pours back and adds ground stitching vias wherever both layers
+   are poured, and into every pour island.
+
+Route on a copy, then copy the board back and run `generate.py check`. The
+VGA daughterboard is routed this way.
+
+Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
+circuit changes into KiCad with *Update PCB from Schematic*, or delete the
+board file to regenerate it unrouted.
 
 ## Renders
 
@@ -78,6 +101,7 @@ constants at the top of the script.
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |
+| `route.py` | Freerouting autorouting: signals, then ground, then stitching vias |
 
 Common changes:
 - **Different sensor:** edit `SENSOR` in `circuits.py`, then regenerate

@@ -56,12 +56,21 @@ def do_schematics(force: bool) -> None:
             print(f"  wrote {sch.relative_to(HERE)} ({len(c.parts)} parts)")
 
 
+def _routed(path: Path) -> bool:
+    """Does the board have tracks (top-level segments, arcs or vias)?"""
+    import re
+    return path.exists() and re.search(r"^\t\((segment|arc|via)\b", path.read_text(), re.M) is not None
+
+
 def do_pcbs(force: bool) -> None:
     from vgacorne import pcb
 
     for board, fn in circuits.BOARDS.items():
         c = fn()
         _, path, name = paths(board)
+        if _routed(path):
+            print(f"  skip {path.relative_to(HERE)} (routed; delete it to regenerate)")
+            continue
         if not _guard(path, force):
             continue
         b = pcb.BUILDERS[board](c, path)

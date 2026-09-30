@@ -407,9 +407,14 @@ def build_link(c: Circuit, pcb_path: Path) -> Builder:
             for p in b.fps["J1"].Pads()]
     b.occupied["B"] += [("J1", g) for g in pins]
     cx, cy = 100 + DSUB_CENTRE[0], 100 + DSUB_CENTRE[1]
-    b.put("J2", cx, cy - LINK_H / 2 + 1.95, 0, "B", mirror=False)
-    for ref in ("JP1", "JP2", "C1"):
-        b.autoplace(ref, (cx, cy + LINK_H / 2 - 2.0), 0, layer="B", max_r=16, mirror=False)
+    # Pigtail pads along the top edge, leaving a via channel above the DE-15's pins.
+    b.put("J2", cx, cy - LINK_H / 2 + 1.45, 0, "B", mirror=False)
+    # Both cable-variant jumpers need pins 9 and 15: side by side under the
+    # connector's left end, with +5V_LINK's cap beside them.
+    y = cy + LINK_H / 2 - 1.55
+    b.put("JP1", cx - 7.9, y, 0, "B", mirror=False)
+    b.put("JP2", cx - 3.05, y, 0, "B", mirror=False)
+    b.put("C1", cx + 0.9, y, 0, "B", mirror=False)
     b.edge(outline)
     b.ground_zones(outline)
     b.text("VGACorne", cx + 13.0, cy - LINK_H / 2 + 1.6, pcbnew.B_SilkS, size=0.8)

@@ -74,10 +74,13 @@ JST10_FP = "Connector_JST:JST_SH_SM10B-SRSS-TB_1x10-1MP_P1.00mm_Horizontal"
 PTC_FP = "Fuse:Fuse_0805_2012Metric"
 
 # JST-SH link cable pinout -- identical on main, satellite and daughterboard.
-# Use a 1:1 ("same side") SH cable.
+# Use a 1:1 ("same side") SH cable. The order follows the DE-15 below the
+# daughterboard's pigtail pads, so its routing is nearly planar: the jumpers'
+# nets at the left end, the selects above the row-3 pins they reach diagonally,
+# the coax lines straight above pins 3/2/1, grounds by pin 6 at the right.
 LINK_PINS = {
-    "1": "+5V_LINK", "2": "GND", "3": "LINK_S0", "4": "LINK_S1", "5": "LINK_S2",
-    "6": "LINK_DET", "7": "GND", "8": "LINK_A", "9": "LINK_B", "10": "LINK_C",
+    "1": "+5V_LINK", "2": "LINK_DET", "3": "LINK_S1", "4": "LINK_S0", "5": "LINK_S2",
+    "6": "LINK_C", "7": "LINK_B", "8": "LINK_A", "9": "GND", "10": "GND",
 }
 
 # DE-15 (VGA) pin -> signal. Pins keep their VGA roles: analog on the coax
