@@ -108,7 +108,7 @@ silicone is springier, poron is more muted.
 | `DAUGHTERBOARD` | plan-view envelope of the vertical VGA board |
 | `MCU_MODULE` | the soldered MCU module on the tab, under the trackpad |
 | `PORTS` | DE-15 shell cutout and USB-C opening (right half), through the back face |
-| `JACKSCREWS` | two Ø3.2 mm holes through the back face for the 4-40 screwlocks, 24.99 mm apart |
+| `JACKSCREWS` | two Ø3.2 mm holes through the back face for the 4-40 jackscrews, 24.99 mm apart |
 | `FLOOR_ACCESS` | Ø3 mm floor holes under the BOOT and RESET buttons (right half) |
 | `FLOOR_POCKETS` | 1 mm pockets in the floor top under the USB-C (right half) and the encoder's pins (left half) |
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
@@ -148,22 +148,37 @@ Milling:
 - The bay starts 4.5 mm further back than column 5 needs
   (`geometry.BAY_BACKSET`). That room is what lets the trackpad sit right
   beside Y/H/N; both halves share it, so their backs line up.
-- The vertical DE-15F is on the front. The back carries 10 solder pads for a
-  **10-pin JST-SH pigtail**, plus the cable-variant jumpers. The pigtail plugs
+- The vertical DE-15F on the front is an **Amphenol FCI 10090929-S154XLF**:
+  4-40 clinch nuts with board locks. The footprint is KiCad's vertical HD-15
+  with the 1.2 mm pin holes and 3.1 mm board-lock holes Amphenol asks for
+  (`lib/vgacorne.pretty`).
+- Solder its board locks: they tie the shell to GND, and the jackscrews tie
+  the case to the shell.
+- The back carries 10 solder pads for a **10-pin JST-SH pigtail**, plus the
+  cable-variant jumpers. Clip the DE-15's pin tails to about 1.5 mm first:
+  they come through on the same side as the pads.
+- The board sits about 6.1 mm (±0.3) behind the flange face on Amphenol's
+  drawing. That drawing doesn't make clear which flange face it measures
+  from, so check it on the first part: the 13 mm envelope leaves about
+  3–4 mm for the pigtail's bend. The pigtail plugs
   into `J3`, which sits on the edge of the inner tab directly in front of the
   board, so a short (~5 cm) pigtail is enough.
-- The DE-15's **4-40 screwlocks** clamp the connector flange to the inside of
-  the back face. That's the only fixing, and it sends cable forces straight
-  into the case.
+- Two **4-40 female jackscrews** (Keystone 7229: 0.187" hex, 0.25" stud) go
+  through the back face into the clinch nuts. They clamp the flange to the
+  inside of the wall; that's the only fixing, and it sends cable forces
+  straight into the case. The cable's thumbscrews thread into them.
+  - A board-lock part can stop a long stud, so use a 0.25" one.
+  - Keystone's figures come from distributor listings; check that the stud
+    pulls the flange tight before it bottoms.
 - The back face is 1.6 mm thick here, so the plug mates fully without a relief.
 - Centre the shell about 7 mm above the floor top: the flange (12.55 mm) sits
   between the floor and the roof, with 14.1 mm clear.
 - `PORTS` has the standard rear-mount cutout for shell size E, 20.5 × 11.4 mm
   (CECC 75 301-802); check it against your connector's datasheet.
 - At full mating the plug's shell reaches about 1 mm into the 1.6 mm wall.
-  That is the most D-sub makers allow with standard hardware, so use 4-40
-  jackscrews whose hex is no taller than 4.8 mm (0.189"), or the plug won't
-  seat.
+  That is the most D-sub makers allow with standard hardware, so the
+  jackscrews' hex must be no taller than 4.8 mm (0.189"), or the plug won't
+  seat. Keystone 7229's is 0.187".
 
 ### Trackpad (right half)
 

@@ -1415,14 +1415,14 @@
 				(justify left)
 			)
 		)
-		(property "Value" "DE-15F (VGA)"
+		(property "Value" "10090929-S154XLF"
 			(at 36.83 57.15 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_Dsub:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles"
+		(property "Footprint" "vgacorne:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_Amphenol_10090929"
 			(at 44.45 76.2 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -1436,7 +1436,14 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "HD-15 female, vertical PCB mount, 4-40 threaded inserts"
+		(property "Description" "HD-15 female, vertical PCB mount, 4-40 clinch nuts with board locks: solder the locks, they ground the shell and, through the jackscrews, the case"
+			(at 44.45 76.2 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "MPN" "Amphenol FCI 10090929-S154XLF"
 			(at 44.45 76.2 0)
 			(effects
 				(font (size 1.27 1.27))

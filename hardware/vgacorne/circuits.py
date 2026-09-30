@@ -431,10 +431,11 @@ def link() -> Circuit:
     4-40 screwlocks, so cable forces go straight into the aluminium.
     """
     p: list[Part] = [
-        Part("J1", "Connector:DE15_Socket_HighDensity_MountingHoles", "DE-15F (VGA)",
-             "Connector_Dsub:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles",
-             dict(VGA_PINS), "conn",
-             description="HD-15 female, vertical PCB mount, 4-40 threaded inserts"),
+        Part("J1", "Connector:DE15_Socket_HighDensity_MountingHoles", "10090929-S154XLF",
+             "vgacorne:DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_Amphenol_10090929",
+             dict(VGA_PINS), "conn", fields={"MPN": "Amphenol FCI 10090929-S154XLF"},
+             description="HD-15 female, vertical PCB mount, 4-40 clinch nuts with board locks: solder the "
+                         "locks, they ground the shell and, through the jackscrews, the case"),
         Part("J2", "Connector_Generic:Conn_01x10", "JST-SH pigtail", "vgacorne:WirePads_1x10_P1.6mm",
              dict(LINK_PINS), "conn",
              description="Solder a 10-pin JST-SH pigtail here; its plug goes to J3 on the half's PCB"),

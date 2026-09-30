@@ -6,13 +6,16 @@
 * ``vgacorne.pretty`` -- Hall-effect MX switch footprints: two 1.75 mm NPTH
   side pegs, no centre post (the magnet lives there) and no pins. The sensor is
   a separate SOT-23 on B.Cu directly under the switch centre. Also the MCU
-  module's castellated edge and the matching landing pads on the main PCB.
+  module's castellated edge and the matching landing pads on the main PCB, and
+  the VGA socket's footprint adapted to the Amphenol part.
 """
 
 from __future__ import annotations
 
 import itertools
 import math
+import os
+import re
 import uuid
 from pathlib import Path
 
@@ -300,6 +303,27 @@ def module_landing_footprint(w: float, h: float) -> tuple[str, list]:
     return name, fp
 
 
+STOCK_FP = Path(os.environ.get("KICAD10_FOOTPRINT_DIR", "/usr/share/kicad/footprints"))
+DSUB_STOCK = "Connector_Dsub.pretty/DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles.kicad_mod"
+DSUB_NAME = "DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_Amphenol_10090929"
+
+
+def dsub_amphenol_footprint() -> tuple[str, str]:
+    """KiCad's vertical HD-15 socket with the holes the Amphenol FCI 10090929-S154XLF
+    asks for: 1.2 mm pin holes (1.8 mm pads) and 3.1 mm board-lock holes."""
+    text = (STOCK_FP / DSUB_STOCK).read_text()
+    head = text.split("\n", 1)
+    text = f'(footprint "{DSUB_NAME}"\n' + head[1]
+    text = re.sub(r'\(descr "[^"]*"\)',
+                  '(descr "15-pin HD D-Sub socket (female), vertical, THT, pitch 2.29x1.98mm, 4-40 clinch '
+                  'nuts with board locks 25mm apart, for Amphenol FCI 10090929-S154XLF: 1.2mm pin holes, '
+                  '3.1mm board-lock holes; https://www.digikey.com/en/products/detail/amphenol-fci/10090929-S154XLF/2350302")', text)
+    text, pins = re.subn(r"\(size 1\.6 1\.6\)(\s*)\(drill 1\)", r"(size 1.8 1.8)\1(drill 1.2)", text)
+    text, locks = re.subn(r"\(drill 3\.2\)", "(drill 3.1)", text)
+    assert (pins, locks) == (15, 2), (pins, locks)
+    return DSUB_NAME, text
+
+
 def write_footprints() -> Path:
     pretty = LIB_DIR / "vgacorne.pretty"
     pretty.mkdir(parents=True, exist_ok=True)
@@ -313,6 +337,8 @@ def write_footprints() -> Path:
     for make in (module_edge_footprint, module_landing_footprint):
         name, fp = make(*MODULE_SIZE)
         (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
+    name, text = dsub_amphenol_footprint()
+    (pretty / f"{name}.kicad_mod").write_text(text)
     return pretty
 
 

@@ -238,7 +238,11 @@ def _tall_parts(pcb_path: Path) -> list[Polygon]:
 # for full mating, so the 4-40 jackscrews outside it must have hexes <= 4.8 mm tall.
 DE15_CUTOUT = (20.5, 11.4)
 DB_WIDTH = 33.0                # pcb.LINK_W
-DB_DEPTH = 13.0                # flange + 4.3 mm body + 1.6 mm PCB + pads + wire bend room
+# Wall to the back of the daughterboard's wiring: the Amphenol 10090929's flange
+# face is 6.1 +/-0.3 mm from the board (its drawing may mean the flange's back
+# face, 0.8 mm more), then the 1.6 mm board, pin tails clipped to 1.5 mm, and
+# the pigtail's pads and bend in what's left (~3-4 mm).
+DB_DEPTH = 13.0
 
 
 def daughterboard_footprint(side: str) -> Polygon:

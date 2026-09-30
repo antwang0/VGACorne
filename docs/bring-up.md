@@ -6,10 +6,9 @@
       it must show 0 DRC errors, and after routing `unconnected_items` should
       reach 0 too.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.
-- [ ] Pick a vertical DE-15F with 4-40 inserts that matches
-      `DSUB-15-HD_Socket_Vertical_P2.29x1.98mm_MountingHoles`. Check its panel
-      cutout against `PORTS` (20.5 × 11.4 mm). Use jackscrews with a hex no
-      taller than 4.8 mm.
+- [ ] The VGA socket is the Amphenol FCI 10090929-S154XLF (the daughterboard
+      footprint has its 1.2 mm pin holes), with Keystone 7229 jackscrews.
+      Only 10 at LCSC; Digi-Key has thousands.
 - [ ] Check stock for the DRV5055A3QDBZR. The second source is the
       MT9102ET; it reads the other way round, so flip `invert_adc`. See
       [sensors.md](sensors.md) and *Sensor polarity* below.
@@ -27,7 +26,8 @@
 | Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the trackpad FFC connector J5 on top (hand-solderable); J4 is bare landing pads for the module |
 | MCU module, 2-layer **1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order with JLC's castellated-hole option |
 | Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the rotary encoder ENC1 on top (hand-solder) |
-| VGA daughterboard | 2 | hand-solder: DE-15, 10-wire pigtail, 0402 cap |
+| VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
+| 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
 | HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
 | Bourns PEC12R-4220F-N0024 encoder | 1 | knob beside B (left half) |
@@ -45,11 +45,15 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 
 ## Daughterboards
 
-1. Solder the DE-15 on the front.
-2. On the back, solder the pigtail wires to pads 1–10. Pad 1 is marked by
+1. Solder the DE-15 on the front, board locks included: they ground the
+   shell. Clip its pin tails on the back to about 1.5 mm.
+2. Try it in the case with the jackscrews before wiring. The flange should
+   pull flat against the wall. Measure the board-to-flange distance: the
+   design assumes about 6.1 mm.
+3. On the back, solder the pigtail wires to pads 1–10. Pad 1 is marked by
    the silk bar and carries +5 V. Wire *n* must end up on pin *n* of the J3
    plug, so check the pigtail's colour order with a meter.
-3. Leave JP1/JP2 bridged 1–2 (the default) unless your VGA cable lacks pin 9.
+4. Leave JP1/JP2 bridged 1–2 (the default) unless your VGA cable lacks pin 9.
    In that case, cut both and bridge 2–3 on **both** boards.
 
 ## First power-up (main half alone)

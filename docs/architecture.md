@@ -69,7 +69,7 @@ cable**. Both halves have female DE-15 ports, like a PC or a monitor.
 | 9 | +5 V (DDC power) | `+5V_LINK` | via JP1 (default) |
 | 15 | DDC SCL | `LINK_DET` | cable detect, via JP2 (default) |
 | 4, 11 | ID | — | unused (often not wired in cables) |
-| shell | | GND | the case gets grounded through the screwlocks |
+| shell | | GND | through the socket's board locks; the case is grounded through the jackscrews |
 
 **Cable requirement:** pins 1–3, 5–10 and 12–15 must be wired. Most "full" or
 "3+6" cables are, but some cheap ones leave out pin 9. Check with a meter. If
@@ -407,9 +407,8 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    than 650 ([sensors.md](sensors.md#field-at-the-sensor)). Confirm them in
    hmkconf's debug view at bring-up ([bring-up.md](bring-up.md)).
 4. **Parts to confirm at ordering:**
-   - A vertical DE-15F with 4-40 inserts that matches the KiCad footprint, and
-     jackscrews with a hex no taller than 4.8 mm
-     ([mechanical.md](mechanical.md#vga-daughterboard)).
+   - The VGA socket's board-to-flange height on the first part (Amphenol FCI
+     10090929-S154XLF, [mechanical.md](mechanical.md#vga-daughterboard)).
    - LCSC stock for the TLV9064, SRV05-4 and DRV5055A3.
    - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
    - Second-source sensor: MT9102ET ([sensors.md](sensors.md)).
