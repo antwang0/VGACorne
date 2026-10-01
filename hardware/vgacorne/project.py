@@ -37,7 +37,9 @@ def _netclass(name, track, clearance=0.2, via=0.6, drill=0.3, dp_w=0.2, dp_gap=0
 
 NETCLASSES = [
     _netclass("Default", 0.2, prio=2147483647),
-    _netclass("Power", 0.4, prio=0),
+    # 0.3 mm still carries the board's <0.5 A and fits the 0.5 mm-pitch pads
+    # (USB-C VBUS, the trackpad FFC's supply) that 0.4 mm tracks can't enter.
+    _netclass("Power", 0.3, prio=0),
     # USB D+/D-: 0.4 mm tracks 0.15 mm apart, with the ground pour 0.25 mm away on
     # the same layer and the other layer poured, come out at ~97 ohm differential
     # bare (a few ohm less under solder mask) on the 1.6 mm main PCB, and the same

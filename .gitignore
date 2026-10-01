@@ -13,3 +13,4 @@ _autosave-*
 
 # KiCad MCP server DRC dumps
 *_drc_violations.json
+route-logs/

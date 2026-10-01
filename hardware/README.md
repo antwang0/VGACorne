@@ -75,8 +75,22 @@ wherever both outer layers are poured, and into every pour island.
 **Castellated edge pads:** the routing area grows past the board edge so
 their outer halves count, and keepouts stop any track leaving the board.
 
+**Speed:**
+- The two 2-layer strategies run at once, in separate processes, and the
+  first to connect everything wins.
+- `--attempts N` runs N Freerouting passes per stage in parallel, each with a
+  different pass limit. The default is 1, since more rarely routed anything
+  extra.
+- Freerouting's logs stream to `route-logs/` next to the output; watch the pass
+  count there. A keyboard half takes 15–30 minutes.
+
+**Finishing pass:** if the best result still leaves connections open, Freerouting
+runs once more over it. That is about as long as a full run on a big board.
+
 Route on a copy, then copy the board back and run `generate.py check`. The
-VGA daughterboard and both MCU modules are routed this way.
+VGA daughterboard, both MCU modules and the satellite are routed this way. The
+main board came out with three gaps, a boxed-in ground pad and an uncoupled
+USB pair; finish those in KiCad (see docs/bring-up.md).
 
 Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the

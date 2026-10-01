@@ -319,22 +319,29 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
     b.autoplace("J2", (tx - 3, ty + 2), 0, max_r=24,
                 avoid=switch_bodies(b) + [b.poly(b.fps["J4"], "F", grow=0.5)])
 
-    # USB input on the ear, spilling under column 4; regulators under the tab,
-    # module decoupling right under the module.
+    # USB input on the ear, spilling under column 4, with both regulators beside
+    # it (their 5 V comes from there): the tab under the module is the board's
+    # most crowded routing. Module decoupling right under the module.
     for ref, rot in (("U4", 0), ("R1", 90), ("R2", 90), ("F1", 0), ("C1", 0)):
         b.autoplace(ref, (ux, uy + 9), rot, max_r=26)
     for ref in ("U2", "U3", "C2", "C3", "C4", "C5"):
-        b.autoplace(ref, (tx + 2, ty), 0, max_r=26)
+        b.autoplace(ref, (ux, uy + 14), 0, max_r=30)
     for ref in ("C9", "C10"):
         b.autoplace(ref, (mx, my), 0, max_r=20)
     for ref in ("SW22", "SW23"):
         b.autoplace(ref, (tx - 12, ty + 5), 0, max_r=24)
-    # Link: between the JST and the module socket.
+    # Link: the ESD, the satellite's supply and the select/detect resistors between
+    # J3 and the module; the remote ADC lines' series resistors and cable-out
+    # pulls at the module's front-edge ADC pads, which they serve.
     for ref in ("U8", "C18", "D1", "C15", "U6", "U7"):
         b.autoplace(ref, (lx - 4, ly + 3), 0, max_r=26)
-    for ref in ("R5", "R6", "R7", "R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16",
-                "R17", "R18"):
+    for ref in ("R5", "R6", "R7", "R17", "R18"):
         b.autoplace(ref, (lx - 9, ly + 6), 90, max_r=26)
+    adc = [p for p in b.fps["J4"].Pads() if p.GetNetname().lstrip("/").startswith("ADC_R")]
+    ax = sum(pcbnew.ToMM(p.GetPosition().x) for p in adc) / len(adc)
+    ay = max(pcbnew.ToMM(p.GetPosition().y) for p in adc) + 2.5
+    for ref in ("R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16"):
+        b.autoplace(ref, (ax, ay), 90, max_r=20, mirror=False)
     # Trackpad FFC connector on top of the board, under the pad's well, its mouth
     # toward the pad's own connector; the pull-ups beside it.
     fx, fy = geo.corne(*PAD.fpc)

@@ -1,28 +1,37 @@
 #!/usr/bin/env python3
 """Autoroute a KiCad board with Freerouting: DSN export -> Freerouting (headless) -> SES import -> zone refill.
 
-    ../.venv/bin/python route.py <board.kicad_pcb> <out.kicad_pcb> [attempts]
+    ../.venv/bin/python route.py <board.kicad_pcb> <out.kicad_pcb> [--attempts N]
 
 Needs Java >= 25 and Freerouting 2.4 (FREEROUTING_JAR, default
 ~/.kicad-mcp/freerouting.jar). Work on a copy of the board's project folder and
-copy the result back once `generate.py check` is happy with it.
+copy the result back once `generate.py check` is happy with it. Freerouting's
+logs stream to route-logs/ next to the output, for watching progress.
 
-Two phases first: the signals, with the ground pours as planes; then, with
-those tracks locked and the pours off, GND as tracks, so no ground pad depends
-on a pour the signals cut up. If that leaves anything unconnected (dense boards,
-where small ground pads get boxed in), it also tries every net in one run and
-keeps whichever connects more. Boards with inner planes: every
-outer SMD pad on a plane net first gets its own via (fan-out), then one run
-routes the signals over the planes. Each run tries Freerouting up to ``attempts``
-times with different pass limits and keeps the best session. Finally, ground
-stitching vias go wherever both layers are poured, and into every pour island.
+2-layer boards try two strategies at once, in separate processes, and keep the
+first that connects everything (or else the best):
+- two phases: the signals, with the ground pours as planes; then, with those
+  tracks locked and the pours off, GND as tracks, so no ground pad depends on a
+  pour the signals cut up;
+- every net in one run, pours off (dense boards, where small ground pads get
+  boxed in by the first strategy).
+Boards with inner planes: every outer SMD pad on a plane net first gets its own
+via (fan-out), then one run routes the signals over the planes.
+Freerouting attempts within a stage (different pass limits) also run at once;
+the default is one, since extra attempts rarely route anything more. Finally,
+ground stitching vias go wherever both layers are poured, and into every pour
+island.
 """
+import argparse
 import os
 import re
 import shutil
+import signal
 import subprocess
 import sys
 import tempfile
+import time
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 import pcbnew
@@ -31,13 +40,18 @@ JAR = Path(os.environ.get("FREEROUTING_JAR", Path.home() / ".kicad-mcp" / "freer
 PASSES = [60, 100, 150, 80, 120, 200]
 
 
+LOGS: Path | None = None  # Freerouting logs go here (set in main)
+
+
 def freeroute(dsn: Path, ses: Path, passes: int) -> tuple[int, str]:
-    r = subprocess.run(["java", "-jar", str(JAR), "--gui.enabled=false", "-de", str(dsn), "-do", str(ses),
-                        "-mp", str(passes)], capture_output=True, text=True, timeout=3600)
-    out = r.stdout + r.stderr
-    done = [l for l in out.splitlines() if "Auto-routing stage completed" in l]
+    """One Freerouting run; its log streams to LOGS. Returns (unrouted, summary line)."""
+    log = (LOGS or dsn.parent) / f"{ses.stem}.log"
+    with open(log, "w") as f:
+        subprocess.run(["java", "-jar", str(JAR), "--gui.enabled=false", "-de", str(dsn), "-do", str(ses),
+                        "-mp", str(passes)], stdout=f, stderr=subprocess.STDOUT, timeout=4 * 3600)
+    done = [l for l in log.read_text().splitlines() if "Auto-routing stage completed" in l]
     m = re.search(r"\((\d+) unrouted", done[-1]) if done else None
-    return (int(m.group(1)) if m else 10**6), (done[-1] if done else out[-500:])
+    return (int(m.group(1)) if m else 10**6), (done[-1] if done else "")
 
 
 def widen_for_edge_pads(board, text: str, margin: float = 1.0) -> str:
@@ -87,16 +101,15 @@ def run(board, tmp: Path, tag: str, attempts: int, ground_width_um: int | None =
         if not k:
             sys.exit("no Power class with GND in the DSN")
         dsn.write_text(text)
+    sessions = [(tmp / f"{tag}{i}.ses", PASSES[i % len(PASSES)]) for i in range(attempts)]
+    with ThreadPoolExecutor(max_workers=attempts) as pool:
+        results = list(pool.map(lambda s: freeroute(dsn, *s), sessions))
     best_n = None
-    for i in range(attempts):
-        ses = tmp / f"{tag}{i}.ses"
-        n, line = freeroute(dsn, ses, PASSES[i % len(PASSES)])
-        print(f"{tag} attempt {i + 1} ({PASSES[i % len(PASSES)]} passes): {n} unrouted")
+    for (ses, passes), (n, _) in zip(sessions, results):
+        print(f"{tag} ({passes} passes): {n} unrouted", flush=True)
         if ses.exists() and (best_n is None or n < best_n):
             best_n = n
             shutil.copy(ses, best)
-        if n == 0:
-            break
     if best_n is None or not pcbnew.ImportSpecctraSES(board, str(best)):
         sys.exit("routing/import failed")
     return best_n
@@ -244,26 +257,121 @@ def planes(board, tmp: Path, attempts: int) -> None:
         board.Add(z)
 
 
-def main():
-    src, dst = Path(sys.argv[1]), Path(sys.argv[2])
-    attempts = int(sys.argv[3]) if len(sys.argv) > 3 else 3
-    results = []
-    layers = pcbnew.LoadBoard(str(src)).GetCopperLayerCount()
+STRATEGIES = {"two_phase": two_phase, "all_at_once": all_at_once, "planes": planes}
+
+
+def finish(path: Path, attempts: int = 1) -> int:
+    """Run Freerouting again over a nearly finished board: it keeps the routing and
+    works on what's left. Keeps the result only if it connects more. Returns
+    KiCad's unconnected count afterwards."""
+    before = unconnected(path)
+    if before == 0:
+        return 0
+    board = pcbnew.LoadBoard(str(path))
+    zones = list(board.Zones())
+    for z in zones:
+        board.Remove(z)
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
-        for strategy in ((planes,) if layers > 2 else (two_phase, all_at_once)):
-            board = pcbnew.LoadBoard(str(src))
-            strategy(board, tmp, attempts)
-            out = tmp / f"{strategy.__name__}.kicad_pcb"
-            board.Save(str(out))
-            n = unconnected(out)
-            print(f"{strategy.__name__}: {n} unconnected")
-            results.append((n, strategy.__name__, out))
-            if n == 0:
-                break
+        run(board, tmp, "finish", attempts)
+        for z in zones:
+            board.Add(z)
+        drop_stray_vias(board)
+        trial = tmp / path.name
+        board.Save(str(trial))
+        after = unconnected(trial)
+        print(f"finishing pass: {before} -> {after} unconnected", flush=True)
+        if after < before:
+            shutil.copy(trial, path)
+            return after
+    return before
+
+
+def drop_stray_vias(board) -> int:
+    """Remove signal vias Freerouting left joined to tracks on fewer than two layers.
+    Vias on nets with a zone (ground, planes) stay: the pours connect them."""
+    zone_nets = {z.GetNetname() for z in board.Zones()}
+    tracks = board.Tracks()
+    items = [tracks[i] for i in range(tracks.size())]
+    ends: dict[tuple, set] = {}
+    for t in items:
+        if t.GetClass() != "PCB_VIA":
+            for pt in (t.GetStart(), t.GetEnd()):
+                ends.setdefault((pt.x, pt.y, t.GetNetCode()), set()).add(t.GetLayer())
+    stray = [t for t in items if t.GetClass() == "PCB_VIA" and t.GetNetname() not in zone_nets
+             and len(ends.get((t.GetPosition().x, t.GetPosition().y, t.GetNetCode()), ())) < 2]
+    for v in stray:
+        board.Remove(v)
+    return len(stray)
+
+
+def route_one(src: Path, out: Path, strategy: str, attempts: int) -> int:
+    """Child process: route ``src`` with one strategy into ``out``; returns KiCad's unconnected count."""
+    board = pcbnew.LoadBoard(str(src))
+    with tempfile.TemporaryDirectory() as tmp:
+        STRATEGIES[strategy](board, Path(tmp), attempts)
+    print(f"removed {drop_stray_vias(board)} stray vias", flush=True)
+    board.Save(str(out))
+    return unconnected(out)
+
+
+def main():
+    global LOGS
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("src", type=Path)
+    ap.add_argument("dst", type=Path)
+    ap.add_argument("--attempts", type=int, default=1, help="Freerouting runs per stage, in parallel")
+    ap.add_argument("--strategy", choices=STRATEGIES, help=argparse.SUPPRESS)  # child mode
+    ap.add_argument("--logs", type=Path, help=argparse.SUPPRESS)
+    args = ap.parse_args()
+    LOGS = args.logs or args.dst.resolve().parent / "route-logs"
+    LOGS.mkdir(parents=True, exist_ok=True)
+    if args.strategy:
+        n = route_one(args.src, args.dst, args.strategy, args.attempts)
+        print(f"RESULT {n}", flush=True)
+        return
+
+    layers = pcbnew.LoadBoard(str(args.src)).GetCopperLayerCount()
+    names = ["planes"] if layers > 2 else ["two_phase", "all_at_once"]
+    with tempfile.TemporaryDirectory() as tmp:
+        tmp = Path(tmp)
+        procs = {}
+        for name in names:
+            out = tmp / f"{name}.kicad_pcb"
+            cmd = [sys.executable, __file__, str(args.src), str(out), "--attempts", str(args.attempts),
+                   "--strategy", name, "--logs", str(LOGS / name)]
+            (LOGS / name).mkdir(exist_ok=True)
+            procs[name] = (subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL, text=True,
+                                            start_new_session=True), out)
+        print(f"routing with {', '.join(names)} in parallel; logs in {LOGS}", flush=True)
+        results = []
+        while procs:
+            for name, (proc, out) in list(procs.items()):
+                if proc.poll() is None:
+                    continue
+                del procs[name]
+                text = proc.stdout.read()
+                for line in text.splitlines():
+                    if not line.startswith("RESULT"):
+                        print(f"  {name}: {line}", flush=True)
+                m = re.search(r"RESULT (\d+)", text)
+                n = int(m.group(1)) if m else 10**6
+                print(f"{name}: {n} unconnected", flush=True)
+                results.append((n, name, out))
+                if n == 0:  # good enough: stop the others
+                    for other, _ in procs.values():
+                        os.killpg(other.pid, signal.SIGTERM)
+                    for other, _ in procs.values():
+                        other.wait()
+                    procs.clear()
+            time.sleep(2)
         n, name, out = min(results)
-        shutil.copy(out, dst)
-    print(f"routed -> {dst} ({name}, {n} unconnected); {stitch(dst)} ground stitching vias")
+        if n >= 10**6:
+            sys.exit("no strategy produced a board")
+        shutil.copy(out, args.dst)
+        if n:
+            n = finish(args.dst, args.attempts)
+    print(f"routed -> {args.dst} ({name}, {n} unconnected); {stitch(args.dst)} ground stitching vias")
 
 
 def _polys(shape_poly_set):
@@ -281,13 +389,17 @@ def _polys(shape_poly_set):
     return out
 
 
-def stitch(path: Path, pitch: float = 2.5, via_d: float = 0.6, drill: float = 0.3) -> int:
+def stitch(path: Path, pitch: float | None = None, via_d: float = 0.6, drill: float = 0.3) -> int:
     """Ground stitching vias wherever both layers' GND pours have room, plus one in
-    every pour island, so no island hangs on a pad's spokes. Returns the count."""
+    every pour island, so no island hangs on a pad's spokes. The grid is 2.5 mm on
+    small boards and 5 mm on big ones. Returns the count."""
     from shapely.geometry import Point
     from shapely.ops import unary_union
 
     board = pcbnew.LoadBoard(str(path))
+    if pitch is None:
+        bb = board.GetBoardEdgesBoundingBox()
+        pitch = 2.5 if pcbnew.ToMM(bb.GetWidth()) * pcbnew.ToMM(bb.GetHeight()) < 2000 else 5.0
     gnd = board.FindNet("GND")
     fills = {pcbnew.F_Cu: [], pcbnew.B_Cu: []}
     for z in board.Zones():
