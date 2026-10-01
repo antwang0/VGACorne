@@ -416,7 +416,8 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 4. **Parts to confirm at ordering:**
    - The VGA socket's board-to-flange height on the first part (Amphenol FCI
      10090929-S154XLF, [mechanical.md](mechanical.md#vga-daughterboard)).
-   - LCSC stock for the TLV9064, SRV05-4 and DRV5055A3.
+   - JLC stock. On 2026-10-01 every part in `hardware/vgacorne/fab.py` was in
+     stock, mostly by the thousand. The exception is the AT32F405RCT7: 73 at JLC.
    - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
    - Second-source sensor: MT9102ET ([sensors.md](sensors.md)).
 5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes

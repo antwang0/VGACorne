@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """VGACorne generator.
 
-    generate.py [--force] [lib|schematics|pcbs|firmware|mechanical|bom|check|all ...]
+    generate.py [--force] [lib|schematics|pcbs|firmware|mechanical|bom|fab|check|all ...]
 
 Schematics and PCBs are *scaffolding*: once you start editing them in KiCad
 they are the source of truth, so they are only (re)written with --force.
@@ -109,6 +109,16 @@ def do_bom(_force: bool) -> None:
         print(f"  wrote {dest.relative_to(HERE)}")
 
 
+def do_fab(_force: bool) -> None:
+    from vgacorne import fab
+
+    for board in circuits.BOARDS:
+        sch, pcb_path, name = paths(board)
+        out = HERE / "fab" / name
+        unplaced = fab.write(sch, pcb_path, out)
+        print(f"  wrote {out.relative_to(HERE)}/" + (f" (no LCSC number: {', '.join(unplaced)})" if unplaced else ""))
+
+
 def do_check(_force: bool) -> None:
     from vgacorne import checks
 
@@ -118,7 +128,7 @@ def do_check(_force: bool) -> None:
 
 
 STEPS = {"lib": do_lib, "schematics": do_schematics, "pcbs": do_pcbs, "firmware": do_firmware,
-         "mechanical": do_mechanical, "bom": do_bom, "check": do_check}
+         "mechanical": do_mechanical, "bom": do_bom, "fab": do_fab, "check": do_check}
 
 
 def main() -> None:

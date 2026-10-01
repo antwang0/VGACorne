@@ -6850,14 +6850,14 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "8 MHz, CL 20 pF: matches QMK's generic STM32F446 clock tree; libhmk takes any whole MHz"
+		(property "Description" "8 MHz, CL 12 pF: matches QMK's generic STM32F446 clock tree; libhmk takes any whole MHz"
 			(at 170.18 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "MPN" "X32258MSB4SI"
+		(property "MPN" "X32258MOB4SI"
 			(at 170.18 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -7009,7 +7009,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 207.01 176.53 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -7156,7 +7156,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 227.33 176.53 0)
 			(effects
 				(font (size 1.27 1.27))

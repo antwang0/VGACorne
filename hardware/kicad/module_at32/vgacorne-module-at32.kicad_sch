@@ -5925,14 +5925,14 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "12 MHz, CL 20 pF (libhmk's AT32 port requires 12 MHz)"
+		(property "Description" "12 MHz, CL 12 pF (libhmk's AT32 port requires 12 MHz)"
 			(at 369.57 62.23 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "MPN" "X322512MSB4SI"
+		(property "MPN" "X322512MOB4SI"
 			(at 369.57 62.23 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -6084,7 +6084,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 161.29 189.23 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -6231,7 +6231,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 181.61 189.23 0)
 			(effects
 				(font (size 1.27 1.27))

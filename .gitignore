@@ -14,3 +14,6 @@ _autosave-*
 # KiCad MCP server DRC dumps
 *_drc_violations.json
 route-logs/
+
+# JLCPCB outputs (generate.py fab)
+hardware/fab/

@@ -26,6 +26,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
+| `fab` | `fab/<board>/`: JLC Gerber/drill zip, BOM and CPL (git-ignored) | yes |
 | `check` | nothing | — |
 
 **Workflow:** the schematics and PCBs start as generated scaffolding. Once you
@@ -96,6 +97,23 @@ Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the
 board file to regenerate it unrouted.
 
+## Ordering from JLC
+
+`generate.py fab` writes JLCPCB's files for each board into `fab/<board>/`:
+- `-gerbers.zip`: Gerbers with JLC's KiCad settings (Protel extensions, no
+  X2, silkscreen clipped to the mask) and Excellon drill files in mm, plated
+  and non-plated holes separate;
+- `-bom.csv` and `-cpl.csv`: the parts JLC places, with positions.
+
+A part is placed if it has an LCSC number: its symbol's `LCSC` field, or the
+`LCSC` table in `vgacorne/fab.py` (by MPN, or by value and footprint for
+passives). The step lists the parts without one; they are the parts fitted by
+hand: J4/J5 and ENC1 on top, and the daughterboard's socket and pigtail (its
+0402 cap is in its BOM, if you have JLC fit it).
+
+Check the placements in JLC's preview before paying: KiCad and JLC disagree
+on the zero rotation of some packages.
+
 ## Renders
 
 `render.py` builds the assembled keyboard in Blender (the `bpy` module) from
@@ -128,6 +146,7 @@ constants at the top of the script.
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |
+| `vgacorne/fab.py` | the `fab` step and its LCSC part numbers |
 | `route.py` | Freerouting autorouting: plane fan-out, signals, ground, stitching vias |
 
 Common changes:

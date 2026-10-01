@@ -18,6 +18,10 @@
 - [ ] Run `hardware/generate.py check`: it must show 0 DRC errors, and
       `unconnected_items` must reach 0 on every board.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.
+- [ ] Run `hardware/generate.py fab` and upload `hardware/fab/<board>/` to
+      JLC: the Gerber zip, then the BOM and CPL for assembly. Check the parts'
+      rotations in JLC's placement preview (hardware/README.md, *Ordering from
+      JLC*).
 - [ ] The VGA socket is the Amphenol FCI 10090929-S154XLF (the daughterboard
       footprint has its 1.2 mm pin holes), with Keystone 7229 jackscrews.
       Only 10 at LCSC; Digi-Key has thousands.

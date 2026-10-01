@@ -1331,7 +1331,7 @@
 				)
 			)
 		)
-		(property "Description" "12 MHz, CL 20 pF (libhmk's AT32 port requires 12 MHz)"
+		(property "Description" "12 MHz, CL 12 pF (libhmk's AT32 port requires 12 MHz)"
 			(at 0 0 0)
 			(layer "F.Fab")
 			(hide yes)
@@ -1354,7 +1354,7 @@
 				)
 			)
 		)
-		(property "MPN" "X322512MSB4SI"
+		(property "MPN" "X322512MOB4SI"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
@@ -1891,7 +1891,7 @@
 				)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 0 1.16 90)
 			(layer "F.Fab")
 			(uuid "2a2efca2-3ed5-42bc-9dd7-24319ad158dc")
@@ -2189,7 +2189,7 @@
 				)
 			)
 		)
-		(property "Value" "30p"
+		(property "Value" "15p"
 			(at 0 1.16 0)
 			(layer "F.Fab")
 			(uuid "ec2c40b8-4213-424f-82be-758c2a4eb482")

@@ -479,6 +479,14 @@ def _module(name: str, title: str, mcu: Part, parts: list[Part], notes: list[str
     return Circuit(name, title, REV, p, blocks, [("\n".join(notes), (20.32, 250.0))], paper="A3")
 
 
+# HSE crystals: YXC 3225, 12 pF load, so 15 pF caps (plus ~5 pF stray).
+# AN2867's gm_crit = 4 ESR (2 pi f)^2 (C0 + CL)^2 then comes to ~0.44 mA/V
+# for both crystals (8 MHz at 180 ohm, 12 MHz at 80 ohm, C0 3 pF), against the
+# F446's Gm_crit_max of 1 mA/V. The 20 pF-load versions with 30 pF caps sat at
+# 0.96. The AT32F405 datasheet gives no limit; the same margin covers it.
+XTAL_CAP = "15p"
+
+
 def module_at32() -> Circuit:
     """AT32F405RCT7: libhmk with USB high-speed (8 kHz)."""
     pins = {**MCU_SIGNAL_PINS,
@@ -493,8 +501,8 @@ def module_at32() -> Circuit:
         C("C5", "100n", "+3.3VA", "GND", "mcu"), C("C6", "1u", "+3.3VA", "GND", "mcu", fp=C0603),
         Part("Y1", "Device:Crystal_GND24", "12MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
              {"1": "HSE_IN", "3": "HSE_OUT", "2": "GND", "4": "GND"}, "mcu",
-             fields={"MPN": "X322512MSB4SI"}, description="12 MHz, CL 20 pF (libhmk's AT32 port requires 12 MHz)"),
-        C("C7", "30p", "HSE_IN", "GND", "mcu"), C("C8", "30p", "HSE_OUT", "GND", "mcu"),
+             fields={"MPN": "X322512MOB4SI"}, description="12 MHz, CL 12 pF (libhmk's AT32 port requires 12 MHz)"),
+        C("C7", XTAL_CAP, "HSE_IN", "GND", "mcu"), C("C8", XTAL_CAP, "HSE_OUT", "GND", "mcu"),
         R("R1", "12k", "OTGHS_R", "GND", "mcu", description="USB HS PHY reference resistor",
           fields={"Tolerance": "1%"}),
         R("R2", "10k", "BOOT", "GND", "mcu", description="BOOT0 pull-down"),
@@ -523,9 +531,9 @@ def module_f446() -> Circuit:
           description="VCAP_1: low-ESR ceramic, value per ST datasheet for single-VCAP packages"),
         Part("Y1", "Device:Crystal_GND24", "8MHz", "Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm",
              {"1": "HSE_IN", "3": "HSE_OUT", "2": "GND", "4": "GND"}, "mcu",
-             fields={"MPN": "X32258MSB4SI"},
-             description="8 MHz, CL 20 pF: matches QMK's generic STM32F446 clock tree; libhmk takes any whole MHz"),
-        C("C9", "30p", "HSE_IN", "GND", "mcu"), C("C10", "30p", "HSE_OUT", "GND", "mcu"),
+             fields={"MPN": "X32258MOB4SI"},
+             description="8 MHz, CL 12 pF: matches QMK's generic STM32F446 clock tree; libhmk takes any whole MHz"),
+        C("C9", XTAL_CAP, "HSE_IN", "GND", "mcu"), C("C10", XTAL_CAP, "HSE_OUT", "GND", "mcu"),
         R("R1", "10k", "BOOT", "GND", "mcu", description="BOOT0 pull-down"),
         R("R2", "10k", "BOOT1", "GND", "mcu",
           description="PB2/BOOT1 pull-down: BOOT0 = 1 only reaches the DFU bootloader with BOOT1 = 0 (RM0390)"),
