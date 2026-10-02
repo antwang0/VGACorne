@@ -273,31 +273,38 @@ reaches the back face behind column 4, beside the DE-15.
 ![3D case, right half: frame above, tray below](../hardware/mechanical/case-right.svg)
 
 `generate.py case` (`vgacorne/case3d.py`, needs build123d) extrudes the
-case-plan layers into four STEP files in `hardware/mechanical/`:
-`case-{left,right}-{tray,frame}.step`. These are what a CNC shop quotes from.
-The outlines are true lines and arcs, within 0.05 mm of the 2D plan.
+case-plan layers into a tray and a frame per half, in two builds. Everything is
+in `hardware/mechanical/`. The outlines are true lines and arcs, within 0.05 mm
+of the 2D plan.
+
+| Build | Files per half | For |
+|---|---|---|
+| `tapped` | `case-<side>-{tray,frame}-tapped.step`, plus a `.dxf` drawing of each part's holes and threads | aluminium: CNC 6061, or printed AlSi10Mg |
+| `inserts` | `case-<side>-{tray,frame}-inserts.step` and `.stl` | FDM prints (PLA, ABS/ASA, nylon) with heat-set inserts |
 
 | Part | Height | Contents |
 |---|---|---|
-| Tray | 0 – 12.1 mm | 3 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.25 mm deep; the lower part of the ports and both jackscrew holes |
+| Tray | 0 – 12.1 mm | 3 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.25 mm deep; two 1/4"-20 mounts in bosses; the lower part of the ports and both jackscrew holes |
 | Frame | 12.1 – 18.6 mm | walls; upper tab pockets up to 15.85 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well (right half); the upper part of the DE-15 cutout |
 
 - **Seam:** at the plate's underside, so the tab sits in the frame's pocket and
   the lower gasket strip in the tray's.
 - **Gaskets:** each pocket gives 6 mm for the 1.5 mm tab and two 3 mm strips,
   which is 25 % compression.
-- **Screws:** eight M3 × 12 button heads (ISO 7380) per half, placed
-  automatically on the wall's midline, clear of the gasket pockets, ports and
-  trackpad.
-  - The tray has 3.4 mm clearance holes, counterbored 6 mm × 4 mm deep from below.
-  - The frame has blind holes: 2.5 mm drill, 5 mm deep, tapped M3 4.5 mm.
-  - The frame is only 6.5 mm tall, so the deep counterbore is what leaves
-    3.9 mm of thread and 1.5 mm of metal above the hole.
-- **Weight**, in 6061: about 255 g for the left half (tray 194 g, frame 61 g) and
-  380 g for the right (tray 301 g, frame 79 g).
+- **Screws:** eight M3 × 12 button heads (ISO 7380) per half, from below,
+  placed automatically on the wall's midline clear of the gasket pockets,
+  ports and trackpad. The same places and screws in both builds.
+- **Mounts:** two 1/4"-20 sockets per half for tripods, tenting heads and desk
+  arms (see [Tenting and desk mounting](#tenting-and-desk-mounting)). Each sits
+  in a 15.4 mm boss that rises from the floor to 0.5 mm under the PCB, in a
+  spot its underside leaves clear (`geometry.mounts`). The PCB generator keeps
+  parts out of these spots, the case foam has a relief round each, and the fit
+  check fails if a part on the PCB moves onto one.
+- **Weight**, in 6061: about 260 g for the left half and 385 g for the right
+  (the `tapped` build).
 - **Fit check:** `generate.py case` and `check` build what goes inside as solids
   and fail if any runs into the tray or frame:
-  - the PCB and its bottom-side parts, the USB-C receptacle;
+  - the PCB, every part under it (from the board file) and the standoff screw heads;
   - the plate with its tabs;
   - the daughterboard;
   - the MCU module;
@@ -307,11 +314,107 @@ The outlines are true lines and arcs, within 0.05 mm of the 2D plan.
   The bodies are inset 0.05 mm, so parts that touch by design pass: the DE-15
   flange against the back wall, the plate on the seam.
 
+### The two builds
+
+| | `tapped` (aluminium) | `inserts` (FDM) |
+|---|---|---|
+| Frame screw holes | 2.5 mm drill, 5 mm deep, tapped M3 (about 3.5 mm of full thread) | 4.2 mm × 5 mm (CAD size) for an M3 × 4.0 insert: ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3 |
+| Tray screw holes | 3.4 mm through, counterbore 6.0 × 4 mm | 3.5 mm through, counterbore 6.2 × 6 mm |
+| 1/4"-20 mounts | #7 (5.1 mm) drill, 5.5 mm deep, tapped (4.5 mm of full thread) | 8.2 mm × 7.4 mm (CAD size) for a 1/4"-20 × 6.4 "short" insert (CNC Kitchen or ruthex) |
+| Floor | 3 mm | 5 mm: 2 mm more underneath, so the 6.4 mm insert fits under the PCB |
+
+Both meet ISO 1222 for the tripod socket: at least 5.5 mm deep with 4 mm of
+full thread; tripod screws stand 4.5 mm proud. The printed floor is thicker all
+over rather than in a pad round the mounts, because the rest of a padded floor
+would overhang the print bed.
+
+**Printing** (`inserts`):
+- **Orientation:** print the tray floor-down and the frame upside down (top on
+  the bed). Neither needs supports. The trackpad's counterbore ledge bridges
+  2.7 mm.
+- **Calibrate the holes first:** print a coupon with 4.0–4.3 mm and 8.0–8.4 mm
+  holes. Printed holes come out about 0.2 mm under their CAD size.
+- **Installing the inserts:** use an iron at about 225 °C for PLA and 265 °C for
+  ABS/ASA (nylon about print temperature + 10–20 °C). Press them flush, never
+  recessed. The frame's go in from the seam side, the mounts' from underneath.
+- **Material:** PLA softens around 55–60 °C, so keep it out of a hot car. ASA or
+  ABS is the better everyday choice. For nylon pick PA12: PA6 creeps and
+  weakens when it absorbs water.
+- **Edges:** turn on elephant-foot compensation; the bottom edges aren't
+  chamfered.
+
+**Aluminium** (`tapped`):
+- **CNC** (JLCCNC, PCBWay, Xometry): none of them reads threads from a STEP
+  file. Send each STEP together with its `.dxf`, which tabulates every hole and
+  thread, and tick "threads" on the order. Ask for tapped holes to be masked
+  when anodising. JLCCNC doesn't anodise threads under M5.
+- **Printed AlSi10Mg (SLM):** JLC3DP doesn't offer aluminium; PCBWay and
+  Xometry do. Printed holes come out undersize, so drill to the tap-drill size
+  and tap afterwards. Use cutting taps, since the alloy is not ductile. Xometry
+  takes thread and Helicoil callouts from the drawing.
+
 Not modelled; tell the machinist or add them later:
 - Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
   break all edges.
 - The wordmark on the roof.
-- Rubber feet.
-- A typing-angle wedge, brass weights, tenting-leg inserts.
+- Rubber feet. `FEET` in the case plan marks a spot near each corner, outside the
+  mount zone and clear of the screw counterbores. Use stick-on feet about
+  10 mm across.
+- A typing-angle wedge, brass weights.
 - Under the trackpad the tray is solid (the wall between the PCB and the
   outline, about 125 g). A pocket from below would lighten it.
+
+### Tenting and desk mounting
+
+Every option below uses the two 1/4"-20 sockets under each half. The camera
+world's standard thread is what tripods, ball heads, Arca-Swiss quick-release
+plates, desk clamps and arms all share.
+
+- **Sockets:** front to back, in the column gap nearest the half's centre of
+  mass. They are 38.6 mm apart on the left half and 38.2 mm on the right.
+- **One socket** takes any single-screw tripod head.
+- **Both sockets** take a two-screw Arca-Swiss plate, which stops the half
+  twisting on the mount. That needs a slotted plate or rail, or Arca-Swiss's
+  adjustable 28–40 mm plate. From then on every mount uses one Arca clamp.
+- **Mount zone:** keep feet and labels out of the 40 mm-wide `MOUNT_ZONE` round
+  the sockets, so a 38 mm plate seats flat.
+- **The back face** stays clear in every setup. Run the VGA cable along the arm
+  and clamp it there for strain relief.
+
+**Tenting on the desk.** A mini tripod with a ball head screws into one socket
+and gives any angle.
+
+| Half | Socket to outer edge | Socket height for 15° | 20° | 30° | 45° |
+|---|---|---|---|---|---|
+| Left | 85 mm | 22 mm | 29 mm | 42 mm | 60 mm |
+| Right | 104 mm | 27 mm | 35 mm | 52 mm | 73 mm |
+
+| Option | Price | Notes |
+|---|---|---|
+| SmallRig BUT2664 tabletop tripod | about $36–45 | Ball head rated 2 kg, with an Arca clamp that takes the two-screw plate. The pick for the aluminium halves. |
+| Manfrotto PIXI EVO | about $85 | Rated 2.5 kg; 10.5–20 cm tall |
+| Manfrotto PIXI | about $30–36 | Rated 1 kg: fine for the printed halves |
+| MagSafe stands (keeb.io R2 $34.99, ErgoKeeb $40, Keebart MagLift) | | Stick their steel ring under the half. Quick to swap; marginal at steep angles for the aluminium halves, since the ring holds by friction. |
+
+**Mounting to a desk or chair**, per pair of halves, with an Arca clamp on each
+half's plate:
+
+| Where | Budget | Premium |
+|---|---|---|
+| Above the desk | 2 × Neewer ST20 11" arm with clamp (about $26 each) + 2 × Falcam F38 quick release ($29.95): about $110. Expect some flex under resting hands; add spring washers. | 2 × Manfrotto 035RL Super Clamp ($44.95) + 2 × 244N friction arm ($138.95) + 2 × Ulanzi Claw or F38 ($30–31): about $430. SmallRig 4862 clamp-and-arm ($99.99 each) sits in between. |
+| Under the desk or beside the chair | MoErgo's "captain's chair" parts: 2 × Pro Signal 1290B pole arm ($35–70) on the chair's arm posts (30–60 mm), a CAMVATE C3031 plate ($14.60) and an Arca clamp each: about $150–200 | Humanscale 6G mechanism with the 27" Big Board (about $260–425): both halves fit up to about 510 mm apart, each on its own Arca clamp or ball head |
+
+Keep arms under about 25 cm of reach. Rest load at the end of a long arm
+flexes it more than the typing does. No vendor publishes stiffness figures.
+
+**What to make, if anything:**
+- **v1:** only the sockets; buy the plates.
+- **Optional custom Arca foot plate,** one per half: 6061, 38 mm wide with 45°
+  flanks, two counterbored 1/4"-20 holes at the socket spacing, and pockets for
+  rubber feet so it doubles as a foot. Copy the flank height from a real
+  Arca-Swiss or RRS plate. About $10–30 each at JLCCNC.
+- **Vertical or side mounting:** a 3 mm 5052 L-bracket with 1/4" slots, about
+  $20–40 at SendCutSend or OSH Cut.
+
+Prices are from 2026-10-01. Some came from search snippets rather than the
+vendors' own pages; check them before buying.

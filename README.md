@@ -40,7 +40,7 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no rotary encoder under libhmk |
 | QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
-| 3D case | Done: tray + frame STEP per half, fit-checked against the boards ([mechanical.md](docs/mechanical.md#3d-case)) |
+| 3D case | Done: tray + frame per half, for aluminium (STEP + tap drawing) or FDM printing with heat-set inserts (STEP/STL), fit-checked against the boards; 1/4"-20 tripod/Arca mounts for tenting and desk arms ([mechanical.md](docs/mechanical.md#3d-case)) |
 
 ![Main half, underside](docs/img/main-bottom.png)
 

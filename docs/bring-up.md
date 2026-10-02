@@ -35,6 +35,12 @@
 | VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | |
+| Case: tray + frame per half | 1 + 1 | print the `inserts` build, or order the `tapped` build in aluminium with its `.dxf` hole drawings ([mechanical.md](mechanical.md#3d-case)) |
+| M3 × 12 button-head screws (ISO 7380) | 16 | tray to frame, eight per half |
+| M3 × 4.0 heat-set inserts (ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3) | 16 | printed case only |
+| 1/4"-20 × 6.4 heat-set inserts (CNC Kitchen or ruthex "short") | 4 | printed case only: the tripod/Arca mounts |
+| Stick-on rubber feet, ~10 mm across | 8 | at the `FEET` marks in the case plan |
+| Tenting or desk mount (optional) | | a mini tripod with a ball head, or an arm with an Arca clamp ([mechanical.md](mechanical.md#tenting-and-desk-mounting)) |
 | HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
 | Bourns PEC12R-4220F-N0024 encoder | 1 | knob beside B (left half) |
 | Knob, ~16 mm across, ~11.5 mm tall, 6 mm D-shaft bore ≥ 9.5 mm deep | 1 | up to 17 mm across; a taller knob needs a ≥ 7.5 mm recess underneath for the encoder's collar ([mechanical.md](mechanical.md#mouse-column-and-rotary-encoder-left-half)) |

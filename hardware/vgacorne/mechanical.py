@@ -104,6 +104,12 @@ MIN_WALL = 3.0         # thinnest wall: behind the gasket pockets
 WALL = TAB_L + 0.5 - WALL_CLEARANCE + MIN_WALL  # walls thick enough to hold the gasket pockets
 PORT_WALL = 1.6        # flat back face at the connectors: plugs only mate fully through a thin panel
 FLOOR_POCKET = 1.0     # extra depth in the floor under the USB-C and the encoder's pins
+# Underneath, the zone round the two 1/4"-20 mounts (geometry.mounts) stays
+# clear of feet, 40 mm wide, so a 38 mm Arca plate seats flat. Stick-on feet go
+# near the corners (FEET).
+MOUNT_ZONE_W = 40.0
+FOOT_D = 10.0
+FOOT_INSET = 12.0      # foot centre from the outside edge: clear of the screw counterbores
 OUTSIDE_R = 25.0       # smallest concave radius on the outside: one smooth profile, big cutter
 CORNER_R = 6.0         # convex corners where the flat port face meets the sides (< WALL keeps PORT_WALL)
 TOOL_R = 1.5           # smallest radius inside the cavity (3 mm end mill)
@@ -192,9 +198,10 @@ def plate_foam(side: str) -> tuple[Polygon, list[Polygon]]:
 
 
 def case_foam(side: str, board_pcb: Path | None) -> tuple[Polygon, list[Polygon]]:
-    """Case foam under the PCB with reliefs for tall bottom-side parts."""
+    """Case foam under the PCB with reliefs for tall bottom-side parts and the mount bosses."""
     outline = geo.pcb_outline(side).buffer(-0.5)
     cut = [Point(x, y).buffer(3.0, 32) for x, y in geo.standoffs(side)]  # screw heads
+    cut += [Point(x, y).buffer(geo.MOUNT_BOSS / 2 + 0.5, 32) for x, y in geo.mounts(side)]
     if board_pcb and board_pcb.exists():
         cut += _tall_parts(board_pcb)
     return outline, cut
@@ -203,6 +210,33 @@ def case_foam(side: str, board_pcb: Path | None) -> tuple[Polygon, list[Polygon]
 # Bottom-side parts taller than STACK.bottom_parts get a relief in the case
 # foam, and so do the rotary encoder's through-hole legs.
 TALL_PARTS = {"J1", "J2", "J3", "SW22", "SW23", "ENC1"}
+
+
+def bottom_side(pcb_path: Path) -> list[tuple[Polygon, float]]:
+    """What hangs under the PCB, as (plan outline, depth below the PCB): each
+    bottom-side part's courtyard (TALL_PARTS at their full height), the leads of
+    through-hole parts on top (trimmed to 2 mm) and the standoff screw heads."""
+    import pcbnew
+
+    board = pcbnew.LoadBoard(str(pcb_path))
+    out = []
+    for fp in board.GetFootprints():
+        if fp.GetLayer() == pcbnew.B_Cu:
+            fp.BuildCourtyardCaches()
+            cy = fp.GetCourtyard(pcbnew.B_CrtYd)
+            bb = cy.BBox() if cy.OutlineCount() else fp.GetBoundingBox(False)
+            depth = STACK.component_max if fp.GetReference() in TALL_PARTS else STACK.bottom_parts
+            out.append((box(pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()),
+                            pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())), depth))
+        else:
+            for pad in fp.Pads():
+                if pad.GetAttribute() == pcbnew.PAD_ATTRIB_PTH:
+                    bb = pad.GetBoundingBox()
+                    out.append((box(pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()),
+                                    pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())), 2.0))
+    side = geo.MAIN_SIDE if "main" in pcb_path.name else geo.SATELLITE_SIDE
+    out += [(Point(x, y).buffer(1.9, 16), 2.0) for x, y in geo.standoffs(side)]  # M2 heads
+    return out
 
 
 def _tall_parts(pcb_path: Path) -> list[Polygon]:
@@ -289,6 +323,23 @@ def floor_pockets(pcb_path: Path) -> list[Polygon]:
     return out
 
 
+def mount_zone(side: str) -> Polygon:
+    """Where a plate on the two mounts sits under the floor: no feet here."""
+    return unary_union([Point(x, y).buffer(MOUNT_ZONE_W / 2, 64) for x, y in geo.mounts(side)]).convex_hull
+
+
+def feet(side: str, outer: Polygon, avoid: list[Polygon]) -> list[Polygon]:
+    """A stick-on foot near each corner of the outline, clear of the mount zone and ``avoid``."""
+    room = outer.buffer(-FOOT_INSET).difference(unary_union([mount_zone(side).buffer(3.0)]
+                                                            + [a.buffer(FOOT_D / 2 + 1.0) for a in avoid]))
+    x0, y0, x1, y1 = outer.bounds
+    out = []
+    for corner in ((x0, y0), (x1, y0), (x0, y1), (x1, y1)):
+        p = nearest_points(room, Point(corner))[0]
+        out.append(p.buffer(FOOT_D / 2, 32))
+    return out
+
+
 def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     """Case-plan layers. ``floor_access`` reads the button positions from the PCB (needs pcbnew)."""
     outline, _, _ = plate(side)
@@ -340,12 +391,15 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     if trackpad:
         layers["TRACKPAD"] = trackpad[:1]
         layers["TRACKPAD_WELL"] = trackpad[1:]
+    layers["MOUNTS"] = [Point(x, y).buffer(geo.MOUNT_BOSS / 2, 64) for x, y in geo.mounts(side)]
+    layers["MOUNT_ZONE"] = [mount_zone(side)]
     if floor_access:
         board = "main" if main else "satellite"
         pcb_path = HARDWARE / "kicad" / board / f"vgacorne-{board}.kicad_pcb"
         if main:
             layers["FLOOR_ACCESS"] = access_holes(pcb_path)
         layers["FLOOR_POCKETS"] = [p.intersection(inner_wall) for p in floor_pockets(pcb_path)]
+    layers["FEET"] = feet(side, outer, layers.get("FLOOR_ACCESS", []))
     return layers
 
 

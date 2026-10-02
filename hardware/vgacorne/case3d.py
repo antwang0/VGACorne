@@ -10,6 +10,12 @@ Everything comes from the 2D case plan (:func:`mechanical.case`, the layers of
   opening round the plate, the 1.5 mm roof over the tab, bay and USB ear,
   the trackpad's counterbore and well, and blind M3 tap holes.
 * Both: the DE-15, USB-C and jackscrew holes through the flat back face.
+* Underneath: two 1/4"-20 mounts for tripods, tenting heads and desk arms, in
+  bosses that rise into clear spots under the PCB.
+
+Two builds (``BUILDS``) differ in their holes, and the printed one in a floor
+2 mm thicker underneath: ``tapped`` for aluminium (drill and tap), ``inserts``
+for FDM prints (heat-set inserts).
 
 Each gasket pocket holds a strip under and over the plate tab at 25 %
 compression (``GASKET_COMPRESSION``). :func:`fit_check` builds the parts
@@ -22,11 +28,13 @@ up), Z up from the case underside.
 
 from __future__ import annotations
 
+import functools
 import math
+from dataclasses import dataclass
 from pathlib import Path
 
 from build123d import (Compound, Cylinder, Edge, ExportSVG, Face, Location, Part, Plane, RectangleRounded,
-                       Wire, export_step, extrude)
+                       Wire, export_step, export_stl, extrude)
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Point, Polygon, box
 from shapely.geometry.polygon import orient
@@ -42,15 +50,41 @@ TOP = ST.case_height
 GASKET_COMPRESSION = 0.25
 GASKET_SET = ST.gasket * (1 - GASKET_COMPRESSION)  # each strip, compressed
 
-# M3 x 12 button-head screws (ISO 7380: 5.7 mm head) up through the tray into
-# blind tapped holes in the frame. The frame is only 6.5 mm tall, so the head
-# sits 4 mm up its counterbore: that leaves 3.9 mm of thread (plenty for holding
-# the case shut) and 1.5 mm of metal over the tap drill.
+
+
+@dataclass(frozen=True)
+class Build:
+    """How a case is made, and so how its M3 x 12 button-head screws (ISO 7380,
+    5.7 mm head) hold the frame to the tray. The frame is only 6.5 mm tall, so
+    the heads sit 4 mm up their counterbores, leaving ~4 mm of thread in the
+    frame and 1.5 mm of material over its blind hole."""
+    name: str                       # file suffix
+    material: str
+    clear: float                    # screw clearance hole through the tray
+    head: tuple[float, float]       # counterbore from below: diameter, depth
+    hole: tuple[float, float]       # blind hole up into the frame: diameter, depth above the seam
+    fastener: str                   # what makes the thread
+    bottom: float                   # extra floor under the case (z 0 is the aluminium case's underside)
+    mount_hole: tuple[float, float]  # each 1/4"-20 mount: diameter, depth up from the underside
+    mount: str
+
+
+# The mounts sit in bosses that stop 0.5 mm under the PCB, so the floor and boss
+# give 6.5 mm. Tapped aluminium needs 5.5 mm of it (ISO 1222: a 5.5 mm socket
+# with 4 mm of full thread; tripod screws stand 4.5 mm proud). A 6.4 mm insert
+# needs 7.4 mm, so the printed floor is 2 mm thicker underneath: a pad round
+# just the mounts would leave the rest of the floor overhanging the print bed.
+# Hole sizes for prints are CAD sizes: printed holes come out ~0.2 mm small.
+TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 3.4, (6.0, 4.0), (2.5, 5.0),
+               "M3 x 0.5 tapped, ~3.5 mm full thread (2.5 mm drill, 5 mm deep)", 0.0, (5.1, 5.5),
+               '1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)')
+INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.5, (6.2, 4.0), (4.2, 5.0),
+                "M3 x 4.0 heat-set insert (ruthex RX-M3Sx4.0, or CNC Kitchen M3 x 3), flush", 2.0, (8.2, 7.4),
+                '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside')
+BOSS_TOP = ST.pcb_bottom - 0.5
+BUILDS = (TAPPED, INSERTS)
 SCREW = "M3 x 12 ISO 7380"
-SCREW_CLEAR = 3.4
-SCREW_HEAD = (6.0, 4.0)         # counterbore diameter, depth
-SCREW_TAP = (2.5, 5.0)          # tap drill and its depth above the seam; thread 4.5 mm
-SCREW_EDGE = 0.5                # metal between the counterbore and the cavity
+SCREW_EDGE = 0.5                # material between the counterbore and the cavity
 SCREW_KEEP = 2.0                # from gasket pockets, ports and the trackpad
 
 DB_HEIGHT = 13.0                # pcb.LINK_H: the daughterboard stands on edge, the DE-15 at its centre
@@ -177,15 +211,14 @@ def _face(poly: Polygon) -> Face:
 
 
 def prism(geom, z0: float, z1: float) -> Part | None:
-    """Extrude 2D board-coordinate polygons between two heights."""
-    solids = [extrude(_face(p), amount=z1 - z0, dir=(0, 0, 1)).moved(Location((0, 0, z0)))
-              for p in _polys(geom)]
+    """Extrude 2D board-coordinate polygons between two heights. Overlapping
+    polygons are merged first, so the solids are disjoint and go into one
+    compound rather than through a fuse each."""
+    polys = _polys(unary_union(_polys(geom))) if len(_polys(geom)) > 1 else _polys(geom)
+    solids = [extrude(_face(p), amount=z1 - z0, dir=(0, 0, 1)).moved(Location((0, 0, z0))) for p in polys]
     if not solids:
         return None
-    out = solids[0]
-    for s in solids[1:]:
-        out = out + s
-    return out
+    return solids[0] if len(solids) == 1 else Part(Compound(children=solids).wrapped)
 
 
 def _cut(part: Part, cutters) -> Part:
@@ -211,8 +244,8 @@ def _hole(x: float, y: float, d: float, z0: float, z1: float) -> Part:
 # ---------------------------------------------------------------------------
 
 class Half:
-    def __init__(self, side: str):
-        self.side = side
+    def __init__(self, side: str, build: Build = TAPPED):
+        self.side, self.build = side, build
         self.main = side == geo.MAIN_SIDE
         self.layers = mech.case(side)
         self.outer = self.layers["OUTER_WALL"][0]
@@ -235,20 +268,22 @@ class Half:
     def _screw_positions(self) -> list[tuple[float, float]]:
         """Evenly spread points on the wall's midline with room for the hole."""
         wall = self.outer.difference(self.inner)
-        need = SCREW_HEAD[0] / 2 + SCREW_EDGE
+        need = max(b.head[0] for b in BUILDS) / 2 + SCREW_EDGE  # same places in every build
+        hole = max(max(b.clear, b.hole[0]) for b in BUILDS)
         line = self.inner.buffer(mech.WALL / 2).exterior
         keep = self._keepout()
         cands = []
         for i in range(int(line.length)):
             p = line.interpolate(i)
-            if wall.contains(p.buffer(need, 16)) and not keep.intersects(p.buffer(SCREW_CLEAR / 2)):
+            if wall.contains(p.buffer(need, 16)) and not keep.intersects(p.buffer(hole / 2)):
                 cands.append((p.x, p.y))
         count = max(6, min(8, round(self.outer.exterior.length / 60)))
         # Farthest-point sampling from the point nearest the back face's middle.
         chosen = [min(cands, key=lambda c: math.dist(c, (self.vga_x, self.face)))]
         while len(chosen) < count:
             chosen.append(max(cands, key=lambda c: min(math.dist(c, q) for q in chosen)))
-        return chosen
+        cx, cy = self.outer.centroid.x, self.outer.centroid.y
+        return sorted(chosen, key=lambda c: math.atan2(c[1] - cy, c[0] - cx))  # numbered round the case
 
     # -- ports ---------------------------------------------------------------
 
@@ -267,14 +302,18 @@ class Half:
     # -- parts ---------------------------------------------------------------
 
     def tray(self) -> Part:
-        part = prism(self.outer, 0.0, SEAM)
-        cutters = [prism(self.inner, ST.floor, SEAM + 1),
-                   prism(self.pockets, SEAM - GASKET_SET, SEAM + 1),
-                   prism(self.layers.get("FLOOR_ACCESS", []), -1, ST.floor + 1),
+        b = self.build
+        under = -b.bottom
+        part = prism(self.outer, under, SEAM) - prism(self.inner, ST.floor, SEAM + 1)
+        part = part + prism(self.layers["MOUNTS"], ST.floor - 1.0, BOSS_TOP)  # overlaps the floor
+        cutters = [prism(self.pockets, SEAM - GASKET_SET, SEAM + 1),
+                   prism(self.layers.get("FLOOR_ACCESS", []), under - 1, ST.floor + 1),
                    prism(self.layers.get("FLOOR_POCKETS", []), ST.floor - mech.FLOOR_POCKET, ST.floor + 1),
                    *self._ports()]
-        for x, y in self.screws:
-            cutters += [_hole(x, y, SCREW_CLEAR, -1, SEAM + 1), _hole(x, y, SCREW_HEAD[0], -1, SCREW_HEAD[1])]
+        for x, y in self.screws:  # heads sit up the counterbore by the same amount in every build
+            cutters += [_hole(x, y, b.clear, under - 1, SEAM + 1), _hole(x, y, b.head[0], under - 1, b.head[1])]
+        for x, y in geo.mounts(self.side):
+            cutters.append(_hole(x, y, b.mount_hole[0], under - 1, under + b.mount_hole[1]))
         return _cut(part, cutters)
 
     def frame(self) -> Part:
@@ -289,46 +328,50 @@ class Half:
         for well in self.layers.get("TRACKPAD_WELL", []):
             cutters.append(prism(well, TOP - PAD.board_t - PAD.parts, TOP - PAD.board_t + 0.01))
         for x, y in self.screws:
-            cutters.append(_hole(x, y, SCREW_TAP[0], SEAM - 1, SEAM + SCREW_TAP[1]))
+            cutters.append(_hole(x, y, self.build.hole[0], SEAM - 1, SEAM + self.build.hole[1]))
         return _cut(part, cutters)
 
     # -- what goes inside ----------------------------------------------------
 
     def contents(self) -> dict[str, Part]:
-        """Solids for the parts inside the case, at their nominal positions, inset
-        FIT_SLACK in plan so parts that touch by design (the DE-15's flange on the
-        back wall) don't count."""
-        pcb_top = ST.pcb_bottom + ST.pcb
+        return contents(self.side)
 
-        def body(geom, z0, z1):
-            return prism(_inset(geom), z0, z1)
 
-        out = {
-            "PCB": body(geo.pcb_outline(self.side), ST.pcb_bottom, pcb_top),
-            "plate": body(mech.plate(self.side)[0], ST.plate_bottom, ST.plate_top),
-            "daughterboard": body(self.db, mech.VGA_Z - DB_HEIGHT / 2, mech.VGA_Z + DB_HEIGHT / 2),
-            "B-side parts": body(geo.pcb_outline(self.side).buffer(-0.5), ST.pcb_bottom - ST.bottom_parts,
-                                 ST.pcb_bottom),
-        }
-        if self.main:
-            out["MCU module"] = body(geo.module_rect(self.side), pcb_top, ST.module_top)
-            out["trackpad overlay"] = body(PAD.top(self.side), TOP - PAD.board_t, TOP)
-            out["trackpad module"] = body(PAD.outline(self.side), TOP - PAD.board_t - PAD.parts,
-                                          TOP - PAD.board_t)
-            board = mech.HARDWARE / "kicad" / "main" / "vgacorne-main.kicad_pcb"
-            usb = mech.floor_pockets(board)  # the USB-C courtyard + 0.5
-            if usb:
-                out["USB-C"] = body(usb[0].buffer(-0.5), ST.pcb_bottom - ST.component_max, ST.pcb_bottom)
-        else:
-            x, y = geo.corne(*geo.ENCODER)
-            if self.side == "right":
-                x, y = geo.mirror_point(x, y)
-            w, h = ENCODER_BODY
-            out["encoder"] = body(box(x - w / 2, y - h / 2, x + w / 2, y + h / 2), pcb_top, ST.plate_top + 0.1)
-            out["encoder collar"] = body(Point(x, y).buffer(ENCODER_COLLAR_D / 2, 32), pcb_top,
-                                         pcb_top + geo.ENCODER_COLLAR)
-            out["knob"] = body(Point(x, y).buffer(KNOB[0] / 2, 64), KNOB_Z, KNOB_Z + KNOB[1])
-        return out
+@functools.cache
+def contents(side: str) -> dict[str, Part]:
+    """Solids for the parts inside the case, at their nominal positions, inset
+    FIT_SLACK in plan so parts that touch by design (the DE-15's flange on the
+    back wall) don't count."""
+    def body(geom, z0, z1):
+        return prism(_inset(geom), z0, z1)
+
+    main = side == geo.MAIN_SIDE
+    pcb_top = ST.pcb_bottom + ST.pcb
+    board = "main" if main else "satellite"
+    under = mech.bottom_side(mech.HARDWARE / "kicad" / board / f"vgacorne-{board}.kicad_pcb")
+    db = mech.daughterboard_footprint(side)
+    out = {
+        "PCB": body(geo.pcb_outline(side), ST.pcb_bottom, pcb_top),
+        "plate": body(mech.plate(side)[0], ST.plate_bottom, ST.plate_top),
+        "daughterboard": body(db, mech.VGA_Z - DB_HEIGHT / 2, mech.VGA_Z + DB_HEIGHT / 2),
+    }
+    for depth in sorted({d for _, d in under}):
+        out[f"parts under the PCB ({depth:g} mm)"] = body(
+            [p for p, d in under if d == depth], ST.pcb_bottom - depth, ST.pcb_bottom)
+    if main:
+        out["MCU module"] = body(geo.module_rect(side), pcb_top, ST.module_top)
+        out["trackpad overlay"] = body(PAD.top(side), TOP - PAD.board_t, TOP)
+        out["trackpad module"] = body(PAD.outline(side), TOP - PAD.board_t - PAD.parts, TOP - PAD.board_t)
+    else:
+        x, y = geo.corne(*geo.ENCODER)
+        if side == "right":
+            x, y = geo.mirror_point(x, y)
+        w, h = ENCODER_BODY
+        out["encoder"] = body(box(x - w / 2, y - h / 2, x + w / 2, y + h / 2), pcb_top, ST.plate_top + 0.1)
+        out["encoder collar"] = body(Point(x, y).buffer(ENCODER_COLLAR_D / 2, 32), pcb_top,
+                                     pcb_top + geo.ENCODER_COLLAR)
+        out["knob"] = body(Point(x, y).buffer(KNOB[0] / 2, 64), KNOB_Z, KNOB_Z + KNOB[1])
+    return out
 
 
 FIT_SLACK = 0.05
@@ -389,30 +432,109 @@ def preview(tray: Part, frame: Part, side: str, path: Path) -> Path | None:
     return path
 
 
+DRAWING_NOTES = [
+    "Units mm. Plan view from above; holes marked * are drilled from below.",
+    "Material: aluminium 6061-T6 (CNC) or AlSi10Mg (SLM). General tolerance +/-0.1.",
+    "Threads as tabulated, cutting taps. Mask all tapped holes when anodising.",
+    "Break all sharp edges 0.2-0.5. Bead blast, then anodise.",
+]
+
+
+def drawing(half: Half, part: str, path: Path) -> Path | None:
+    """The tapped holes of one part of a ``tapped`` half as a DXF drawing: what
+    CNC shops need beside the STEP, since none reads threads from it."""
+    import ezdxf
+
+    b = half.build
+    holes = []
+    if part == "frame":
+        holes += [("A", xy, f"M3 x 0.5: {b.fastener}") for xy in half.screws]
+    else:
+        holes += [("B", xy, f"Clearance {b.clear} thru, counterbore {b.head[0]} x {b.head[1]} deep*")
+                  for xy in half.screws]
+        holes += [("C", xy, f"{b.mount}*") for xy in geo.mounts(half.side)]
+    doc = ezdxf.new("R2010", setup=True)
+    doc.units = ezdxf.units.MM
+    msp = doc.modelspace()
+    for name in ("OUTLINE", "HOLES", "TEXT"):
+        doc.layers.add(name)
+    for ring in [half.outer.exterior]:
+        msp.add_lwpolyline([(x, -y) for x, y in ring.coords], close=True, dxfattribs={"layer": "OUTLINE"})
+    rows = {}
+    for kind, (x, y), spec in holes:
+        n = sum(1 for k in rows if k.startswith(kind)) + 1
+        rows[f"{kind}{n}"] = spec
+        d = b.hole[0] if kind == "A" else b.clear if kind == "B" else b.mount_hole[0]
+        msp.add_circle((x, -y), d / 2, dxfattribs={"layer": "HOLES"})
+        msp.add_text(f"{kind}{n}", height=2.0, dxfattribs={"layer": "TEXT"}).set_placement((x + 3, -y + 1))
+    x0, y0, x1, y1 = half.outer.bounds
+    lines = [f"{path.stem}: {b.material}"] + DRAWING_NOTES + [""]
+    for kind in sorted({k[0] for k in rows}):
+        refs = [k for k in rows if k[0] == kind]
+        lines.append(f"{refs[0]}-{refs[-1]} ({len(refs)}x): {rows[refs[0]]}")
+    for i, line in enumerate(lines):
+        msp.add_text(line, height=2.5, dxfattribs={"layer": "TEXT"}).set_placement((x0, -y1 - 10 - 4.5 * i))
+    tmp = path.with_suffix(".tmp")
+    doc.saveas(tmp)
+    # ezdxf stamps a time and fresh handles: keep the old file unless the drawing changed.
+    if path.exists() and _dxf_entities(path) == _dxf_entities(tmp):
+        tmp.unlink()
+        return None
+    tmp.replace(path)
+    return path
+
+
+def _dxf_entities(path: Path) -> list:
+    import ezdxf
+
+    return sorted(str((e.dxftype(), e.dxf.layer, getattr(e.dxf, "text", ""),
+                       [tuple(round(v, 4) for v in p) for p in e.get_points()] if e.dxftype() == "LWPOLYLINE"
+                       else tuple(round(v, 4) for v in getattr(e.dxf, "center", getattr(e.dxf, "insert", ())))))
+                  for e in ezdxf.readfile(path).modelspace())
+
+
+def _stl(part: Part, path: Path) -> None:
+    export_stl(part, str(path), tolerance=0.01, angular_tolerance=0.1)
+
+
 def write(side: str, out: Path) -> tuple[list[Path], list[str]]:
-    """Write ``case-<side>-tray.step``, ``-frame.step`` and a ``case-<side>.svg``
-    preview; return the paths written and any fit problems."""
-    half = Half(side)
-    tray, frame = half.tray(), half.frame()
-    written = [path for name, part in (("tray", tray), ("frame", frame))
-               if _export(part, path := out / f"case-{side}-{name}.step")]
-    written += [p for p in [preview(tray, frame, side, out / f"case-{side}.svg")] if p]
-    return written, fit_check(half, tray, frame)
+    """Write ``case-<side>-<tray|frame>-<build>.step`` for every build (and an STL
+    of each printed part) plus a ``case-<side>.svg`` preview; return the paths
+    written and any fit problems."""
+    written, problems = [], []
+    for build in BUILDS:
+        half = Half(side, build)
+        tray, frame = half.tray(), half.frame()
+        for name, part in (("tray", tray), ("frame", frame)):
+            path = out / f"case-{side}-{name}-{build.name}.step"
+            stl = path.with_suffix(".stl")
+            if _export(part, path):
+                written.append(path)
+            if build is INSERTS and (path in written or not stl.exists()):
+                _stl(part, stl)
+                written.append(stl)
+        problems += fit_check(half, tray, frame)
+        if build is TAPPED:
+            written += [p for p in [preview(tray, frame, side, out / f"case-{side}.svg"),
+                                    drawing(half, "tray", out / f"case-{side}-tray-tapped.dxf"),
+                                    drawing(half, "frame", out / f"case-{side}-frame-tapped.dxf")] if p]
+    return written, problems
 
 
 def check() -> list[str]:
     """Fit problems, and any STEP file that is out of date."""
     problems = []
     for side in (geo.MAIN_SIDE, geo.SATELLITE_SIDE):
-        half = Half(side)
-        tray, frame = half.tray(), half.frame()
-        problems += fit_check(half, tray, frame)
-        for name, part in (("tray", tray), ("frame", frame)):
-            path = mech.OUT / f"case-{side}-{name}.step"
-            tmp = path.with_suffix(".check")
-            part.label = path.stem
-            export_step(part, str(tmp))
-            if _step_body(tmp) != _step_body(path):
-                problems.append(f"{path.name} is out of date: run generate.py case")
-            tmp.unlink()
+        for build in BUILDS:
+            half = Half(side, build)
+            tray, frame = half.tray(), half.frame()
+            problems += fit_check(half, tray, frame)
+            for name, part in (("tray", tray), ("frame", frame)):
+                path = mech.OUT / f"case-{side}-{name}-{build.name}.step"
+                tmp = path.with_suffix(".check")
+                part.label = path.stem
+                export_step(part, str(tmp))
+                if _step_body(tmp) != _step_body(path):
+                    problems.append(f"{path.name} is out of date: run generate.py case")
+                tmp.unlink()
     return problems

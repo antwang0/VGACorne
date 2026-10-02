@@ -174,6 +174,7 @@ class Builder:
             return []
         k = geo.sensor_keepouts(self.side)
         k += [Point(x, y).buffer(2.6) for x, y in geo.standoffs(self.side)]
+        k += [Point(x, y).buffer(geo.MOUNT_BOSS / 2 + 1.0) for x, y in geo.mounts(self.side)]
         return k
 
     def autoplace(self, ref: str, near: tuple[float, float], rot: float = 0.0, layer="B",

@@ -322,6 +322,23 @@ def standoffs(side: str) -> list[tuple[float, float]]:
     return pts if side == "left" else [mirror_point(x, y) for x, y in pts]
 
 
+# Tripod / Arca mounts (Corne frame): two 1/4"-20 sockets per half in the floor,
+# each in a boss that rises under the PCB, so they sit where the PCB's
+# underside is clear: in the column gap nearest the half's centre of mass, one
+# between rows 0 and 1 and one between row 2 and the thumb keys. 38 mm apart,
+# inside the 28-40 mm range of Arca-Swiss's adjustable two-screw plates.
+MOUNT_BOSS = 15.4  # a 1/4"-20 heat-set insert (8.7 mm) needs 3.3 mm of wall
+_MOUNTS = {
+    SATELLITE_SIDE: [(-61.9125, -3.571875), (-61.9125, 35.0)],   # col3/col4
+    MAIN_SIDE: [(-42.8625, -1.2), (-42.8625, 37.0)],              # col4/col5: the trackpad pulls the centre of mass in
+}
+
+
+def mounts(side: str) -> list[tuple[float, float]]:
+    pts = [_c(x, y) for x, y in _MOUNTS[side]]
+    return pts if side == "left" else [mirror_point(x, y) for x, y in pts]
+
+
 # Anchor points for the analog muxes (Corne frame), roughly one per column pair
 # (circuits.MUX_KEYS): A = col0, col1, top of col2; B = rest of col2, col3,
 # col4, T0; C = col5, T1, T2 and the satellite's mouse column.

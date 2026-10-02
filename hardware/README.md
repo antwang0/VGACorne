@@ -25,7 +25,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board |
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
-| `case` | `mechanical/case-*-{tray,frame}.step` (+ `.svg` preview), after a fit check | yes |
+| `case` | `mechanical/case-*-{tray,frame}-{tapped,inserts}.step`, `.stl` for printing, `.dxf` hole drawings for machining (+ `.svg` preview), after a fit check | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
 | `fab` | `fab/<board>/`: JLC Gerber/drill zip, BOM and CPL (git-ignored) | yes |
 | `check` | nothing | — |
@@ -146,7 +146,7 @@ constants at the top of the script.
 | `vgacorne/firmware.py` | netlist tracer → libhmk `keyboard.json`, default keymap |
 | `vgacorne/qmk.py` | QMK `keyboard.json` layout, `he_wiring.h` (incl. the rotary encoder's levels) and `rules.mk` from the same trace |
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
-| `vgacorne/case3d.py` | the 3D case (tray + frame STEP per half) and its fit check |
+| `vgacorne/case3d.py` | the 3D case: tray + frame per half in two builds (tapped aluminium, printed with inserts), hole drawings, fit check |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |
 | `vgacorne/fab.py` | the `fab` step and its LCSC part numbers |

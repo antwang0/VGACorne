@@ -44,9 +44,11 @@ Python API exposes it. In the editor this is roughly 15–20 minutes of work.
 
 Details are in the linked docs.
 
-- [ ] **Case:** get a CNC quote from the STEP files. Options not modelled yet:
-      edge rounds, feet, a typing angle, lightening under the trackpad
-      ([mechanical.md](docs/mechanical.md#3d-case)).
+- [ ] **Case:** print the `inserts` build and check the fit, then quote the
+      `tapped` build in aluminium (STEP + `.dxf` hole drawing). Pick a tenting
+      and desk setup ([mechanical.md](docs/mechanical.md#tenting-and-desk-mounting)).
+      Not modelled yet: edge rounds, a typing angle, lightening under the
+      trackpad.
 - [ ] **QMK:**
   - Move the trackpad reads to their own thread
     ([pointing-devices.md](firmware/pointing-devices.md)).
