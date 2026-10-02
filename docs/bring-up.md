@@ -50,7 +50,7 @@
 | Azoteq TPS65-201A-S trackpad (optional) | 1 | end-of-life at Azoteq and out of stock at LCSC; Keycapsss still sells it. GR-Trackpad65 is an open clone |
 | Trackpad overlay, 1 mm glass or acrylic, 71 × 55 mm, ~7 mm corners | 1 | non-metal, matte/etched top; laser-cut black acrylic works |
 | 6-pin 0.5 mm FFC, ~30 mm | 1 | trackpad to J5 (Jushuo AFC07-S06FCA-00, LCSC C262553, bottom contact). Same-side or opposite-side contacts: decide with the paper mock-up (*Trackpad*, step 2) |
-| Poron/silicone gaskets, case foam, plate foam | | see [mechanical.md](mechanical.md) |
+| PORON: 3.18 mm 4701-30 (or 3 mm LE-20) for gaskets, 1.5 mm for case foam, 3.5 mm LE-20 for plate foam | | 32 gasket strips 10 × 4.5 mm; foams cut from the DXFs ([mechanical.md](mechanical.md#foam-and-gaskets)) |
 
 BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 (the DNP flags are already set from `SENSOR`).

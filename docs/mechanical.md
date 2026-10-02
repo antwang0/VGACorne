@@ -33,22 +33,23 @@ Heights are from the underside of the case.
 
 | z (mm) | Surface |
 |---|---|
-| 0.0 | case underside |
-| 2.0 – 3.0 | floor pockets under the USB-C and the encoder's pins (`FLOOR_POCKETS`) |
-| 3.0 | floor top (3.0 mm floor) |
-| 3.0 – 5.0 | case foam, 2 mm (poron sheet or silicone pad) |
-| 5.5 | underside of the parts over the foam: sensors, muxes, regulators (up to 1.45 mm) |
-| 7.0 | PCB underside (the USB-C hangs 3.26 mm below it, over a foam relief and a floor pocket) |
-| 8.6 | PCB top |
-| 12.1 | plate underside (MX spec: plate top is 5.0 mm above the PCB top) |
-| 13.6 | plate top |
-| 12.9 – 17.6 | trackpad module, its connector and the FFC fold, in their well (right half) |
-| 8.6 – 11.3 | MCU module (under the trackpad): soldered flat, 1.0 mm board, 1.6 mm LQFP |
-| 13.7 – 18.7 | encoder body top (flush with the plate) and the ~7 mm collar round its shaft (left half) |
-| 19.1 – 30.6 | encoder knob (left half): clears the collar, top about 2 mm above the keycaps |
-| 17.1 | underside of the 1.5 mm roof over the VGA bay and USB-C ear |
-| 17.6 – 18.6 | trackpad overlay, flush with the top (right half) |
-| 18.6 | top of case (frame 5 mm above the plate) |
+| 0.0 | case underside (the printed build's floor goes 2 mm lower) |
+| 2.5 – 3.5 | floor pockets under the USB-C and the encoder's pins (`FLOOR_POCKETS`) |
+| 3.5 | floor top (3.5 mm floor) |
+| 3.5 – 5.0 | case foam, 1.5 mm PORON, then 1 mm of air to the parts above it |
+| 3.5 – 6.5 | bosses for the two 1/4"-20 mounts, stopping 1 mm under the PCB |
+| 6.0 | underside of the parts over the foam: sensors, muxes, regulators (up to 1.45 mm) |
+| 7.5 | PCB underside (the USB-C hangs 3.26 mm below it, over a foam relief and a floor pocket) |
+| 9.1 | PCB top |
+| 12.6 | plate underside (MX spec: plate top is 5.0 mm above the PCB top) |
+| 14.1 | plate top |
+| 13.4 – 18.1 | trackpad module, its connector and the FFC fold, in their well (right half) |
+| 9.1 – 11.8 | MCU module (under the trackpad): soldered flat, 1.0 mm board, 1.6 mm LQFP |
+| 14.2 – 19.2 | encoder body top (flush with the plate) and the ~7 mm collar round its shaft (left half) |
+| 19.6 – 31.1 | encoder knob (left half): clears the collar, top about 2 mm above the keycaps |
+| 17.6 | underside of the 1.5 mm roof over the VGA bay and USB-C ear |
+| 18.1 – 19.1 | trackpad overlay, flush with the top (right half) |
+| 19.1 | top of case (frame 5 mm above the plate) |
 
 The frame height is set by the parts under the roof: the VGA bay needs more
 than the DE-15's 12.55 mm flange (it gets 14.1 mm). The MCU module is 2.7 mm
@@ -56,25 +57,72 @@ tall and sits 1.6 mm under the trackpad's well.
 For a typing angle, keep these heights at the front and raise the back by
 `depth × tan(angle)`. The case is 116 mm deep, so 5° adds about 10 mm.
 
-## Poron or silicone
+## Foam and gaskets
 
-Every soft layer has its own DXF. Either material fits the same pockets;
-silicone is springier, poron is more muted.
+Every soft layer has its own DXF. Use **PORON** (Rogers' open-cell
+polyurethane foam) for all three layers.
 
-| Layer | File | Poron | Silicone |
-|---|---|---|---|
-| Gaskets (above and below each plate tab) | tabs in `plate-*.dxf`, pockets in `case-plan-*.dxf` | 3 mm PORON strips, 10 mm wide | 3 mm silicone strip or "sock" (≈ Shore 30–40A) |
-| Case foam (under the PCB) | `foam-case-*.dxf` | 2 mm PORON sheet | 2 mm poured or cut silicone pad (≈ Shore 10–20A) |
-| Plate foam (optional, between plate and PCB) | `foam-plate-*.dxf` | 3.5 mm PORON | 3.5 mm silicone |
+| Layer | File | Use | Thickness | Alternatives | Avoid |
+|---|---|---|---|---|---|
+| **Gaskets:** a strip above and below each plate tab, 10 × 4.5 mm, 16 per half | tabs in `plate-*.dxf`, pockets in `case-plan-*.dxf` | **PORON 4701-30** (Very Soft, 320 kg/m³; 25 % CFD about 35 kPa) | 3.18 mm (Rogers' standard 0.125") | Softer: Rogers Inoac **LE-20**, 3.0 mm. Firmer: **PORON 4701-40**, 3.18 mm, or BISCO HT-800 silicone foam. | Solid silicone: 10–30× stiffer (table below). Silicone "socks" would need different tabs and cast 20A parts. |
+| **Case foam:** on the floor under the PCB | `foam-case-*.dxf` | **PORON** 4701-30 or -40 at 1.57 mm, or LE-20 sheet, adhesive on one side | 1.5 mm | 2 mm EVA, which is cheap | Anything that reaches the parts: a 2 mm sheet plus tolerance and adhesive leaves only about 0.3 mm of air. A solid silicone pad: heavy, overkill. |
+| **Plate foam** (optional): between plate and PCB | `foam-plate-*.dxf` | **PORON LE-20** 3.5 mm plate-foam sheet, or 4701-30 at 3.18 mm, which leaves 0.3 mm | ≤ 3.5 mm | 3.5 mm EVA cut from the DXF by a service | Anything thicker than the 3.5 mm gap: 10 % oversize pushes plate and PCB apart with roughly 50–90 N per half, which can bow the PCB and shift the Hall readings. Firm EVA. |
+| **Switch pads** | – | **None** | – | – | IXPE/PE pads: the switches aren't soldered, so a pad pushes each one up against its plate clips, and the rest heights vary key to key. |
+| **Feet** | `FEET` in `case-plan-*.dxf` | stick-on rubber or silicone bumpers, about 10 mm across | – | – | – |
 
-- Aim for about 25 % gasket compression when the case is closed. Tune it with
-  strip thickness, not by changing the pockets.
-- Leave the 0.5 mm air gap between the case foam and the parts over it
-  (`foam_gap`). The parts under the PCB are up to 1.45 mm tall (`bottom_parts`).
-  Foam that touches the PCB or its parts preloads the gaskets and kills the
-  flex, so thicker foam needs a taller case.
-- The case foam has reliefs for the connectors and buttons (read from the PCB
-  file) and for the standoff screw heads.
+**Gasket options.** The figures are for 16 strips of 45 mm² squeezed 25 %.
+- **Case clamp:** the force on the case screws. The strips above and below each
+  tab work in series through the tab, so it's half the sum of all 16.
+- **Flex:** for a 5 N bottom-out in the middle of the keys, and on a corner key.
+
+| Option | Grade | 25 % CFD | Per strip | Case clamp per half | Flex, middle / corner |
+|---|---|---|---|---|---|
+| **Use** | PORON 4701-30-20125-04 (3.18 mm) | 35 kPa (21–55) | 1.6 N | about 13 N | 0.15 / 0.44 mm |
+| Softer | Rogers Inoac LE-20 (3.0 mm) | 20 kPa | 0.9 N | about 7 N | 0.26 / 0.77 mm; a hard corner press lets the top strip go slack |
+| Firmer | PORON 4701-40-20125-04 (3.18 mm) | about 80 kPa | 3.6 N | about 29 N | 0.07 / 0.19 mm |
+| Don't | solid silicone, Shore 30–40A, 3 mm | – | 18–46 N | 140–370 N | almost none; loads a printed case heavily |
+
+- **Squeeze:** the pockets are drawn for 3.18 mm strips at 25 %. A 3.0 mm LE-20
+  strip is squeezed about 20 %, so it's a little softer than its row says.
+- **Thickness tolerance:** foam thickness is ±10 %. Measure your sheet, and tune
+  with strip thickness, not by changing the pockets.
+- **Adhesive:** put PSA (pressure-sensitive adhesive) on the case side only. It
+  adds 0.05–0.13 mm.
+
+**Buying.** Rogers itself sells big rolls, and gives samples of up to 10 sheets
+of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
+
+| Item | Source | Price |
+|---|---|---|
+| LE-20 strips, 25 × 4.5 × 3 mm, sold as "stickers" (cut each to 10 mm) | KPrepublic | $3.90–5.40 per 5-pack (snippet) |
+| LE-20 strip, 80 × 4 × 3 mm | MaxCustom | €3.55 each |
+| LE-20 sheets, 1 / 2 / 3 mm | SwagKeys | about $5.50 (snippet) |
+| PORON 2 or 3 mm sheet, 17 × 5 in | Thock King | $6.95 (snippet) |
+| KBDfans "module foam", 3.5 mm PORON plate foam with adhesive | KBDfans | ? |
+| 4701-40, 1/8 in with PSA, 12.4 × 9.4 in, box of 10 | eBay surplus | $17.95 + shipping (snippet) |
+| 4701-30 / 4701-40 rolls, with or without PSA | iTapeStore, LGS Technologies | $120+ minimum |
+
+**Cutting:**
+
+| Layer | How |
+|---|---|
+| Gaskets | By hand: 10 × 4.5 mm pieces from strips or sheet, with a printed stop jig. No DXF needed. |
+| Case foam | Print `foam-case-*.dxf` at 1:1 (check a 50 mm square first), tape it to the release liner and cut with a fresh blade and a steel rule, in several light passes. A Cricut Maker (up to 2.4 mm) or Silhouette Cameo 5 (up to 3 mm) cuts it from the DXF. |
+| Plate foam | PORON: a Cameo, or by hand with a printed 14 mm jig for the switch holes and leather punches for the standoffs. EVA: send the DXF to CustomKBD, Upgrade Keyboards or Ponoko. |
+
+- **Don't laser-cut PORON or EVA at a makerspace.** Polyurethane gives off
+  hydrogen cyanide, and most makerspaces ban both.
+- **Don't laser-cut silicone:** it chars. Use a die or waterjet.
+- **When preparing a DXF for a service,** add 0.2–0.3 mm round switch holes and
+  standoffs.
+
+**Fit rules:**
+- **Clearance:** the case foam must never touch the PCB or the parts under it.
+  If it does, it preloads the gaskets and kills the flex. Keep the 1 mm of air
+  (`foam_gap`); the parts hang 1.5 mm below the PCB (`bottom_parts`). Thicker
+  foam needs a taller case.
+- **Reliefs:** the case foam has reliefs for the connectors and buttons (read
+  from the PCB file), the standoff screw heads and the mount bosses.
 - **Magnetics:** foams, silicone, aluminium, brass and FR4 are all fine.
   **Don't use a steel plate or steel weights.** Use brass for weights and
   standoffs. Any small static field distortion (e.g. stainless screws) is
@@ -264,7 +312,7 @@ The receptacle is on the PCB underside, on a small ear of the PCB that
 reaches the back face behind column 4, beside the DE-15.
 - **Position:** it overhangs the ear's edge by 0.46 mm, as HRO's drawing
   intends (`geometry.USB_OVERHANG`). That puts its face 1.9 mm inside the back
-  face and its centre about 5.3 mm above the case underside (`USB_Z`).
+  face and its centre about 5.8 mm above the case underside (`USB_Z`).
 - **Opening:** a fully seated plug's overmould stops about 0.45 mm short of
   the receptacle face (USB Type-C R2.5: a 6.65 mm plug in a 6.20 mm
   receptacle), so it goes ~1.4 mm into the 1.6 mm wall. The opening in `PORTS`
@@ -290,23 +338,23 @@ of the 2D plan.
 
 | Part | Height | Contents |
 |---|---|---|
-| Tray | 0 – 12.1 mm | 3 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.25 mm deep; two 1/4"-20 mounts in bosses; the lower part of the ports and both jackscrew holes |
-| Frame | 12.1 – 18.6 mm | walls; upper tab pockets up to 15.85 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well (right half); the upper part of the DE-15 cutout |
+| Tray | 0 – 12.6 mm | 3.5 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.4 mm deep; two 1/4"-20 mounts in bosses; the lower part of the ports and both jackscrew holes |
+| Frame | 12.6 – 19.1 mm | walls; upper tab pockets up to 16.5 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well (right half); the upper part of the DE-15 cutout |
 
 - **Seam:** at the plate's underside, so the tab sits in the frame's pocket and
   the lower gasket strip in the tray's.
-- **Gaskets:** each pocket gives 6 mm for the 1.5 mm tab and two 3 mm strips,
-  which is 25 % compression.
+- **Gaskets:** each pocket gives 6.27 mm for the 1.5 mm tab and two 3.18 mm
+  PORON strips, which is 25 % compression ([Foam and gaskets](#foam-and-gaskets)).
 - **Screws:** eight M3 × 12 button heads (ISO 7380) per half, from below,
   placed automatically on the wall's midline clear of the gasket pockets,
   ports and trackpad. The same places and screws in both builds.
 - **Mounts:** two 1/4"-20 sockets per half for tripods, tenting heads and desk
   arms (see [Tenting and desk mounting](#tenting-and-desk-mounting)). Each sits
-  in a 15.4 mm boss that rises from the floor to 0.5 mm under the PCB, in a
+  in a 15.4 mm boss that rises from the floor to 1 mm under the PCB, in a
   spot its underside leaves clear (`geometry.mounts`). The PCB generator keeps
   parts out of these spots, the case foam has a relief round each, and the fit
   check fails if a part on the PCB moves onto one.
-- **Weight**, in 6061: about 260 g for the left half and 385 g for the right
+- **Weight**, in 6061: about 275 g for the left half and 405 g for the right
   (the `tapped` build).
 - **Fit check:** `generate.py case` and `check` build what goes inside as solids
   and fail if any runs into the tray or frame:
@@ -325,9 +373,9 @@ of the 2D plan.
 | | `tapped` (aluminium) | `inserts` (FDM) |
 |---|---|---|
 | Frame screw holes | 2.5 mm drill, 5 mm deep, tapped M3 (about 3.5 mm of full thread) | 4.2 mm × 5 mm (CAD size) for an M3 × 4.0 insert: ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3 |
-| Tray screw holes | 3.4 mm through, counterbore 6.0 × 4 mm | 3.5 mm through, counterbore 6.2 × 6 mm |
+| Tray screw holes | 3.4 mm through, counterbore 6.0 × 4.5 mm | 3.5 mm through, counterbore 6.2 × 6.5 mm |
 | 1/4"-20 mounts | #7 (5.1 mm) drill, 5.5 mm deep, tapped (4.5 mm of full thread) | 8.2 mm × 7.4 mm (CAD size) for a 1/4"-20 × 6.4 "short" insert (CNC Kitchen or ruthex) |
-| Floor | 3 mm | 5 mm: 2 mm more underneath, so the 6.4 mm insert fits under the PCB |
+| Floor | 3.5 mm | 5.5 mm: 2 mm more underneath, so the 6.4 mm insert fits under the PCB |
 
 Both meet ISO 1222 for the tripod socket: at least 5.5 mm deep with 4 mm of
 full thread; tripod screws stand 4.5 mm proud. The printed floor is thicker all

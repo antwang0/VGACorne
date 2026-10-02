@@ -56,12 +56,12 @@ GASKET_SET = ST.gasket * (1 - GASKET_COMPRESSION)  # each strip, compressed
 class Build:
     """How a case is made, and so how its M3 x 12 button-head screws (ISO 7380,
     5.7 mm head) hold the frame to the tray. The frame is only 6.5 mm tall, so
-    the heads sit 4 mm up their counterbores, leaving ~4 mm of thread in the
-    frame and 1.5 mm of material over its blind hole."""
+    the heads sit 1 mm above the floor's top, up deep counterbores, leaving
+    ~4 mm of thread in the frame and 1.5 mm of material over its blind hole."""
     name: str                       # file suffix
     material: str
     clear: float                    # screw clearance hole through the tray
-    head: tuple[float, float]       # counterbore from below: diameter, depth
+    head: tuple[float, float]       # counterbore: diameter, depth up from the underside
     hole: tuple[float, float]       # blind hole up into the frame: diameter, depth above the seam
     fastener: str                   # what makes the thread
     bottom: float                   # extra floor under the case (z 0 is the aluminium case's underside)
@@ -69,19 +69,19 @@ class Build:
     mount: str
 
 
-# The mounts sit in bosses that stop 0.5 mm under the PCB, so the floor and boss
-# give 6.5 mm. Tapped aluminium needs 5.5 mm of it (ISO 1222: a 5.5 mm socket
+# The mounts sit in bosses that stop 1 mm under the PCB, which moves down
+# 0.15-0.44 mm under a hard press on the gaskets; the floor and boss give 6.5 mm. Tapped aluminium needs 5.5 mm of it (ISO 1222: a 5.5 mm socket
 # with 4 mm of full thread; tripod screws stand 4.5 mm proud). A 6.4 mm insert
 # needs 7.4 mm, so the printed floor is 2 mm thicker underneath: a pad round
 # just the mounts would leave the rest of the floor overhanging the print bed.
 # Hole sizes for prints are CAD sizes: printed holes come out ~0.2 mm small.
-TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 3.4, (6.0, 4.0), (2.5, 5.0),
+TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 3.4, (6.0, 4.5), (2.5, 5.0),
                "M3 x 0.5 tapped, ~3.5 mm full thread (2.5 mm drill, 5 mm deep)", 0.0, (5.1, 5.5),
                '1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)')
-INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.5, (6.2, 4.0), (4.2, 5.0),
+INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.5, (6.2, 6.5), (4.2, 5.0),
                 "M3 x 4.0 heat-set insert (ruthex RX-M3Sx4.0, or CNC Kitchen M3 x 3), flush", 2.0, (8.2, 7.4),
                 '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside')
-BOSS_TOP = ST.pcb_bottom - 0.5
+BOSS_TOP = ST.pcb_bottom - 1.0
 BUILDS = (TAPPED, INSERTS)
 SCREW = "M3 x 12 ISO 7380"
 SCREW_EDGE = 0.5                # material between the counterbore and the cavity
@@ -90,8 +90,6 @@ SCREW_KEEP = 2.0                # from gasket pockets, ports and the trackpad
 DB_HEIGHT = 13.0                # pcb.LINK_H: the daughterboard stands on edge, the DE-15 at its centre
 ENCODER_BODY = (12.4, 13.4)
 ENCODER_COLLAR_D = 7.0
-KNOB = (16.0, 11.5)             # diameter, height
-KNOB_Z = 19.1
 
 # Curves come from shapely as polylines, sampled ever finer by repeated
 # buffering. _wire turns them back into the fewest lines and true arcs that
@@ -310,8 +308,8 @@ class Half:
                    prism(self.layers.get("FLOOR_ACCESS", []), under - 1, ST.floor + 1),
                    prism(self.layers.get("FLOOR_POCKETS", []), ST.floor - mech.FLOOR_POCKET, ST.floor + 1),
                    *self._ports()]
-        for x, y in self.screws:  # heads sit up the counterbore by the same amount in every build
-            cutters += [_hole(x, y, b.clear, under - 1, SEAM + 1), _hole(x, y, b.head[0], under - 1, b.head[1])]
+        for x, y in self.screws:  # the heads sit at the same height in every build
+            cutters += [_hole(x, y, b.clear, under - 1, SEAM + 1), _hole(x, y, b.head[0], under - 1, under + b.head[1])]
         for x, y in geo.mounts(self.side):
             cutters.append(_hole(x, y, b.mount_hole[0], under - 1, under + b.mount_hole[1]))
         return _cut(part, cutters)
@@ -370,7 +368,8 @@ def contents(side: str) -> dict[str, Part]:
         out["encoder"] = body(box(x - w / 2, y - h / 2, x + w / 2, y + h / 2), pcb_top, ST.plate_top + 0.1)
         out["encoder collar"] = body(Point(x, y).buffer(ENCODER_COLLAR_D / 2, 32), pcb_top,
                                      pcb_top + geo.ENCODER_COLLAR)
-        out["knob"] = body(Point(x, y).buffer(KNOB[0] / 2, 64), KNOB_Z, KNOB_Z + KNOB[1])
+        knob_top = pcb_top + geo.ENCODER_SHAFT + 2.0  # pushed on to leave 2 mm above the shaft
+        out["knob"] = body(Point(x, y).buffer(geo.KNOB_D / 2, 64), knob_top - geo.KNOB_H, knob_top)
     return out
 
 

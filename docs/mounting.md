@@ -8,8 +8,8 @@ Every option here attaches to the two 1/4"-20 sockets under each half (see
 - **Spacing:** the sockets are 38.6 mm apart on the left half and 38.2 mm on the
   right.
 
-The halves weigh about 260 g (left) and 385 g (right) in aluminium, less
-printed. Everything must leave the back face clear for the VGA cable and USB-C.
+The halves' cases weigh about 275 g (left) and 405 g (right) in aluminium,
+less printed. Everything must leave the back face clear for the VGA cable and USB-C.
 
 Prices are from 2026-10-01. Ones marked "(snippet)" came from search results,
 not the vendor's page, and "?" means no price was found. Check before buying.

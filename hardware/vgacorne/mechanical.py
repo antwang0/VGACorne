@@ -32,16 +32,16 @@ OUT = HARDWARE / "mechanical"
 @dataclass(frozen=True)
 class Stack:
     """Z stack-up in mm, measured up from the outside of the case floor."""
-    floor: float = 3.0            # bottom tray floor thickness
-    case_foam: float = 2.0        # poron 2 mm, or a 2 mm silicone pad
-    foam_gap: float = 0.5         # air between the foam and the lowest parts over it
+    floor: float = 3.5            # bottom tray floor: room for the tripod sockets' bosses 1 mm under the PCB
+    case_foam: float = 1.5        # PORON 1.57 mm: thicker leaves too little air once tolerance and adhesive add up
+    foam_gap: float = 1.0         # air between the foam and the lowest parts over it (corner keys flex ~0.4 mm)
     bottom_parts: float = 1.5     # B-side parts over the foam: SOT-23-5/6 1.45 mm max, sensors 1.12 mm
     component_max: float = 3.3    # tallest B-side part (USB-C receptacle, 3.26 mm), over a foam relief
     pcb: float = 1.6
     plate_gap: float = 3.5        # MX standard: plate top is 5.0 mm above PCB top
     plate: float = 1.5
-    gasket: float = 3.0           # each gasket strip, uncompressed (above and below the tab)
-    frame_above_plate: float = 5.0  # also sets the 13.6 mm interior needed by the DE-15 flange
+    gasket: float = 3.18          # each gasket strip, uncompressed: PORON 4701-30's standard 0.125"
+    frame_above_plate: float = 5.0  # also sets the VGA bay's 14.1 mm clear height (bay_interior) for the 12.55 mm DE-15 flange
     roof: float = 1.5               # top-frame thickness over the inner column and the VGA bay
 
     @property
