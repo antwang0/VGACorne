@@ -6,7 +6,7 @@ from one Python description of the keyboard.
 ```sh
 # once: a venv that can see KiCad's pcbnew module
 uv venv --system-site-packages --python /usr/bin/python3 ../.venv
-uv pip install --python ../.venv/bin/python shapely ezdxf pydantic
+uv pip install --python ../.venv/bin/python shapely ezdxf pydantic build123d
 
 ../.venv/bin/python generate.py              # every step
 ../.venv/bin/python generate.py check        # verify only
@@ -25,6 +25,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board |
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
+| `case` | `mechanical/case-*-{tray,frame}.step` (+ `.svg` preview), after a fit check | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
 | `fab` | `fab/<board>/`: JLC Gerber/drill zip, BOM and CPL (git-ignored) | yes |
 | `check` | nothing | — |
@@ -44,6 +45,7 @@ because they're read back from the schematics.
 - a check that each MCU module's castellated pads land on the main board's J4 pads pin-for-pin
 - a check that each generated firmware file is current, and the QMK matrix host
   test (needs a host C compiler)
+- the 3D case's fit check, and that its STEP files are current (needs build123d)
 
 Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
 
@@ -91,7 +93,7 @@ runs once more over it. That is about as long as a full run on a big board.
 Route on a copy, then copy the board back and run `generate.py check`. The
 VGA daughterboard, both MCU modules and the satellite are routed this way. The
 main board came out with three gaps, a boxed-in ground pad and an uncoupled
-USB pair; finish those in KiCad (see docs/bring-up.md).
+USB pair; finish those in KiCad (see TODO.md).
 
 Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the
@@ -144,6 +146,7 @@ constants at the top of the script.
 | `vgacorne/firmware.py` | netlist tracer → libhmk `keyboard.json`, default keymap |
 | `vgacorne/qmk.py` | QMK `keyboard.json` layout, `he_wiring.h` (incl. the rotary encoder's levels) and `rules.mk` from the same trace |
 | `vgacorne/mechanical.py` | stack-up, plate, gasket tabs, foams, case plan |
+| `vgacorne/case3d.py` | the 3D case (tray + frame STEP per half) and its fit check |
 | `vgacorne/customlib.py` | AT32F405RCT7 symbol; HE switch, M2 standoff and pigtail-pad footprints |
 | `vgacorne/checks.py` | the `check` step |
 | `vgacorne/fab.py` | the `fab` step and its LCSC part numbers |

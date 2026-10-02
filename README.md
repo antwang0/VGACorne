@@ -30,23 +30,24 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 
 ## Status
 
-**Rev 0.1: design scaffold. Not routed, not fabricated.**
+**Rev 0.1: routed except a few spots on the main board ([TODO](TODO.md)). Not fabricated.**
 
 | Part | State |
 |---|---|
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
-| PCBs | All placed and DRC clean, with module edge pads verified pin-for-pin against the landing pads. VGA daughterboard, both (4-layer) MCU modules and the satellite **routed**. Main board autorouted except four spots and the USB pair, **to finish by hand** ([bring-up](docs/bring-up.md#before-ordering)) |
+| PCBs | All placed and DRC clean, with module edge pads verified pin-for-pin against the landing pads. VGA daughterboard, both (4-layer) MCU modules and the satellite **routed**. Main board autorouted except four spots and the USB pair, **to finish by hand** ([TODO](TODO.md)) |
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics. **Both compile** (AT32 33 KB, F446 37 KB); no rotary encoder under libhmk |
 | QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
-| 3D case model | Not started. The 2D case plan and stack-up define its envelope; `hardware/render.py` extrudes them for [renders](docs/img/render-top.jpg) |
+| 3D case | Done: tray + frame STEP per half, fit-checked against the boards ([mechanical.md](docs/mechanical.md#3d-case)) |
 
 ![Main half, underside](docs/img/main-bottom.png)
 
 ## Repository layout
 
 ```
+TODO.md               what's left: the main board's last routing, then firmware and case
 docs/
   architecture.md     electrical design, VGA link, power, firmware mapping, decisions
   mechanical.md       stack-up, plate/gaskets/foam (poron or silicone), aluminium case rules
@@ -57,7 +58,7 @@ hardware/
   vgacorne/           the generator: layout, circuits, schematic/PCB writers, checks
   lib/                project symbols/footprints (AT32F405RCT7, HE switch, M2 standoff...)
   kicad/{main,satellite,link,module_at32,module_f446}/   KiCad 10 projects
-  mechanical/         plate, foam and case-plan DXFs (+ SVG previews), FR4 plate boards
+  mechanical/         plate, foam and case-plan DXFs (+ SVG previews), FR4 plate boards, case STEP files
   bom/                grouped BOM CSVs
 firmware/libhmk/keyboards/vgacorne_{at32,f446}/   drop-in libhmk keyboards, one per MCU module
 firmware/qmk/keyboards/vgacorne/                  QMK keyboard (STM32F446 module) + host tests

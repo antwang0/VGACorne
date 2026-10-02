@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """VGACorne generator.
 
-    generate.py [--force] [lib|schematics|pcbs|firmware|mechanical|bom|fab|check|all ...]
+    generate.py [--force] [lib|schematics|pcbs|firmware|mechanical|case|bom|fab|check|all ...]
 
 Schematics and PCBs are *scaffolding*: once you start editing them in KiCad
 they are the source of truth, so they are only (re)written with --force.
@@ -93,6 +93,26 @@ def do_mechanical(_force: bool) -> None:
         print(f"  wrote {p.relative_to(HERE)}")
 
 
+def do_case(_force: bool) -> None:
+    try:
+        from vgacorne import case3d
+    except ImportError:
+        print("  skip: needs build123d (see README)")
+        return
+    from vgacorne import mechanical
+
+    problems = []
+    for side in ("left", "right"):
+        written, fit = case3d.write(side, mechanical.OUT)
+        problems += fit
+        for p in written:
+            print(f"  wrote {p.relative_to(HERE)}")
+    for p in problems:
+        print(f"  FIT: {p}")
+    if problems:
+        sys.exit(1)
+
+
 def do_bom(_force: bool) -> None:
     import subprocess
 
@@ -128,7 +148,7 @@ def do_check(_force: bool) -> None:
 
 
 STEPS = {"lib": do_lib, "schematics": do_schematics, "pcbs": do_pcbs, "firmware": do_firmware,
-         "mechanical": do_mechanical, "bom": do_bom, "fab": do_fab, "check": do_check}
+         "mechanical": do_mechanical, "case": do_case, "bom": do_bom, "fab": do_fab, "check": do_check}
 
 
 def main() -> None:

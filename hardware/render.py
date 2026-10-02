@@ -43,7 +43,7 @@ ST = mech.STACK
 GAP = 100.0     # between the two inner walls
 SPLAY = 8.0     # each half turned this many degrees, tops inward
 KEYCAP_Z = ST.plate_top + 7.0  # keycap skirt above the plate, MX stem at rest
-VGA_Z = ST.floor + 7.0         # DE-15 shell centre (docs/mechanical.md)
+VGA_Z = mech.VGA_Z            # DE-15 shell centre
 USB_Z = mech.USB_Z             # USB-C centre above the case underside
 CASE_EDGE_R = 1.2
 

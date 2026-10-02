@@ -388,7 +388,7 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
 1. **Finish routing the main PCB.** Everything else is routed
    (`hardware/route.py`); the main board needs four spots and its USB pair
-   finished by hand ([bring-up](bring-up.md#before-ordering)).
+   finished by hand ([TODO](../TODO.md)).
    - The USB-C sits on an ear behind column 4 so it can share the back face
      with the DE-15, and the module sits on the tab beyond column 5. D+/D−
      therefore run about 50 mm to the module's back-corner pads, across the

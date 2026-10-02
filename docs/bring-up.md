@@ -2,19 +2,9 @@
 
 ## Before ordering
 
-- [ ] Finish the main PCB in KiCad's interactive router. Every other board
-      is routed (`hardware/route.py`, see hardware/README.md); the autorouter
-      left the main board with:
-      - three gaps:
-        - `LINK_B`: J3 pin 7 to U7 pin 3;
-        - `VBUS`: USB-C pad A4 to the rest of `VBUS`;
-        - `LINK_A`: R8 pad 1 to its track, which ends at (156.5, 47.6) mm;
-      - C18's ground pad, whose bottom-layer pour island is fenced off by
-        tracks (it needs a track to ground, or C18 nudged);
-      - the USB pair, routed as two loose tracks 8.6 mm apart in length. Delete
-        it and route `USB_DP`/`USB_DN` with the differential-pair router (the
-        `USB` net class: 0.4/0.15 mm) from U4 to J4's back corner. That matters
-        for the AT32's high-speed USB.
+- [ ] Finish the main PCB in KiCad's interactive router: three gaps, C18's
+      ground pad and the USB pair ([TODO.md](../TODO.md)). Every other board
+      is routed.
 - [ ] Run `hardware/generate.py check`: it must show 0 DRC errors, and
       `unconnected_items` must reach 0 on every board.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.

@@ -237,6 +237,7 @@ def _tall_parts(pcb_path: Path) -> list[Polygon]:
 # the plug's shell reaches ~1 mm into the 1.6 mm wall. That wall is at the limit
 # for full mating, so the 4-40 jackscrews outside it must have hexes <= 4.8 mm tall.
 DE15_CUTOUT = (20.5, 11.4)
+VGA_Z = STACK.floor + 7.0  # DE-15 shell centre: its 12.55 mm flange between floor and roof
 DB_WIDTH = 33.0                # pcb.LINK_W
 # Wall to the back of the daughterboard's wiring: the Amphenol 10090929's flange
 # face is 6.1 +/-0.3 mm from the board (its drawing may mean the flange's back

@@ -151,6 +151,21 @@ def module_connector(module: str) -> bool:
     return not bad
 
 
+def case_fit() -> bool:
+    """The 3D case against what goes inside it, and its STEP files up to date (needs build123d)."""
+    try:
+        from . import case3d
+    except ImportError:
+        print("  3D case: skipped (needs build123d)")
+        return True
+    problems = case3d.check()
+    for p in problems:
+        print(f"  3D case: {p}")
+    if not problems:
+        print("  3D case: fits, STEP files up to date")
+    return not problems
+
+
 def run_all() -> bool:
     ok = True
     for board in circuits.BOARDS:
@@ -165,5 +180,6 @@ def run_all() -> bool:
         ok &= module_connector(module)
     ok &= firmware_config()
     ok &= qmk_host_test()
+    ok &= case_fit()
     print("  PASS" if ok else "  FAIL")
     return ok

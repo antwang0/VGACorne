@@ -114,13 +114,14 @@ silicone is springier, poron is more muted.
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
 | `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
 
-Suggested split: the **bottom tray** carries the floor, walls up to the lower
-gasket seat and the lower tab pockets. The **top frame** carries the bezel
-around the keys, the upper tab pockets and the **1.5 mm roof** (`ROOF`), which
-covers the VGA bay, the tab and the USB-C ear. Join them with M3 screws from below through the wall thickness (6–8
-places), clear of the gasket pockets. The left half is about 150 × 116 mm. The
-right half is 202 × 116 mm with the TPS65 trackpad (171 mm with the 40 mm
-Cirque).
+Each half is a **bottom tray** and a **top frame**, split at the plate's
+underside (see [3D case](#3d-case) below). The tray carries the floor, the walls
+and the lower tab pockets. The frame carries the bezel around the keys, the
+upper tab pockets and the **1.5 mm roof** (`ROOF`), which covers the VGA bay,
+the tab and the USB-C ear. Eight M3 screws per half come up from below through
+the wall thickness, clear of the gasket pockets. The left half is about
+150 × 116 mm. The right half is 202 × 116 mm with the TPS65 trackpad (171 mm
+with the 40 mm Cirque).
 
 Milling:
 
@@ -267,13 +268,50 @@ reaches the back face behind column 4, beside the DE-15.
 - **Floor:** the shell hangs to 0.74 mm above the floor top, so the floor has a
   1 mm pocket under it (`FLOOR_POCKETS`), and gasket travel can't bottom it out.
 
-## What to model next
+## 3D case
 
-A parametric 3D case (e.g. build123d or FreeCAD) can extrude the case-plan
-layers directly:
+![3D case, right half: frame above, tray below](../hardware/mechanical/case-right.svg)
 
-1. Floor: `OUTER_WALL`, 3 mm, minus `FLOOR_ACCESS` and 1 mm deep `FLOOR_POCKETS`.
-2. Walls: `OUTER_WALL` − `INNER_WALL`, up to 18.6 mm.
-3. Tab pockets at the plate height, split between tray and frame.
-4. 1.5 mm roof over `ROOF`. Port and screwlock through-cuts in the back face.
-5. Optional wedge for a typing angle, brass weight pocket, tenting-leg inserts.
+`generate.py case` (`vgacorne/case3d.py`, needs build123d) extrudes the
+case-plan layers into four STEP files in `hardware/mechanical/`:
+`case-{left,right}-{tray,frame}.step`. These are what a CNC shop quotes from.
+The outlines are true lines and arcs, within 0.05 mm of the 2D plan.
+
+| Part | Height | Contents |
+|---|---|---|
+| Tray | 0 – 12.1 mm | 3 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.25 mm deep; the lower part of the ports and both jackscrew holes |
+| Frame | 12.1 – 18.6 mm | walls; upper tab pockets up to 15.85 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well (right half); the upper part of the DE-15 cutout |
+
+- **Seam:** at the plate's underside, so the tab sits in the frame's pocket and
+  the lower gasket strip in the tray's.
+- **Gaskets:** each pocket gives 6 mm for the 1.5 mm tab and two 3 mm strips,
+  which is 25 % compression.
+- **Screws:** eight M3 × 12 button heads (ISO 7380) per half, placed
+  automatically on the wall's midline, clear of the gasket pockets, ports and
+  trackpad.
+  - The tray has 3.4 mm clearance holes, counterbored 6 mm × 4 mm deep from below.
+  - The frame has blind holes: 2.5 mm drill, 5 mm deep, tapped M3 4.5 mm.
+  - The frame is only 6.5 mm tall, so the deep counterbore is what leaves
+    3.9 mm of thread and 1.5 mm of metal above the hole.
+- **Weight**, in 6061: about 255 g for the left half (tray 194 g, frame 61 g) and
+  380 g for the right (tray 301 g, frame 79 g).
+- **Fit check:** `generate.py case` and `check` build what goes inside as solids
+  and fail if any runs into the tray or frame:
+  - the PCB and its bottom-side parts, the USB-C receptacle;
+  - the plate with its tabs;
+  - the daughterboard;
+  - the MCU module;
+  - the trackpad overlay and module;
+  - the encoder, its collar and the knob.
+
+  The bodies are inset 0.05 mm, so parts that touch by design pass: the DE-15
+  flange against the back wall, the plate on the seam.
+
+Not modelled; tell the machinist or add them later:
+- Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
+  break all edges.
+- The wordmark on the roof.
+- Rubber feet.
+- A typing-angle wedge, brass weights, tenting-leg inserts.
+- Under the trackpad the tray is solid (the wall between the PCB and the
+  outline, about 125 g). A pocket from below would lighten it.
