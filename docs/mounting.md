@@ -33,7 +33,7 @@ tilts, so the socket has to stand at least this high above the desk:
 | SmallRig 2948B / BUT2665 mini ball heads | 1/4"-20 | ball head; needs a base or tripod | 1.5 / 2 kg | ? | Both, on a base of your choice |
 | Neewer Z-Flex tilt head | 1/4" or 3/8" underneath, quick-release plate on top | folding tilt, 0–90° | 3 kg | ? | Both. Its flat base is stable on a desk; Bastard Keyboards use it. |
 | Ulanzi MT-08 | 1/4"-20 ball head | 13–23.5 cm | not rated | ? | Printed halves |
-| keeb.io MagSafe stand R2 | steel ring (56/46 mm) stuck under the half; magnet on an adjustable arm | adjustable | – | $34.99 | Printed halves. On aluminium the ring holds by friction alone, so it is marginal at steep angles. Folds flat, 188 g per half. |
+| keeb.io MagSafe stand R2 | steel ring (56/46 mm) stuck under the half; magnet on an adjustable arm | adjustable | – | $34.99 | **Not recommended:** the stand's magnet ends up 7–9 mm under the Hall sensors ([below](#why-not-magsafe)) |
 | ErgoKeeb tenting kit | MagSafe ring | adjustable | – | $40 | As above |
 | Keebart MagLift | MagSafe ring | adjustable | – | €39.90 | As above |
 | TheKeebLab metal kit | MagSafe ring | adjustable | – | €49 | As above |
@@ -41,7 +41,7 @@ tilts, so the socket has to stand at least this high above the desk:
 | MoErgo Glove80 legs | M4 studs screwed into the case, feet on the ends | up to ~25–30° | – | MoErgo spares | No: needs M4 inserts on the inner edge (not modelled). The right half needs ~49 mm legs for 15°. |
 | Adhesive legs (holykeebs, beekeeb Bobtail, PandaKB) | tape | 2–3 low steps (Bobtail: 6.1 / 26.9 mm) | – | $6.50–20 | Left half, low tents only |
 | splitkb Tenting Puck | adds a 1/4"-20 thread to boards without one: 4 × M2 on a Ø38.1 mm circle | – | – | €28.88 a pair (snippet) | Not needed: the sockets are built in |
-| Printable stands (Printables: McAbra tenting kit, Jakmazdev MagSafe stand, Corne v4.1 tenting base) | screws, MagSafe rings or a cradle | fixed or parametric | – | free | Would need adapting, and a cradle must leave the back face open |
+| Printable stands (Printables: McAbra tenting kit, Corne v4.1 tenting base) | screws or a cradle | fixed or parametric | – | free | Would need adapting, and a cradle must leave the back face open. Skip the magnetic ones (e.g. Jakmazdev's MagSafe stand), for the same reason. |
 
 These are built for other keyboards, so they're for reference only:
 - **ZSA Moonlander tripod kit:** 1/4"-20 blocks on M2.6 screws.
@@ -51,7 +51,38 @@ These are built for other keyboards, so they're for reference only:
 - **Dygma Raise and Defy:** stepped kits.
 
 **Picks:** SmallRig BUT2664 for the aluminium halves and a Manfrotto PIXI for the
-printed ones. A MagSafe stand if you swap setups often and the case is printed.
+printed ones. To swap setups quickly, put an Arca quick release on the stand,
+e.g. a Falcam F38 or Ulanzi Claw (about $30). It clicks on and off like
+MagSafe, with no magnet.
+
+### Why not MagSafe
+
+A MagSafe stand's magnet presses against the steel ring under the case. That
+puts it about 7 mm below the Hall sensors in the aluminium case and 9 mm in the
+printed one. Field at the sensor (DRV5055A3 figures from
+[sensors.md](sensors.md)):
+
+| | Field at the sensor |
+|---|---|
+| A full keypress | about 20–55 mT (400–1,100 ADC counts) |
+| The firmware's starting bottom-out threshold | about 20 mT (400 counts) |
+| A MagSafe magnet directly under a sensor | about 10–35 mT (estimate, for a 1–2 mm N52 ring) |
+
+A 56 mm ring always passes under several sensors.
+- **Clipping:** the sensor reads up to ±88 mT. With a strong switch giving
+  ~75 mT, an offset in the same direction pushes keys over the ring past that
+  limit, so they lose the bottom of their travel.
+- **Attaching or detaching while plugged in:** libhmk calibrates each key's
+  resting value only in the first 500 ms after power-up. Moving the half onto
+  or off the stand shifts the keys over the ring by about a full keypress.
+  They read as pressed, or go dead, until you replug or recalibrate. Quick
+  attach and detach is the whole point of MagSafe, so this defeats it.
+- **The steel ring alone** is harmless: it's thin and far from the switch
+  magnets, and calibration absorbs its small, constant effect.
+
+If you use one anyway: put the half on the stand before plugging in USB, or
+recalibrate in hmkconf afterwards. Then check in hmkconf's debug view that no
+key over the ring clips at the bottom of its travel.
 
 ## Desk and chair mounting
 

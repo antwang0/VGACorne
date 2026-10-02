@@ -79,6 +79,12 @@ silicone is springier, poron is more muted.
   **Don't use a steel plate or steel weights.** Use brass for weights and
   standoffs. Any small static field distortion (e.g. stainless screws) is
   calibrated out, but brass or titanium M2 screws near the sensors are nicer.
+  - **No magnets under the case.** A MagSafe tenting stand's magnet sits 7–9 mm
+    under the sensors. It shifts the keys above it by about a full keypress
+    whenever it's attached or removed ([mounting.md](mounting.md#why-not-magsafe)).
+  - A steel tripod screw in the 1/4"-20 sockets is about 12 mm from the
+    nearest sensor and unmagnetised, so it should be negligible. Check the key
+    readings in hmkconf's debug view the first time you mount a half.
 
 ## Plate
 
