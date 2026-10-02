@@ -53,6 +53,7 @@ docs/
   mechanical.md       stack-up, plate/gaskets/foam (poron or silicone), aluminium case rules
   bring-up.md         ordering, assembly, first power-up, flashing, calibration
   sensors.md          Hall/TMR sensor options and the field the common HE switches give
+  mounting.md         tenting stands and desk/chair mounts for the 1/4"-20 sockets
 hardware/
   generate.py         regenerates everything below (see hardware/README.md)
   vgacorne/           the generator: layout, circuits, schematic/PCB writers, checks

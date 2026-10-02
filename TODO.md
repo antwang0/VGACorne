@@ -46,7 +46,7 @@ Details are in the linked docs.
 
 - [ ] **Case:** print the `inserts` build and check the fit, then quote the
       `tapped` build in aluminium (STEP + `.dxf` hole drawing). Pick a tenting
-      and desk setup ([mechanical.md](docs/mechanical.md#tenting-and-desk-mounting)).
+      and desk setup ([mounting.md](docs/mounting.md)).
       Not modelled yet: edge rounds, a typing angle, lightening under the
       trackpad.
 - [ ] **QMK:**

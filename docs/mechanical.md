@@ -366,9 +366,9 @@ Not modelled; tell the machinist or add them later:
 
 ### Tenting and desk mounting
 
-Every option below uses the two 1/4"-20 sockets under each half. The camera
-world's standard thread is what tripods, ball heads, Arca-Swiss quick-release
-plates, desk clamps and arms all share.
+Every tenting and mounting option uses the two 1/4"-20 sockets under each
+half. It is the camera world's standard thread, shared by tripods, ball heads,
+Arca-Swiss quick-release plates, desk clamps and arms.
 
 - **Sockets:** front to back, in the column gap nearest the half's centre of
   mass. They are 38.6 mm apart on the left half and 38.2 mm on the right.
@@ -381,40 +381,9 @@ plates, desk clamps and arms all share.
 - **The back face** stays clear in every setup. Run the VGA cable along the arm
   and clamp it there for strain relief.
 
-**Tenting on the desk.** A mini tripod with a ball head screws into one socket
-and gives any angle.
-
-| Half | Socket to outer edge | Socket height for 15° | 20° | 30° | 45° |
-|---|---|---|---|---|---|
-| Left | 85 mm | 22 mm | 29 mm | 42 mm | 60 mm |
-| Right | 104 mm | 27 mm | 35 mm | 52 mm | 73 mm |
-
-| Option | Price | Notes |
-|---|---|---|
-| SmallRig BUT2664 tabletop tripod | about $36–45 | Ball head rated 2 kg, with an Arca clamp that takes the two-screw plate. The pick for the aluminium halves. |
-| Manfrotto PIXI EVO | about $85 | Rated 2.5 kg; 10.5–20 cm tall |
-| Manfrotto PIXI | about $30–36 | Rated 1 kg: fine for the printed halves |
-| MagSafe stands (keeb.io R2 $34.99, ErgoKeeb $40, Keebart MagLift) | | Stick their steel ring under the half. Quick to swap; marginal at steep angles for the aluminium halves, since the ring holds by friction. |
-
-**Mounting to a desk or chair**, per pair of halves, with an Arca clamp on each
-half's plate:
-
-| Where | Budget | Premium |
-|---|---|---|
-| Above the desk | 2 × Neewer ST20 11" arm with clamp (about $26 each) + 2 × Falcam F38 quick release ($29.95): about $110. Expect some flex under resting hands; add spring washers. | 2 × Manfrotto 035RL Super Clamp ($44.95) + 2 × 244N friction arm ($138.95) + 2 × Ulanzi Claw or F38 ($30–31): about $430. SmallRig 4862 clamp-and-arm ($99.99 each) sits in between. |
-| Under the desk or beside the chair | MoErgo's "captain's chair" parts: 2 × Pro Signal 1290B pole arm ($35–70) on the chair's arm posts (30–60 mm), a CAMVATE C3031 plate ($14.60) and an Arca clamp each: about $150–200 | Humanscale 6G mechanism with the 27" Big Board (about $260–425): both halves fit up to about 510 mm apart, each on its own Arca clamp or ball head |
-
-Keep arms under about 25 cm of reach. Rest load at the end of a long arm
-flexes it more than the typing does. No vendor publishes stiffness figures.
-
-**What to make, if anything:**
-- **v1:** only the sockets; buy the plates.
-- **Optional custom Arca foot plate,** one per half: 6061, 38 mm wide with 45°
-  flanks, two counterbored 1/4"-20 holes at the socket spacing, and pockets for
-  rubber feet so it doubles as a foot. Copy the flank height from a real
-  Arca-Swiss or RRS plate. About $10–30 each at JLCCNC.
-- **Vertical or side mounting:** a 3 mm 5052 L-bracket with 1/4" slots, about
-  $20–40 at SendCutSend or OSH Cut.
-
-Prices are from 2026-10-01. Some came from search snippets rather than the
-vendors' own pages; check them before buying.
+Stands, ball heads, arms, trays and what each costs:
+[mounting.md](mounting.md). The short version:
+- **Tenting:** a SmallRig BUT2664 or Manfrotto PIXI ball head on one socket.
+- **Above the desk:** a clamp and arm with an Arca quick release.
+- **Under the desk or at the chair:** pole arms on the chair, or a wide
+  keyboard-tray board with a clamp per half.
