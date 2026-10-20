@@ -32,8 +32,9 @@ Enter the bootloader in 3 ways:
 
 The matrix is analog (`he_matrix.c`); `he_wiring.h` and `keyboard.json` are
 generated from the schematics by `hardware/generate.py firmware` in the
-VGACorne repository. Connect the VGA cable before USB, or press `HE_CALB`,
-with your hands off the keys. Rest values are learned in the first 500 ms.
+VGACorne repository. Rest values are learned in the first 500 ms after power-up,
+and again for the left half whenever the VGA cable is plugged in: keep your
+hands off those keys meanwhile. `HE_CALB` recalibrates every key.
 
 | Keycode | Action |
 |---|---|

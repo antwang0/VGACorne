@@ -320,8 +320,18 @@ def layout() -> dict:
     return {"keymap": rows}
 
 
+def remote_keys(w: Wiring) -> list[int]:
+    """0-based indices of the keys read over the VGA cable (the satellite half)."""
+    sat = HAND[SATELLITE_SIDE]
+    return sorted(k - 1 for row, side in zip(w.matrix, w.input_sides) if side == sat for k in row if k)
+
+
 def keyboard_json(module: str, w: Wiring) -> dict:
     m = MODULES[module]
+    # Needs firmware/libhmk/detachable.patch: hold the satellite's keys released
+    # while the cable is out, and recalibrate them when it comes back.
+    detachable = {"detachable": {"detect": w.det_pin, "active_low": True, "keys": remote_keys(w)}} \
+        if w.det_pin else {}
     return {
         "name": m["name"],
         "manufacturer": "VGACorne",
@@ -334,6 +344,7 @@ def keyboard_json(module: str, w: Wiring) -> dict:
             "invert_adc": SENSOR.invert_adc,
             "mux": {"select": w.select_pins, "input": w.inputs, "matrix": w.matrix},
         },
+        **detachable,
         "calibration": {
             "initial_rest_value": SENSOR.initial_rest_value,
             "initial_bottom_out_threshold": SENSOR.initial_bottom_out_threshold,

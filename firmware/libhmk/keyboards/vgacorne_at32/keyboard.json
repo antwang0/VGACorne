@@ -20,6 +20,11 @@
       ]
     }
   },
+  "detachable": {
+    "detect": "C4",
+    "active_low": true,
+    "keys": [0, 1, 2, 3, 4, 5, 12, 13, 14, 15, 16, 17, 24, 25, 26, 27, 28, 29, 36, 37, 38, 42, 43]
+  },
   "calibration": {"initial_rest_value": 2400, "initial_bottom_out_threshold": 400},
   "layout": {
     "keymap": [

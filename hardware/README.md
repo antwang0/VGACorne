@@ -47,7 +47,8 @@ because they're read back from the schematics.
   test (needs a host C compiler)
 - the 3D case's fit check, and that its STEP files are current (needs build123d)
 
-Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema.
+Set `LIBHMK=/path/to/libhmk` to also validate against libhmk's schema and run
+the libhmk hot-plug host test (`firmware/libhmk/tests`).
 
 ## Routing
 

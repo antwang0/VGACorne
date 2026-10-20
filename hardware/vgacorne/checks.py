@@ -105,24 +105,38 @@ def firmware_config() -> bool:
             from keyboard import Keyboard  # type: ignore
 
             Keyboard.model_validate(fresh)
-            print(f"  {path.parent.name}/keyboard.json validates against libhmk's schema")
+            # Without detachable.patch the schema has no `detachable` and silently drops it.
+            patched = "detachable" not in fresh or "detachable" in Keyboard.model_fields
+            ok &= patched
+            print(f"  {path.parent.name}/keyboard.json validates against libhmk's schema"
+                  + ("" if patched else " but LIBHMK lacks firmware/libhmk/detachable.patch"))
     return ok
+
+
+def _host_test(name: str, script: Path, env: dict | None = None) -> bool:
+    import shutil
+
+    if not shutil.which("cc"):
+        print(f"  {name} host test skipped (no C compiler)")
+        return True
+    r = subprocess.run(["sh", str(script)], capture_output=True, text=True, env=env)
+    lines = r.stdout.strip().splitlines()
+    print(f"  {name} host test: {lines[-1] if lines else r.stderr.strip()[-200:]}")
+    if r.returncode:
+        print("    " + "\n    ".join(l for l in lines if l.startswith("FAIL")))
+    return r.returncode == 0
 
 
 def qmk_host_test() -> bool:
     """Run the QMK hall-effect matrix against simulated sensors (needs a host C compiler)."""
-    import shutil
+    return _host_test("qmk", HARDWARE.parent / "firmware" / "qmk" / "tests" / "run.sh")
 
-    script = HARDWARE.parent / "firmware" / "qmk" / "tests" / "run.sh"
-    if not shutil.which("cc"):
-        print("  qmk host test skipped (no C compiler)")
+
+def libhmk_host_test() -> bool:
+    """Run libhmk's matrix with detachable.patch against a simulated cable (needs LIBHMK and a C compiler)."""
+    if not os.environ.get("LIBHMK"):
         return True
-    r = subprocess.run(["sh", str(script)], capture_output=True, text=True)
-    lines = r.stdout.strip().splitlines()
-    print(f"  qmk host test: {lines[-1] if lines else r.stderr.strip()[-200:]}")
-    if r.returncode:
-        print("    " + "\n    ".join(l for l in lines if l.startswith("FAIL")))
-    return r.returncode == 0
+    return _host_test("libhmk", HARDWARE.parent / "firmware" / "libhmk" / "tests" / "run.sh", dict(os.environ))
 
 
 def module_connector(module: str) -> bool:
@@ -180,6 +194,7 @@ def run_all() -> bool:
         ok &= module_connector(module)
     ok &= firmware_config()
     ok &= qmk_host_test()
+    ok &= libhmk_host_test()
     ok &= case_fit()
     print("  PASS" if ok else "  FAIL")
     return ok

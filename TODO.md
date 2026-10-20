@@ -15,6 +15,14 @@ problems that the scripted tools can't fix well:
 - **Freerouting has no differential pairs.** It routes D+ and D− as two
   unrelated nets.
 
+Freerouting 2.5.0 (October 2026) didn't help, tried 2026-10-20:
+- **From scratch:** 15 unconnected items, against the current board's 3.
+- **Closing the gaps:** it treats KiCad's ground pour as unconnected, so it
+  re-routes all of ground as tracks.
+
+Quilter is next to try. Its output must pass `generate.py check` and beat the
+current board before it replaces it.
+
 KiCad's interactive router can shove tracks aside, route differential pairs
 and tune lengths. It only runs in the editor; neither `kicad-cli` nor the
 Python API exposes it. In the editor this is roughly 15–20 minutes of work.
@@ -56,9 +64,7 @@ Details are in the linked docs.
     ([firmware/README.md](firmware/README.md)).
 - [ ] **libhmk:** add the rotary encoder and the trackpad
       ([pointing-devices.md](firmware/pointing-devices.md)).
-- [ ] **Hot-plugging:** use `DET` to ignore remote keys while the VGA cable
-      is out, and recalibrate when it returns
-      ([architecture.md](docs/architecture.md#open-items), item 2).
 - [ ] **USB IDs:** request real PIDs to replace the pid.codes test IDs.
-- [ ] **At bring-up:** confirm sensor polarity and calibration, and fit QMK's
-      travel curve to real sensor data ([bring-up.md](docs/bring-up.md)).
+- [ ] **At bring-up:** confirm sensor polarity and calibration, test
+      hot-plugging the VGA cable, and fit QMK's travel curve to real sensor
+      data ([bring-up.md](docs/bring-up.md)).

@@ -88,6 +88,7 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 
 ```sh
 git clone https://github.com/peppapighs/libhmk && cd libhmk
+git apply ../VGACorne/firmware/libhmk/detachable.patch
 cp -r ../VGACorne/firmware/libhmk/keyboards/vgacorne_* keyboards/
 python setup.py -k vgacorne_at32 && pio run       # or -k vgacorne_f446 for the STM32 module
 ```
@@ -108,8 +109,9 @@ bootloader.
 
 ## Sensor polarity and calibration
 
-1. Connect the satellite **before** plugging in USB. libhmk learns each key's
-   rest value during the first 500 ms.
+1. Connect the satellite. Each key's rest value is learned in the first 500 ms
+   after USB power-up, and the left half's again for 500 ms whenever the cable
+   goes in: keep your hands off the keys meanwhile.
 2. Open [hmkconf](https://hmkconf.com) and watch the raw/distance view while
    pressing a key on each half.
    - If distance falls as you press, flip `invert_adc` in
@@ -125,6 +127,13 @@ bootloader.
    half usually means a select or analog line isn't making it through the
    cable. Beep out the VGA cable against the pinout table in
    [architecture.md](architecture.md#vga-link-pinout).
+4. Hot-plug, with hmkconf (or `qmk console` and `HE_DBG`) open:
+   - Unplug the cable while holding a left-half key. The key should release at
+     once, and nothing on the left half should register while it's out.
+   - Plug it back in. Within about half a second every left-half key should
+     work again, with rest values like before.
+   - If not, check that PC4 (`DET`) reads low with the cable in and high with
+     it out: JP2 and cable pin 15.
 
 ## Rotary encoder (left half, QMK)
 
@@ -170,9 +179,9 @@ version (`-2024-`). Check 3.3 V on its FFC pin 12.
 | Symptom | Likely cause |
 |---|---|
 | Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or U8 in current limit (a short on `+5V_LINK`) |
-| Left half keys stuck pressed after plugging the cable in late | rest values were learned with the cable out: recalibrate in hmkconf or re-plug USB |
+| Left half keys stuck pressed after plugging the cable in late | libhmk built without `detachable.patch`, or `DET` not reaching PC4 (JP2, cable pin 15). Recalibrate in hmkconf or re-plug USB meanwhile |
 | One column on the left dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
 | Keys fine, trackpad dead | FFC reversed or folded the wrong way, the FFC seated after power-up (QMK only looks at boot), or, for a Cirque, an SPI pad with R1 still fitted |
 | Knob scrolls in bursts or backwards on some detents | a missing level on `ENC` (see *Rotary encoder*) |
-| Keys trigger randomly with the cable unplugged | pull resistor set doesn't match `invert_adc` |
+| Keys trigger randomly with the cable unplugged | `DET` not going high (PC4 shorted, or libhmk without `detachable.patch`), and the pull resistor set doesn't match `invert_adc` |
 | Rest value drifts when pressing on the plate | a standoff screw is loose, so the plate flexes against the PCB |

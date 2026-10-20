@@ -127,8 +127,11 @@ and limits current into an unpowered satellite.
 otherwise fit R14–R16 as pull-downs instead. Both the resistor choice and the
 firmware flag come from `SENSOR` in `hardware/vgacorne/circuits.py`. The
 satellite ties `LINK_DET` low through 1 kΩ, and the main half pulls it up, so
-PC4 reads low when a satellite is attached. libhmk doesn't use DET yet; see
-[open items](#open-items).
+PC4 reads low when a satellite is attached. Both firmwares watch it: while
+it's high they hold the left half's keys released, and when it goes low they
+relearn those keys' rest values over 500 ms. libhmk needs
+`firmware/libhmk/detachable.patch` for this
+([firmware](../firmware/README.md#libhmk)).
 
 **Timing.** libhmk waits `ADC_SAMPLE_DELAY` (20 µs by default) after each
 select change, so a full 8-step scan takes about 0.2 ms. The buffered cable
@@ -404,10 +407,10 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
    Route analog nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the
    select lines.
-2. **Hot-plugging.** libhmk calibrates each key's rest value only during the
-   first 500 ms after boot. Connect the VGA cable *before* USB, or recalibrate
-   from hmkconf. A small libhmk patch could use `DET` (PC4) to ignore remote
-   keys while the cable is out and recalibrate when it returns.
+2. **Hot-plugging** is handled in both firmwares through `DET` (PC4); libhmk
+   needs `firmware/libhmk/detachable.patch`. It's tested against simulated
+   sensors only: unplug and re-plug the cable at bring-up
+   ([bring-up.md](bring-up.md#sensor-polarity-and-calibration)).
 3. **Sensor polarity and calibration.** `invert_adc` and the initial rest
    value are copied from HE60 practice. The initial bottom-out threshold is 400
    counts rather than HE60's 650, because the weaker switches may swing less
