@@ -20,7 +20,7 @@ via (fan-out), then one run routes the signals over the planes.
 Freerouting attempts within a stage (different pass limits) also run at once;
 the default is one, since extra attempts rarely route anything more. Finally,
 ground stitching vias go wherever both layers are poured, and into every pour
-island.
+island, and any pad DRC finds starved of thermal spokes gets a via of its own.
 """
 import argparse
 import os
@@ -152,17 +152,19 @@ def all_at_once(board, tmp: Path, attempts: int) -> None:
         board.Add(z)
 
 
-def fanout(board, via_d: float = 0.6, drill: float = 0.3, clearance: float = 0.15, width: float = 0.25) -> int:
+def fanout(board, via_d: float = 0.6, drill: float = 0.3, clearance: float = 0.15, width: float = 0.25,
+           only: set[tuple[str, str]] | None = None) -> int:
     """Give every outer-layer SMD pad on a net with an inner plane its own via, on
     a short track clear of every other net's copper; where there's no room, join
     it to the nearest via of its net instead. Freerouting then only has to route
-    the signals. Returns the number of pads connected."""
+    the signals. With ``only`` ((ref, pad number) pairs), give just those pads a
+    via, around the board's existing tracks. Returns the number of pads connected."""
     import math
     from shapely.geometry import LineString, Point, box as sbox
     from shapely.ops import unary_union
 
     inner = {z.GetNetname() for z in board.Zones() if z.GetLayer() not in (pcbnew.F_Cu, pcbnew.B_Cu)}
-    if not inner:
+    if not inner and not only:
         return 0
     edge = board.GetBoardEdgesBoundingBox()  # includes half the edge line's width
     m = 0.3 + via_d / 2 + 0.15  # copper-to-edge clearance, via radius, margin
@@ -177,6 +179,19 @@ def fanout(board, via_d: float = 0.6, drill: float = 0.3, clearance: float = 0.1
             pads.append((pad, fp, shape))
     placed = []  # (net, via Point, track LineString)
     count = 0
+    # Copper already on the board (none before routing): (net, shape), and via holes.
+    existing, holes0 = [], []
+    tracks = board.Tracks()
+    for i in range(tracks.size()):
+        t = tracks[i]
+        if t.GetClass() == "PCB_VIA":
+            pt = Point(pcbnew.ToMM(t.GetPosition().x), pcbnew.ToMM(t.GetPosition().y))
+            existing.append((t.GetNetname(), pt.buffer(pcbnew.ToMM(t.Cast().GetWidth(pcbnew.F_Cu)) / 2)))
+            holes0.append(pt)
+        else:
+            line = LineString([(pcbnew.ToMM(t.GetStart().x), pcbnew.ToMM(t.GetStart().y)),
+                               (pcbnew.ToMM(t.GetEnd().x), pcbnew.ToMM(t.GetEnd().y))])
+            existing.append((t.GetNetname(), line.buffer(pcbnew.ToMM(t.GetWidth()) / 2)))
 
     def add(pad, net, c, v, new_via):
         if new_via:
@@ -197,14 +212,18 @@ def fanout(board, via_d: float = 0.6, drill: float = 0.3, clearance: float = 0.1
         board.Add(seg)
         placed.append((net, v if new_via else None, LineString([(c.x, c.y), (v.x, v.y)])))
 
-    todo = [x for x in pads if x[0].GetNetname() in inner and x[0].GetAttribute() == pcbnew.PAD_ATTRIB_SMD]
+    if only:
+        todo = [x for x in pads if (x[1].GetReference(), x[0].GetNumber()) in only]
+    else:
+        todo = [x for x in pads if x[0].GetNetname() in inner and x[0].GetAttribute() == pcbnew.PAD_ATTRIB_SMD]
 
     def try_via(pad, fp, shape, dirs_n, steps) -> bool:
         net = pad.GetNetname()
         others = unary_union([s for p, _, s in pads if p.GetNetname() != net]
+                             + [s for n, s in existing if n != net]
                              + [v.buffer(via_d / 2) for n, v, _ in placed if n != net and v is not None]
                              + [l.buffer(width / 2) for n, _, l in placed if n != net])
-        holes = [v for _, v, _ in placed if v is not None]
+        holes = holes0 + [v for _, v, _ in placed if v is not None]
         c = shape.centroid
         fc = Point(pcbnew.ToMM(fp.GetPosition().x), pcbnew.ToMM(fp.GetPosition().y))
         away = math.atan2(c.y - fc.y, c.x - fc.x) if c.distance(fc) > 1e-6 else 0.0
@@ -285,6 +304,32 @@ def finish(path: Path, attempts: int = 1) -> int:
             shutil.copy(trial, path)
             return after
     return before
+
+
+def fix_starved(path: Path) -> int:
+    """Pads that DRC finds joined to their pour by too few thermal spokes (tracks
+    leave room for only one): connect each to its pour solidly instead of by
+    spokes, and give it a via of its own to the other layer's pour, so its patch
+    of pour doesn't hang on one connection. Returns the number of pads fixed."""
+    with tempfile.TemporaryDirectory() as tmp:
+        rpt = Path(tmp) / "drc.rpt"
+        subprocess.run(["kicad-cli", "pcb", "drc", "--refill-zones", "-o", str(rpt), str(path)],
+                       check=True, capture_output=True)
+        blocks = re.split(r"\n(?=\[)", rpt.read_text())
+    starved = {(ref, pad) for b in blocks if b.startswith("[starved_thermal]")
+               for pad, ref in re.findall(r"Pad (\S+) \[[^\]]*\] of (\S+)", b)}
+    if not starved:
+        return 0
+    board = pcbnew.LoadBoard(str(path))
+    fanout(board, clearance=0.2, width=0.3, only=starved)
+    for ref, num in starved:
+        for pad in board.FindFootprintByReference(ref).Pads():
+            if pad.GetNumber() == num:
+                pad.SetLocalZoneConnection(pcbnew.ZONE_CONNECTION_FULL)
+    board.Save(str(path))
+    subprocess.run(["kicad-cli", "pcb", "drc", "--refill-zones", "--save-board", "-o", "/dev/null", str(path)],
+                   check=True, capture_output=True)
+    return len(starved)
 
 
 def drop_stray_vias(board) -> int:
@@ -371,7 +416,8 @@ def main():
         shutil.copy(out, args.dst)
         if n:
             n = finish(args.dst, args.attempts)
-    print(f"routed -> {args.dst} ({name}, {n} unconnected); {stitch(args.dst)} ground stitching vias")
+    print(f"routed -> {args.dst} ({name}, {n} unconnected); {stitch(args.dst)} ground stitching vias; "
+          f"{fix_starved(args.dst)} starved pads given a via")
 
 
 def _polys(shape_poly_set):

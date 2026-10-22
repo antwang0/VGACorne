@@ -29,6 +29,9 @@ from .schematic import Circuit, symbol_uuid
 
 STOCK_FP = Path(os.environ.get("KICAD10_FOOTPRINT_DIR", "/usr/share/kicad/footprints"))
 LOCAL_FP = Path(__file__).resolve().parent.parent / "lib"
+# Courtyard clearance for the main board's link and ADC-resistor groups beside
+# the module, its most crowded routing.
+LINK_GAP = 1.0
 
 
 def mm(v: float) -> int:
@@ -178,7 +181,8 @@ class Builder:
         return k
 
     def autoplace(self, ref: str, near: tuple[float, float], rot: float = 0.0, layer="B",
-                  max_r: float = 30.0, mirror=True, avoid=None) -> None:
+                  max_r: float = 30.0, mirror=True, avoid=None, gap: float = 0.15) -> None:
+        """Place ``ref`` at the free spot nearest ``near``, ``gap`` mm clear of other courtyards."""
         if mirror:
             near = geo.mirror_point(*near) if self.side == "right" else near
             rot = -rot if self.side == "right" else rot
@@ -197,7 +201,7 @@ class Builder:
                     if layer == "B" and fp.GetLayer() == pcbnew.F_Cu:
                         fp.Flip(fp.GetPosition(), pcbnew.FLIP_DIRECTION_LEFT_RIGHT)
                     fp.SetOrientationDegrees(ro)
-                    p = self.poly(fp, layer, grow=0.15)
+                    p = self.poly(fp, layer, grow=gap)
                     if self.inside.contains(p) and not p.intersects(blocked):
                         self.occupied[layer].append((ref, self.poly(fp, layer)))
                         return
@@ -335,14 +339,14 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
     # J3 and the module; the remote ADC lines' series resistors and cable-out
     # pulls at the module's front-edge ADC pads, which they serve.
     for ref in ("U8", "C18", "D1", "C15", "U6", "U7"):
-        b.autoplace(ref, (lx - 4, ly + 3), 0, max_r=26)
+        b.autoplace(ref, (lx - 4, ly + 3), 0, max_r=26, gap=LINK_GAP)
     for ref in ("R5", "R6", "R7", "R17", "R18"):
-        b.autoplace(ref, (lx - 9, ly + 6), 90, max_r=26)
+        b.autoplace(ref, (lx - 9, ly + 6), 90, max_r=26, gap=LINK_GAP)
     adc = [p for p in b.fps["J4"].Pads() if p.GetNetname().lstrip("/").startswith("ADC_R")]
     ax = sum(pcbnew.ToMM(p.GetPosition().x) for p in adc) / len(adc)
     ay = max(pcbnew.ToMM(p.GetPosition().y) for p in adc) + 2.5
     for ref in ("R8", "R9", "R10", "R11", "R12", "R13", "R14", "R15", "R16"):
-        b.autoplace(ref, (ax, ay), 90, max_r=20, mirror=False)
+        b.autoplace(ref, (ax, ay), 90, max_r=20, mirror=False, gap=LINK_GAP)
     # Trackpad FFC connector on top of the board, under the pad's well, its mouth
     # toward the pad's own connector; the pull-ups beside it.
     fx, fy = geo.corne(*PAD.fpc)

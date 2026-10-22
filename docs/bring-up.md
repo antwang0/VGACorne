@@ -2,9 +2,8 @@
 
 ## Before ordering
 
-- [ ] Finish the main PCB in KiCad's interactive router: three gaps, C18's
-      ground pad and the USB pair ([TODO.md](../TODO.md)). Every other board
-      is routed.
+- [ ] Route the main board's USB pair as a differential pair in KiCad
+      ([TODO.md](../TODO.md)). Everything else on every board is routed.
 - [ ] Run `hardware/generate.py check`: it must show 0 DRC errors, and
       `unconnected_items` must reach 0 on every board.
 - [ ] If you swapped mux channels while routing, run `generate.py firmware`.

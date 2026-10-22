@@ -91,10 +91,15 @@ their outer halves count, and keepouts stop any track leaving the board.
 **Finishing pass:** if the best result still leaves connections open, Freerouting
 runs once more over it. That is about as long as a full run on a big board.
 
-Route on a copy, then copy the board back and run `generate.py check`. The
-VGA daughterboard, both MCU modules and the satellite are routed this way. The
-main board came out with three gaps, a boxed-in ground pad and an uncoupled
-USB pair; finish those in KiCad (see TODO.md).
+**Starved pads:** last, any pad DRC finds joined to its ground pour by too few
+thermal spokes (tracks fence off its patch of pour) gets a solid connection and
+a via of its own.
+
+Route on a copy, then copy the board back and run `generate.py check`. Every
+board is routed this way. The main board only routed completely once the parts
+beside the module were spread out (`LINK_GAP` in `vgacorne/pcb.py`); if a
+board leaves connections in one crowded spot, space its parts out there before
+re-running. Its USB pair still needs coupling in KiCad (see TODO.md).
 
 Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the

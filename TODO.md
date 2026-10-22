@@ -1,43 +1,22 @@
 # TODO
 
-## Finish routing the main PCB (by hand, in KiCad)
+## Route the main board's USB pair (in KiCad)
 
-`hardware/route.py` autorouted every board. The main board came out with four
-problems that the scripted tools can't fix well:
+Every board is autorouted by `hardware/route.py` and passes `generate.py
+check`. On the main board, getting there took spreading out the link and
+ADC-resistor parts beside the module (`LINK_GAP` in `vgacorne/pcb.py`, 1.0 mm
+between courtyards instead of 0.15 mm). With them packed tight, every router
+tried left 1–11 connections open in that cluster: Freerouting 2.4.1 and 2.5.0,
+and Quilter, which also squeezed below our track and clearance rules and
+shorted nets when asked to finish the old board.
 
-- **Freerouting runs out of room.** The main board has two copper layers, and
-  most parts are on the bottom. Its last three connections are in the most
-  crowded spots. Closing them means pushing existing tracks aside. More runs
-  gave diminishing returns: 9 gaps, then 4, then 3, at 20–35 minutes a run.
-- **Freerouting doesn't understand copper pours.** `route.py` routes ground as
-  tracks, then adds the pour and stitching vias itself. That leaves one pad
-  boxed in.
-- **Freerouting has no differential pairs.** It routes D+ and D− as two
-  unrelated nets.
+Freerouting has no differential pairs, so one thing is left for KiCad's
+interactive router, roughly 10 minutes of work:
 
-Freerouting 2.5.0 (October 2026) didn't help, tried 2026-10-20:
-- **From scratch:** 15 unconnected items, against the current board's 3.
-- **Closing the gaps:** it treats KiCad's ground pour as unconnected, so it
-  re-routes all of ground as tracks.
-
-Quilter is next to try. Its output must pass `generate.py check` and beat the
-current board before it replaces it.
-
-KiCad's interactive router can shove tracks aside, route differential pairs
-and tune lengths. It only runs in the editor; neither `kicad-cli` nor the
-Python API exposes it. In the editor this is roughly 15–20 minutes of work.
-
-- [ ] **Three gaps:**
-  - `LINK_B`: J3 pin 7 to U7 pin 3, about 6 mm.
-  - `VBUS`: USB-C pad A4 to the rest of `VBUS`.
-  - `LINK_A`: R8 pad 1 to its track, which ends at (156.5, 47.6) mm.
-- [ ] **C18's ground pad** (DRC `starved_thermal`, the one error that fails
-      `generate.py check`). Tracks fence its patch of bottom-layer ground pour
-      off from the rest, and there's no room for a ground via. Route a short
-      track to ground, or nudge C18 and move a track.
-- [ ] **The USB pair.** It is two loose tracks, 55 and 46 mm long and not side
-      by side. That's harmless for the F446's full-speed USB, but it loses the
-      ~90 Ω coupling the AT32's high-speed USB needs, and adds ~55 ps of skew.
+- [ ] **The USB pair.** It is two separate tracks, 41.3 and 39.0 mm long with
+      one via each, not side by side. That's harmless for the F446's
+      full-speed USB, but it loses the ~90 Ω coupling the AT32's high-speed
+      USB needs (the 2.3 mm mismatch is only ~15 ps).
       - Delete both tracks.
       - Route `USB_DP`/`USB_DN` with the differential-pair router (the `USB`
         net class: 0.4 mm tracks, 0.15 mm gap) from U4 to J4's back corner.
