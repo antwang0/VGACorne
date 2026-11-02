@@ -97,9 +97,15 @@ a via of its own.
 
 Route on a copy, then copy the board back and run `generate.py check`. Every
 board is routed this way. The main board only routed completely once the parts
-beside the module were spread out (`LINK_GAP` in `vgacorne/pcb.py`); if a
-board leaves connections in one crowded spot, space its parts out there before
-re-running. Its USB pair still needs coupling in KiCad (see TODO.md).
+beside the module were spread out (`LINK_GAP` in `vgacorne/pcb.py`, 1.0 mm
+between courtyards instead of 0.15 mm): packed tight, every router tried left
+1–11 connections open in that cluster, Freerouting 2.4.1 and 2.5.0 alike, and
+Quilter, which also squeezed below our track and clearance rules and shorted
+nets when asked to finish the old board. If a board leaves connections in one
+crowded spot, space its parts out there before re-running. Freerouting has no
+differential pairs: the main board's USB pair was laid by hand afterwards with
+pcbnew (`USB` class, 0.4 mm tracks 0.15 mm apart, a trombone on `USB_DN` to
+match the lengths).
 
 Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
 circuit changes into KiCad with *Update PCB from Schematic*, or delete the

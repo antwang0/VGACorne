@@ -1,29 +1,15 @@
 # TODO
 
-## Route the main board's USB pair (in KiCad)
+## Order the boards
 
-Every board is autorouted by `hardware/route.py` and passes `generate.py
-check`. On the main board, getting there took spreading out the link and
-ADC-resistor parts beside the module (`LINK_GAP` in `vgacorne/pcb.py`, 1.0 mm
-between courtyards instead of 0.15 mm). With them packed tight, every router
-tried left 1–11 connections open in that cluster: Freerouting 2.4.1 and 2.5.0,
-and Quilter, which also squeezed below our track and clearance rules and
-shorted nets when asked to finish the old board.
+Every board is routed and passes `generate.py check` (0 DRC errors, 0
+unconnected items). Freerouting (`hardware/route.py`) routed everything but
+the main board's USB pair; it has no differential pairs, so that was laid by
+hand afterwards: 0.4 mm tracks 0.15 mm apart from the module's pads to the
+vias beside the ESD array U4, with a trombone on `USB_DN` that matches the
+lengths to 0.01 mm (41.46 vs 41.45 mm). The last 1–6 mm into U4 stay
+single-ended, as the connector cluster leaves no room to move the vias.
 
-Freerouting has no differential pairs, so one thing is left for KiCad's
-interactive router, roughly 10 minutes of work:
-
-- [ ] **The USB pair.** It is two separate tracks, 41.3 and 39.0 mm long with
-      one via each, not side by side. That's harmless for the F446's
-      full-speed USB, but it loses the ~90 Ω coupling the AT32's high-speed
-      USB needs (the 2.3 mm mismatch is only ~15 ps).
-      - Delete both tracks.
-      - Route `USB_DP`/`USB_DN` with the differential-pair router (the `USB`
-        net class: 0.4 mm tracks, 0.15 mm gap) from U4 to J4's back corner.
-      - Keep the length difference under ~1 mm.
-      - Keep the ground pour beside the pair and unbroken ground under it.
-- [ ] Run `hardware/generate.py check`: 0 DRC errors and 0 unconnected items
-      on every board.
 - [ ] Run `hardware/generate.py fab` and order (see
       [bring-up](docs/bring-up.md#before-ordering)).
 

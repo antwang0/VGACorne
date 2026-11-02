@@ -389,16 +389,20 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
 ## Open items
 
-1. **Finish routing the main PCB.** Everything else is routed
-   (`hardware/route.py`); the main board's USB pair still needs routing as a
-   differential pair by hand ([TODO](../TODO.md)).
+1. **Main PCB routing: done.** Every board is autorouted
+   (`hardware/route.py`); the main board's USB pair was then laid by hand as a
+   differential pair, since Freerouting has none.
    - The USB-C sits on an ear behind column 4 so it can share the back face
      with the DE-15, and the module sits on the tab beyond column 5. D+/D−
-     therefore run about 50 mm to the module's back-corner pads, across the
-     top of column 5.
-   - This matters for the AT32's high-speed USB. Route D+/D− as a pair with the
-     `USB` net class: 0.4 mm tracks 0.15 mm apart, the ground pour beside them,
-     and unbroken ground on the other layer.
+     therefore run about 41 mm to the module's back-corner pads, along the
+     notch between the two, over the top of column 5.
+   - This matters for the AT32's high-speed USB. D+/D− run as a pair in the
+     `USB` net class, 0.4 mm tracks 0.15 mm apart, from the module pads to the
+     two vias beside the ESD array U4, with ground pour beside them and the
+     ground pour of the other layer beneath. A trombone on D− after the module
+     breakout matches the lengths to 0.01 mm (41.46 vs 41.45 mm). The last
+     1–6 mm into U4 are single-ended: the connector cluster leaves no room to
+     move the vias, and the connector-to-U4 stubs are single-ended anyway.
    - On the 1.6 mm 2-layer main board that comes to about 97 Ω differential as
      bare copper, a few ohms less under solder mask (2D field-solver estimate).
      That is inside USB's 90 Ω ±15%.

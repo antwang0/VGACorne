@@ -30,13 +30,13 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 
 ## Status
 
-**Rev 0.1: routed except a few spots on the main board ([TODO](TODO.md)). Not fabricated.**
+**Rev 0.1: fully routed, `generate.py check` clean. Not fabricated ([TODO](TODO.md)).**
 
 | Part | State |
 |---|---|
 | Architecture, VGA link pinout, power budget | Done: [docs/architecture.md](docs/architecture.md) |
 | Schematics (main, satellite, VGA daughterboard, 2 MCU modules) | Done. KiCad 10, ERC clean |
-| PCBs | All placed and DRC clean, with module edge pads verified pin-for-pin against the landing pads. VGA daughterboard, both (4-layer) MCU modules and the satellite **routed**. Main board **routed** too, except that its USB pair still needs coupling as a differential pair in KiCad ([TODO](TODO.md)). `generate.py check` passes |
+| PCBs | All placed and DRC clean, with module edge pads verified pin-for-pin against the landing pads. All five boards **routed**: the VGA daughterboard, both (4-layer) MCU modules and the satellite by Freerouting, the main board too except its USB pair, laid by hand as a differential pair (0.4 mm / 0.15 mm, lengths matched to 0.01 mm). `generate.py check` passes |
 | Firmware | libhmk `keyboard.json` per module, traced from the schematics, plus a small libhmk patch for hot-plugging the VGA cable (host-tested). **Both compile** (AT32 33.5 KB, F446 37.3 KB); no rotary encoder under libhmk |
 | QMK | F446 module: hall-effect matrix with actuation + rapid trigger, the rotary encoder and the optional trackpad. **Builds** (36.8 KB) and passes host tests; VIA not yet |
 | Plate (aluminium DXF + FR4 KiCad board), foams, case plan | Done: [docs/mechanical.md](docs/mechanical.md) |
@@ -47,7 +47,7 @@ per-key actuation, the [hmkconf](https://hmkconf.com) web configurator). The
 ## Repository layout
 
 ```
-TODO.md               what's left: the main board's last routing, then firmware and case
+TODO.md               what's left: order the boards, then firmware and case
 docs/
   architecture.md     electrical design, VGA link, power, firmware mapping, decisions
   mechanical.md       stack-up, plate/gaskets/foam (poron or silicone), aluminium case rules
