@@ -436,6 +436,9 @@ DRAWING_NOTES = [
     "Material: aluminium 6061-T6 (CNC) or AlSi10Mg (SLM). General tolerance +/-0.1.",
     "Threads as tabulated, cutting taps. Mask all tapped holes when anodising.",
     "Break all sharp edges 0.2-0.5. Bead blast, then anodise.",
+    "BARE layer: no anodising (mask, or skim 0.05 after). Chem film per MIL-DTL-5541 Type II Class 3.",
+    "Bare areas: the seam face (tray top / frame underside), the DE-15 flange seat inside the back wall",
+    "and the D pads on the floor top. Under 0.1 ohm between any two bare areas of a part.",
 ]
 
 
@@ -446,25 +449,33 @@ def drawing(half: Half, part: str, path: Path) -> Path | None:
 
     b = half.build
     holes = []
+    bare = [half.layers["BARE"][0]]                      # the seam face, on both parts
     if part == "frame":
         holes += [("A", xy, f"M3 x 0.5: {b.fastener}") for xy in half.screws]
     else:
         holes += [("B", xy, f"Clearance {b.clear} thru, counterbore {b.head[0]} x {b.head[1]} deep*")
                   for xy in half.screws]
         holes += [("C", xy, f"{b.mount}*") for xy in geo.mounts(half.side)]
+        holes += [("D", (p.centroid.x, p.centroid.y), f"Bare pad dia {mech.BARE_PAD_D:g} on the floor top, no anodising")
+                  for p in half.layers.get("BARE_FLOOR", [])]
+        bare += half.layers["BARE"][1:]                  # the DE-15 flange seat (tray: the lower part of the back wall)
     doc = ezdxf.new("R2010", setup=True)
     doc.units = ezdxf.units.MM
     msp = doc.modelspace()
-    for name in ("OUTLINE", "HOLES", "TEXT"):
+    for name in ("OUTLINE", "HOLES", "BARE", "TEXT"):
         doc.layers.add(name)
     for ring in [half.outer.exterior]:
         msp.add_lwpolyline([(x, -y) for x, y in ring.coords], close=True, dxfattribs={"layer": "OUTLINE"})
+    for poly in bare:
+        for g in getattr(poly, "geoms", [poly]):
+            for ring in [g.exterior, *g.interiors]:
+                msp.add_lwpolyline([(x, -y) for x, y in ring.coords], close=True, dxfattribs={"layer": "BARE"})
     rows = {}
     for kind, (x, y), spec in holes:
         n = sum(1 for k in rows if k.startswith(kind)) + 1
         rows[f"{kind}{n}"] = spec
-        d = b.hole[0] if kind == "A" else b.clear if kind == "B" else b.mount_hole[0]
-        msp.add_circle((x, -y), d / 2, dxfattribs={"layer": "HOLES"})
+        d = {"A": b.hole[0], "B": b.clear, "C": b.mount_hole[0], "D": mech.BARE_PAD_D}[kind]
+        msp.add_circle((x, -y), d / 2, dxfattribs={"layer": "HOLES" if kind != "D" else "BARE"})
         msp.add_text(f"{kind}{n}", height=2.0, dxfattribs={"layer": "TEXT"}).set_placement((x + 3, -y + 1))
     x0, y0, x1, y1 = half.outer.bounds
     lines = [f"{path.stem}: {b.material}"] + DRAWING_NOTES + [""]

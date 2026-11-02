@@ -20,9 +20,9 @@ Details are in the linked docs.
 - [ ] **Case:** print the `inserts` build and check the fit, then quote the
       `tapped` build in aluminium (STEP + `.dxf` hole drawing). Pick a tenting
       and desk setup ([mounting.md](docs/mounting.md)).
-      For aluminium, finish the grounding plan ([grounding.md](docs/grounding.md)):
-      the PCBs are done (grounded standoffs and encoder legs, spring fingers);
-      the case still needs its `BARE` layer for the anodiser.
+      The grounding plan ([grounding.md](docs/grounding.md)) is in the boards
+      and the drawings: order the four spring fingers and ask the shop to mask
+      the `BARE` areas.
       Not modelled yet: edge rounds, a typing angle, lightening under the
       trackpad.
 - [ ] **QMK:**

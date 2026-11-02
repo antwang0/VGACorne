@@ -38,9 +38,9 @@ cuts that to a tenth, and a grounded plate makes an arc to the plate harmless.
 
 ### 1. Case finish: anodise with bare spots
 
-Keep "bead blast, then anodise", and add a `BARE` layer to the case plan and
-the hole drawings listing what the anodiser masks (or the shop skims 0.05 mm
-after anodising):
+Keep "bead blast, then anodise". The case plan's `BARE` and `BARE_FLOOR`
+layers and the hole drawings show what the anodiser masks (or the shop skims
+0.05 mm after anodising):
 
 - the **seam faces**, the tray's wall top and the frame's underside over the
   whole wall width (hidden when assembled): the frame-to-tray bond, and a
@@ -139,8 +139,9 @@ The PCB side is done (2026-11-02), so the boards you order carry it:
       is GUI-only): footprints swapped, nets set, fingers placed in free
       copper, and the tracks Freerouting had run against the old holes bent
       round the new pads (seven sites). `generate.py check` clean.
-- [ ] `mechanical.py` / `case3d.py`: the `BARE` layer (seam faces, flange
-      seat, Ø8 floor pads under G1/G2) in the case plan and hole drawings.
+- [x] `mechanical.py` / `case3d.py`: `BARE` (seam face, flange seat) and
+      `BARE_FLOOR` (Ø8 pads under G1/G2) in the case plan; the hole drawings
+      outline them, list the pads as D1/D2 and carry the masking note.
 - [ ] `bring-up.md`: with a meter, case to USB shell under 1 Ω on the right
       half and under a few ohms on the left through the cable; plate and knob
       to GND; trackpad sensitivity the same with the case on and off; an

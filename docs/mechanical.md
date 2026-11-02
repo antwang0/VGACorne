@@ -169,6 +169,8 @@ of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
 | `FLOOR_POCKETS` | 1 mm pockets in the floor top under the USB-C (right half) and the encoder's pins (left half) |
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
 | `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
+| `BARE` | left unanodised ([grounding.md](grounding.md)): the seam face (the wall ring: tray top and frame underside) and the DE-15 flange seat inside the back wall |
+| `BARE_FLOOR` | Ø8 bare pads on the floor top under the spring fingers G1/G2 |
 
 Each half is a **bottom tray** and a **top frame**, split at the plate's
 underside (see [3D case](#3d-case) below). Grounding the aluminium parts, the plate and the
@@ -403,16 +405,15 @@ would overhang the print bed.
 **Aluminium** (`tapped`):
 - **CNC** (JLCCNC, PCBWay, Xometry): none of them reads threads from a STEP
   file. Send each STEP together with its `.dxf`, which tabulates every hole and
-  thread, and tick "threads" on the order. Ask for tapped holes to be masked
-  when anodising. JLCCNC doesn't anodise threads under M5.
+  thread and outlines the `BARE` areas, and tick "threads" on the order. Ask
+  for the tapped holes and the `BARE` areas to be masked when anodising (or
+  skimmed after), and chem-filmed. JLCCNC doesn't anodise threads under M5.
 - **Printed AlSi10Mg (SLM):** JLC3DP doesn't offer aluminium; PCBWay and
   Xometry do. Printed holes come out undersize, so drill to the tap-drill size
   and tap afterwards. Use cutting taps, since the alloy is not ductile. Xometry
   takes thread and Helicoil callouts from the drawing.
 
 Not modelled; tell the machinist or add them later:
-- Bare (unanodised) faces for grounding: the seam faces, the DE-15 flange
-  seat and two floor pads per half ([grounding.md](grounding.md)).
 - Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
   break all edges.
 - The wordmark on the roof.

@@ -324,6 +324,20 @@ def floor_pockets(pcb_path: Path) -> list[Polygon]:
     return out
 
 
+BARE_PAD_D = 8.0        # bare floor pad under each spring finger (docs/grounding.md)
+FLANGE_SEAT = (32.0, 13.0)  # DE-15 flange face, kept bare on the inside of the back wall
+
+
+def ground_pads(pcb_path: Path) -> list[Polygon]:
+    """Floor spots the spring fingers G1/G2 press on: left unanodised."""
+    import pcbnew
+
+    if not pcb_path.exists():
+        return []
+    return [Point(pcbnew.ToMM(fp.GetPosition().x), pcbnew.ToMM(fp.GetPosition().y)).buffer(BARE_PAD_D / 2, 32)
+            for fp in pcbnew.LoadBoard(str(pcb_path)).GetFootprints() if fp.GetReference() in ("G1", "G2")]
+
+
 def mount_zone(side: str) -> Polygon:
     """Where a plate on the two mounts sits under the floor: no feet here."""
     return unary_union([Point(x, y).buffer(MOUNT_ZONE_W / 2, 64) for x, y in geo.mounts(side)]).convex_hull
@@ -394,12 +408,19 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
         layers["TRACKPAD_WELL"] = trackpad[1:]
     layers["MOUNTS"] = [Point(x, y).buffer(geo.MOUNT_BOSS / 2, 64) for x, y in geo.mounts(side)]
     layers["MOUNT_ZONE"] = [mount_zone(side)]
+    # Left bare when anodising, so the case is one conductor and bonds to the
+    # PCB (docs/grounding.md): the seam faces (the wall ring: tray top and frame
+    # underside) and the DE-15 flange seat on the inside of the back wall, drawn
+    # as the wall behind it.
+    layers["BARE"] = [outer.difference(inner_wall),
+                      box(cx - FLANGE_SEAT[0] / 2, face, cx + FLANGE_SEAT[0] / 2, miny).intersection(outer)]
     if floor_access:
         board = "main" if main else "satellite"
         pcb_path = HARDWARE / "kicad" / board / f"vgacorne-{board}.kicad_pcb"
         if main:
             layers["FLOOR_ACCESS"] = access_holes(pcb_path)
         layers["FLOOR_POCKETS"] = [p.intersection(inner_wall) for p in floor_pockets(pcb_path)]
+        layers["BARE_FLOOR"] = ground_pads(pcb_path)   # under the spring fingers
     layers["FEET"] = feet(side, outer, layers.get("FLOOR_ACCESS", []))
     return layers
 
