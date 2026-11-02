@@ -1245,269 +1245,6 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Device:RotaryEncoder"
-			(pin_names
-				(offset 0.254)
-				(hide yes)
-			)
-			(exclude_from_sim no)
-			(in_bom yes)
-			(on_board yes)
-			(in_pos_files yes)
-			(duplicate_pin_numbers_are_jumpers no)
-			(property "Reference" "SW"
-				(at 0 6.604 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "Value" "RotaryEncoder"
-				(at 0 -6.604 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "Footprint" ""
-				(at -3.81 4.064 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "Datasheet" ""
-				(at 0 6.604 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "Description" "Rotary encoder, dual channel, incremental quadrate outputs"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "ki_keywords" "rotary switch encoder"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(property "ki_fp_filters" "RotaryEncoder*"
-				(at 0 0 0)
-				(show_name no)
-				(do_not_autoplace no)
-				(hide yes)
-				(effects
-					(font (size 1.27 1.27))
-				)
-			)
-			(symbol "RotaryEncoder_0_1"
-				(rectangle
-					(start -5.08 5.08)
-					(end 5.08 -5.08)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type background))
-				)
-				(polyline
-					(pts
-						(xy -5.08 2.54)
-						(xy -3.81 2.54)
-						(xy -3.81 2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy -5.08 0)
-						(xy -3.81 0)
-						(xy -3.81 -1.016)
-						(xy -3.302 -2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy -5.08 -2.54)
-						(xy -3.81 -2.54)
-						(xy -3.81 -2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy -4.318 0)
-						(xy -3.81 0)
-						(xy -3.81 1.016)
-						(xy -3.302 2.032)
-					)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(circle
-					(center -3.81 0)
-					(radius 0.254)
-					(stroke
-						(width 0)
-						(type default)
-					)
-					(fill (type outline))
-				)
-				(polyline
-					(pts
-						(xy -0.635 -1.778)
-						(xy -0.635 1.778)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(circle
-					(center -0.381 0)
-					(radius 1.905)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy -0.381 -1.778)
-						(xy -0.381 1.778)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(arc
-					(start -0.381 -2.794)
-					(mid -3.0988 -0.0635)
-					(end -0.381 2.667)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy -0.127 1.778)
-						(xy -0.127 -1.778)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy 0.254 2.921)
-						(xy -0.508 2.667)
-						(xy 0.127 2.286)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-				(polyline
-					(pts
-						(xy 0.254 -3.048)
-						(xy -0.508 -2.794)
-						(xy 0.127 -2.413)
-					)
-					(stroke
-						(width 0.254)
-						(type default)
-					)
-					(fill (type none))
-				)
-			)
-			(symbol "RotaryEncoder_1_1"
-				(pin passive line
-					(at -7.62 2.54 0)
-					(length 2.54)
-					(name "A"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "A"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 -2.54 0)
-					(length 2.54)
-					(name "B"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "B"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-				(pin passive line
-					(at -7.62 0 0)
-					(length 2.54)
-					(name "C"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-					(number "C"
-						(effects
-							(font (size 1.27 1.27))
-						)
-					)
-				)
-			)
-			(embedded_fonts no)
-		)
 		(symbol "Mechanical:MountingHole"
 			(pin_names
 				(offset 1.016)
@@ -1587,6 +1324,107 @@
 						(type default)
 					)
 					(fill (type none))
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "Mechanical:MountingHole_Pad"
+			(pin_numbers (hide yes))
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom no)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "H"
+				(at 0 6.35 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Value" "MountingHole_Pad"
+				(at 0 4.445 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Description" "Mounting Hole with connection"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_keywords" "mounting hole"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_fp_filters" "MountingHole*Pad*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(symbol "MountingHole_Pad_0_1"
+				(circle
+					(center 0 1.27)
+					(radius 1.27)
+					(stroke
+						(width 1.27)
+						(type default)
+					)
+					(fill (type none))
+				)
+			)
+			(symbol "MountingHole_Pad_1_1"
+				(pin input line
+					(at 0 -2.54 90)
+					(length 2.54)
+					(name "1"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "1"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
 				)
 			)
 			(embedded_fonts no)
@@ -2748,6 +2586,283 @@
 						(type default)
 					)
 					(fill (type none))
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "vgacorne:RotaryEncoder_SH"
+			(pin_names
+				(offset 0.254)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "SW"
+				(at 0 6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Value" "RotaryEncoder_SH"
+				(at 0 -6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Footprint" ""
+				(at -3.81 4.064 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 6.604 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "Description" "Rotary encoder, dual channel, incremental quadrature outputs, with a pin for the mounting legs"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_keywords" "rotary switch encoder"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(property "ki_fp_filters" "RotaryEncoder*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font (size 1.27 1.27))
+				)
+			)
+			(symbol "RotaryEncoder_SH_0_1"
+				(rectangle
+					(start -5.08 5.08)
+					(end 5.08 -5.08)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type background))
+				)
+				(polyline
+					(pts
+						(xy -5.08 2.54)
+						(xy -3.81 2.54)
+						(xy -3.81 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy -5.08 0)
+						(xy -3.81 0)
+						(xy -3.81 -1.016)
+						(xy -3.302 -2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy -5.08 -2.54)
+						(xy -3.81 -2.54)
+						(xy -3.81 -2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy -4.318 0)
+						(xy -3.81 0)
+						(xy -3.81 1.016)
+						(xy -3.302 2.032)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(circle
+					(center -3.81 0)
+					(radius 0.254)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill (type outline))
+				)
+				(polyline
+					(pts
+						(xy -0.635 -1.778)
+						(xy -0.635 1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(circle
+					(center -0.381 0)
+					(radius 1.905)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy -0.381 -1.778)
+						(xy -0.381 1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(arc
+					(start -0.381 -2.794)
+					(mid -3.0988 -0.0635)
+					(end -0.381 2.667)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy -0.127 1.778)
+						(xy -0.127 -1.778)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy 0.254 2.921)
+						(xy -0.508 2.667)
+						(xy 0.127 2.286)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+				(polyline
+					(pts
+						(xy 0.254 -3.048)
+						(xy -0.508 -2.794)
+						(xy 0.127 -2.413)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill (type none))
+				)
+			)
+			(symbol "RotaryEncoder_SH_1_1"
+				(pin passive line
+					(at -7.62 2.54 0)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "A"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 -2.54 0)
+					(length 2.54)
+					(name "B"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "B"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+				)
+				(pin passive line
+					(at -7.62 0 0)
+					(length 2.54)
+					(name "C"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "C"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+				)
+				(pin passive line
+					(at 7.62 0 180)
+					(length 2.54)
+					(name "SH"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
+					(number "SH"
+						(effects
+							(font (size 1.27 1.27))
+						)
+					)
 				)
 			)
 			(embedded_fonts no)
@@ -24832,8 +24947,8 @@
 		)
 	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 601.98 226.06 0)
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 601.98 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -24855,25 +24970,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 601.98 226.06 0)
+			(at 601.98 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 601.98 226.06 0)
+			(at 601.98 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 601.98 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 601.98 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "d38f1465-87ef-5149-b4a1-fac3614c0658")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -24884,9 +25002,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 601.98 229.87)
+			(xy 601.98 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "daba236b-629c-5bae-a3d8-25e50e3205eb")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 618.49 226.06 0)
+		(lib_id "power:GND")
+		(at 601.98 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "662a17a3-1621-51f9-a8ad-1e2f51c085fb")
+		(property "Reference" "#PWR150"
+			(at 604.52 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 604.52 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 601.98 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 601.98 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 601.98 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "84efd556-2096-577e-bc35-d84832ebf4b1")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR150")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 618.49 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -24908,25 +25094,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 618.49 226.06 0)
+			(at 618.49 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 618.49 226.06 0)
+			(at 618.49 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 618.49 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 618.49 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "a1362868-5212-519a-afd3-afab0f158b1f")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -24937,9 +25126,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 618.49 229.87)
+			(xy 618.49 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1d2657df-e9b4-5f90-8090-2a0961ca5c16")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 633.73 226.06 0)
+		(lib_id "power:GND")
+		(at 618.49 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "ccb007eb-1140-5e47-9b80-eefeab5c2b57")
+		(property "Reference" "#PWR151"
+			(at 621.03 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 621.03 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 618.49 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 618.49 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 618.49 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "541959b7-9105-533d-8b99-d35cc1df7c30")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR151")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 633.73 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -24961,25 +25218,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 633.73 226.06 0)
+			(at 633.73 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 633.73 226.06 0)
+			(at 633.73 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 633.73 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 633.73 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "a454ffd9-eea2-5e79-95f4-5ae4ccf5cd49")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -24990,9 +25250,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 633.73 229.87)
+			(xy 633.73 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "521a39d5-9608-5ff5-82f5-db27199f3bb0")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 650.24 226.06 0)
+		(lib_id "power:GND")
+		(at 633.73 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "81e36d74-db7e-5c49-a902-a2297e301594")
+		(property "Reference" "#PWR152"
+			(at 636.27 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 636.27 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 633.73 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 633.73 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 633.73 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b9949e02-bc70-5356-9d45-35261715e87a")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR152")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 650.24 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -25014,25 +25342,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 650.24 226.06 0)
+			(at 650.24 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 650.24 226.06 0)
+			(at 650.24 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 650.24 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 650.24 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "bf9a982d-546b-5917-bb4a-3b49ca8e3474")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25043,9 +25374,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 650.24 229.87)
+			(xy 650.24 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d9005dbd-4f24-5c8c-9497-8a5d628562b5")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 666.75 226.06 0)
+		(lib_id "power:GND")
+		(at 650.24 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "d548a273-d32d-5558-a6db-aebc6d7e67f4")
+		(property "Reference" "#PWR153"
+			(at 652.78 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 652.78 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 650.24 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 650.24 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 650.24 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "474d5c76-ce73-58ea-aba5-0177e063e3f1")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR153")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 666.75 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -25067,25 +25466,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 666.75 226.06 0)
+			(at 666.75 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 666.75 226.06 0)
+			(at 666.75 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 666.75 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 666.75 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "b55afa13-315e-5bed-98c2-6af06d431b59")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25096,9 +25498,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 666.75 229.87)
+			(xy 666.75 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e6e48b9e-14dd-5057-8199-66f111f80cd2")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 683.26 226.06 0)
+		(lib_id "power:GND")
+		(at 666.75 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "d19730e7-1a60-5733-8aaf-be5ae3179b4a")
+		(property "Reference" "#PWR154"
+			(at 669.29 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 669.29 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 666.75 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 666.75 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 666.75 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5f18f345-f4f8-5c62-8d16-0d0b0be88649")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR154")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 683.26 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -25120,25 +25590,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 683.26 226.06 0)
+			(at 683.26 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 683.26 226.06 0)
+			(at 683.26 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 683.26 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 683.26 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "e0bd3f43-142f-532e-8f12-b21d3599e14d")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25149,9 +25622,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 683.26 229.87)
+			(xy 683.26 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "eb307bac-e1ab-501d-9c57-9cde4fd623a5")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 698.5 226.06 0)
+		(lib_id "power:GND")
+		(at 683.26 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "36246b52-3477-5152-bebe-6d5c2b53ded4")
+		(property "Reference" "#PWR155"
+			(at 685.8 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 685.8 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 683.26 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 683.26 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 683.26 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "e342e7dd-748f-5a11-8718-75a306c06875")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR155")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 698.5 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -25173,25 +25714,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 698.5 226.06 0)
+			(at 698.5 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 698.5 226.06 0)
+			(at 698.5 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 698.5 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 698.5 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "32b3b8c2-5ca7-583e-859a-b6fe77e3a16e")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25202,9 +25746,77 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 698.5 229.87)
+			(xy 698.5 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "48b596a2-f7d5-50ef-8a78-4230953f7372")
+	)
 	(symbol
-		(lib_id "Mechanical:MountingHole")
-		(at 715.01 226.06 0)
+		(lib_id "power:GND")
+		(at 698.5 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "4b352c40-8095-51d5-800a-d0818ce804c7")
+		(property "Reference" "#PWR156"
+			(at 701.04 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 701.04 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 698.5 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 698.5 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 698.5 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a4b1034d-e5be-566e-93e9-2867c943749c")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR156")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 715.01 227.33 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
@@ -25226,25 +25838,28 @@
 			)
 		)
 		(property "Footprint" "vgacorne:Standoff_M2"
-			(at 715.01 226.06 0)
+			(at 715.01 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 715.01 226.06 0)
+			(at 715.01 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
-		(property "Description" "PCB-to-plate M2 standoff"
-			(at 715.01 226.06 0)
+		(property "Description" "PCB-to-plate M2 standoff, plated and grounded"
+			(at 715.01 227.33 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
+		)
+		(pin "1"
+			(uuid "4428b5e4-d9e5-521e-aa85-b864518c0790")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25255,8 +25870,338 @@
 			)
 		)
 	)
+	(wire
+		(pts
+			(xy 715.01 229.87)
+			(xy 715.01 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "4ce01731-f826-588c-83e0-2bc213261cc2")
+	)
 	(symbol
-		(lib_id "Device:RotaryEncoder")
+		(lib_id "power:GND")
+		(at 715.01 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "b55cfb02-aa70-5d7a-b818-b1a14d3666bd")
+		(property "Reference" "#PWR157"
+			(at 717.55 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 717.55 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 715.01 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 715.01 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 715.01 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7374a5db-a6ec-5eff-995c-70e1d5b62c14")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR157")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 731.52 227.33 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "496505c2-1351-56f7-bf00-e7707bf5a426")
+		(property "Reference" "G1"
+			(at 732.79 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Value" "WE-SECF 331236362553"
+			(at 732.79 229.87 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" "vgacorne:EMI_Finger_WE-SECF_3.6x2.5mm"
+			(at 731.52 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 731.52 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT EMI spring finger to the case floor: grounds an aluminium case"
+			(at 731.52 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "MPN" "331236362553"
+			(at 731.52 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "539307fa-5fa6-5d2a-bc40-e52dca9b187e")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "G1")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 731.52 229.87)
+			(xy 731.52 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c2092aa7-0264-56dd-990e-8d84193ddae4")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 731.52 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "e89f61da-8bae-523f-9fb7-602af6ffbb10")
+		(property "Reference" "#PWR158"
+			(at 734.06 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 734.06 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 731.52 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 731.52 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 731.52 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "2e7b91b6-37c7-5e43-b1d2-6ef3644ffb4a")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR158")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Mechanical:MountingHole_Pad")
+		(at 748.03 227.33 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "cf1dd6bf-aa63-5e25-a924-b4125f7bc1af")
+		(property "Reference" "G2"
+			(at 749.3 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Value" "WE-SECF 331236362553"
+			(at 749.3 229.87 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" "vgacorne:EMI_Finger_WE-SECF_3.6x2.5mm"
+			(at 748.03 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 748.03 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "SMT EMI spring finger to the case floor: grounds an aluminium case"
+			(at 748.03 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "MPN" "331236362553"
+			(at 748.03 227.33 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "16e37fa9-d3a5-5004-97f2-9516829d01a2")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "G2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 748.03 229.87)
+			(xy 748.03 232.41)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "58a5d94a-bf90-5ca5-ab17-82f064aa42f7")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 748.03 232.41 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "88dfdd3d-1e5d-5ce0-8844-a7a185676a62")
+		(property "Reference" "#PWR159"
+			(at 750.57 233.68 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 750.57 236.22 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 748.03 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 748.03 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 748.03 232.41 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "acd9a17f-74cc-53c4-837e-637e6869f713")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR159")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "vgacorne:RotaryEncoder_SH")
 		(at 316.23 154.94 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -25265,14 +26210,14 @@
 		(dnp no)
 		(uuid "af936fd5-4209-584f-bf29-f391376e501c")
 		(property "Reference" "ENC1"
-			(at 322.58 151.13 0)
+			(at 308.61 146.05 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "PEC12R-4220F-N0024"
-			(at 322.58 153.67 0)
+			(at 308.61 148.59 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
@@ -25292,7 +26237,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Rotary encoder with a knob: 24 detents, 20 mm shaft, no bushing, no switch (same PCB layout as the -3 bushing version)"
+		(property "Description" "Rotary encoder with a knob: 24 detents, 20 mm shaft, no bushing, no switch (same PCB layout as the -3 bushing version); mounting legs grounded for the knob"
 			(at 316.23 154.94 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -25307,13 +26252,16 @@
 			)
 		)
 		(pin "A"
-			(uuid "c2511fdc-68ce-5e42-8dbe-a405e932d703")
+			(uuid "d051d63d-6f91-5713-8e4b-865d6cf61d42")
 		)
 		(pin "B"
-			(uuid "013f014e-02ee-5321-b475-fe5376112d9a")
+			(uuid "5bdc7f0b-de4c-5e1b-8e4d-c74e522fff88")
 		)
 		(pin "C"
-			(uuid "0fcae3f6-8848-5060-a346-b76971071e7c")
+			(uuid "95a05f69-e91c-5380-a4b3-3b204164e7c8")
+		)
+		(pin "SH"
+			(uuid "a305696e-a94a-591d-b6c8-98ea4372c595")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25333,7 +26281,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "ae272521-6e51-5793-bcae-567d3326940e")
+		(uuid "0bcd1c60-b896-5a5e-84a1-27af661db9a9")
 	)
 	(label "ENC_A"
 		(at 306.07 152.4 180)
@@ -25342,7 +26290,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "6c55d701-4973-595a-8e93-4f2cb1c7e13b")
+		(uuid "daa34f63-a4c7-5548-ba4f-6857295fb647")
 	)
 	(wire
 		(pts
@@ -25353,7 +26301,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "16b38e01-eff6-5c22-8748-205974dc1bbd")
+		(uuid "42487a6d-8b23-5eb4-a558-8bff4933bb80")
 	)
 	(label "ENC_B"
 		(at 306.07 157.48 180)
@@ -25362,7 +26310,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "f86d627f-2a0d-5400-a197-5ab2a5f6db17")
+		(uuid "02945e30-da42-59ad-a100-90688785bbac")
 	)
 	(wire
 		(pts
@@ -25373,7 +26321,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "521a39d5-9608-5ff5-82f5-db27199f3bb0")
+		(uuid "7e3cf7c5-43d7-5f3d-96a9-e7e7d3db41ec")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -25383,8 +26331,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "662a17a3-1621-51f9-a8ad-1e2f51c085fb")
-		(property "Reference" "#PWR150"
+		(uuid "454c9cd5-fc15-5122-bc42-b89f20275a28")
+		(property "Reference" "#PWR160"
 			(at 307.34 154.94 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -25421,12 +26369,80 @@
 			)
 		)
 		(pin "1"
-			(uuid "543a2dbb-d371-5b12-a8ef-ec46d92398ba")
+			(uuid "6b26c715-3e7c-5e6b-8ff9-b16895b70b1c")
 		)
 		(instances
 			(project "vgacorne-satellite"
 				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
-					(reference "#PWR150")
+					(reference "#PWR160")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 323.85 154.94)
+			(xy 326.39 154.94)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "21671467-cfd8-5aec-a7af-c677ac3d1645")
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 326.39 154.94 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "ff000681-1131-5e71-9c85-d81b59a545c7")
+		(property "Reference" "#PWR161"
+			(at 330.2 154.94 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 330.2 157.48 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 326.39 154.94 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 326.39 154.94 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 326.39 154.94 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "f1bb42a1-bd1e-5abe-8fc9-eb16351a065a")
+		)
+		(instances
+			(project "vgacorne-satellite"
+				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
+					(reference "#PWR161")
 					(unit 1)
 				)
 			)
@@ -25434,7 +26450,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 349.25 153.67 0)
+		(at 351.79 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -25442,45 +26458,45 @@
 		(dnp no)
 		(uuid "b4d8a6f8-8d61-5e19-a4ac-e682a08a3b4e")
 		(property "Reference" "R21"
-			(at 351.79 151.13 0)
+			(at 354.33 151.13 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "10k"
-			(at 351.79 153.67 0)
+			(at 354.33 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 349.25 153.67 0)
+			(at 351.79 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 349.25 153.67 0)
+			(at 351.79 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Resistor"
-			(at 349.25 153.67 0)
+			(at 351.79 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "f25b5cad-e176-5058-b18d-f0dde1b54530")
+			(uuid "f7e75cc5-08c0-5fa6-b2e4-c1bd468337b7")
 		)
 		(pin "2"
-			(uuid "67bb0b57-137b-5f55-b5d5-4877a8ec2ad4")
+			(uuid "e767c8a4-1f12-5476-b7e6-844eba9ac131")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25493,46 +26509,46 @@
 	)
 	(wire
 		(pts
-			(xy 349.25 149.86)
-			(xy 349.25 147.32)
+			(xy 351.79 149.86)
+			(xy 351.79 147.32)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "9f2b9ed3-618f-5222-9cd8-3d25bcb386f5")
+		(uuid "922eec0e-7881-5e4c-9cb9-737122261a47")
 	)
 	(label "ENC_A"
-		(at 349.25 147.32 90)
+		(at 351.79 147.32 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "816993e3-ffb1-5a7a-aa8e-a3097b15249e")
+		(uuid "b27f8353-e7f8-57ca-89a1-bde2538b459c")
 	)
 	(wire
 		(pts
-			(xy 349.25 157.48)
-			(xy 349.25 160.02)
+			(xy 351.79 157.48)
+			(xy 351.79 160.02)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "e6e48b9e-14dd-5057-8199-66f111f80cd2")
+		(uuid "73d06525-45bb-54c4-8327-4ce96b229bb3")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
-		(at 349.25 160.02 180)
+		(at 351.79 160.02 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "ccb007eb-1140-5e47-9b80-eefeab5c2b57")
-		(property "Reference" "#PWR151"
-			(at 351.79 161.29 0)
+		(uuid "29b49a0e-f007-56f2-b2fe-eb25f7a9e17b")
+		(property "Reference" "#PWR162"
+			(at 354.33 161.29 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
@@ -25540,40 +26556,40 @@
 			)
 		)
 		(property "Value" "+3.3VA"
-			(at 351.79 163.83 0)
+			(at 354.33 163.83 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 349.25 160.02 0)
+			(at 351.79 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 349.25 160.02 0)
+			(at 351.79 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
-			(at 349.25 160.02 0)
+			(at 351.79 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "ae764168-8814-5bb1-8b36-b54f7ebe808f")
+			(uuid "886cbe53-db10-5841-8913-9cad4feb2c71")
 		)
 		(instances
 			(project "vgacorne-satellite"
 				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
-					(reference "#PWR151")
+					(reference "#PWR162")
 					(unit 1)
 				)
 			)
@@ -25581,7 +26597,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 367.03 153.67 0)
+		(at 369.57 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -25589,45 +26605,45 @@
 		(dnp no)
 		(uuid "ec6798f7-2710-5cce-b52e-0506bc52b42b")
 		(property "Reference" "R22"
-			(at 369.57 151.13 0)
+			(at 372.11 151.13 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "10k"
-			(at 369.57 153.67 0)
+			(at 372.11 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 367.03 153.67 0)
+			(at 369.57 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 367.03 153.67 0)
+			(at 369.57 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Resistor"
-			(at 367.03 153.67 0)
+			(at 369.57 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "49e2d15c-de55-5f42-8c99-ea46f0d40804")
+			(uuid "3a51be95-f0b2-52ff-b60d-6c6288cd7c29")
 		)
 		(pin "2"
-			(uuid "c25c386c-a328-5b54-a4dd-8d873fcaceb8")
+			(uuid "4515e04b-a4e7-51d8-b75e-26b85689df13")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25640,46 +26656,46 @@
 	)
 	(wire
 		(pts
-			(xy 367.03 149.86)
-			(xy 367.03 147.32)
+			(xy 369.57 149.86)
+			(xy 369.57 147.32)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "1af8d3e8-6a4e-5627-9c11-9c66148e87c7")
+		(uuid "a7f51f1c-cd59-5025-b3ed-c5d7c3edb83c")
 	)
 	(label "ENC_B"
-		(at 367.03 147.32 90)
+		(at 369.57 147.32 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "82994144-2dc5-518f-b781-a1ed4de312dc")
+		(uuid "1f25b0e3-80b3-57db-9f1f-8d4f42d00b37")
 	)
 	(wire
 		(pts
-			(xy 367.03 157.48)
-			(xy 367.03 160.02)
+			(xy 369.57 157.48)
+			(xy 369.57 160.02)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "48b596a2-f7d5-50ef-8a78-4230953f7372")
+		(uuid "78bd3db2-d8f7-5b27-a18d-21c1c56bb4ac")
 	)
 	(symbol
 		(lib_id "power:+3.3VA")
-		(at 367.03 160.02 180)
+		(at 369.57 160.02 180)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "81e36d74-db7e-5c49-a902-a2297e301594")
-		(property "Reference" "#PWR152"
-			(at 369.57 161.29 0)
+		(uuid "08511eed-1151-5d3a-bd05-550019cc0f09")
+		(property "Reference" "#PWR163"
+			(at 372.11 161.29 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
@@ -25687,40 +26703,40 @@
 			)
 		)
 		(property "Value" "+3.3VA"
-			(at 369.57 163.83 0)
+			(at 372.11 163.83 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 367.03 160.02 0)
+			(at 369.57 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 367.03 160.02 0)
+			(at 369.57 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"+3.3VA\""
-			(at 367.03 160.02 0)
+			(at 369.57 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "04314934-fdc2-5f6e-a848-74d86281cbe6")
+			(uuid "ddbdf3a0-2885-5458-9179-4640f20dc40e")
 		)
 		(instances
 			(project "vgacorne-satellite"
 				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
-					(reference "#PWR152")
+					(reference "#PWR163")
 					(unit 1)
 				)
 			)
@@ -25728,7 +26744,7 @@
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 384.81 153.67 0)
+		(at 387.35 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -25736,52 +26752,52 @@
 		(dnp no)
 		(uuid "64f36419-90ba-53fd-bccd-8a1dd379241c")
 		(property "Reference" "R23"
-			(at 387.35 151.13 0)
+			(at 389.89 151.13 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "47k"
-			(at 387.35 153.67 0)
+			(at 389.89 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 384.81 153.67 0)
+			(at 387.35 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 384.81 153.67 0)
+			(at 387.35 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Resistor"
-			(at 384.81 153.67 0)
+			(at 387.35 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Tolerance" "1%"
-			(at 384.81 153.67 0)
+			(at 387.35 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "06003fc9-bfa8-58ad-8dc4-d9cc5cd0d908")
+			(uuid "ec11705c-da63-5ae2-acc5-dd947909f0ce")
 		)
 		(pin "2"
-			(uuid "1c3ca701-2535-5f37-9d8e-0143b2a6441b")
+			(uuid "42be2e07-ccd0-5766-9431-5accc5ee1fd6")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25794,47 +26810,47 @@
 	)
 	(wire
 		(pts
-			(xy 384.81 149.86)
-			(xy 384.81 147.32)
+			(xy 387.35 149.86)
+			(xy 387.35 147.32)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "81a3ec52-8971-5e09-9cef-db9c0344833e")
+		(uuid "92de3bce-b606-5eb2-872e-f965e4d61feb")
 	)
 	(label "ENC_A"
-		(at 384.81 147.32 90)
+		(at 387.35 147.32 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "faa781a1-5572-5e04-8386-5ee622c4d4af")
+		(uuid "ffe9e7cb-54d1-5fb9-859e-636552d1317d")
 	)
 	(wire
 		(pts
-			(xy 384.81 157.48)
-			(xy 384.81 160.02)
+			(xy 387.35 157.48)
+			(xy 387.35 160.02)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "c2092aa7-0264-56dd-990e-8d84193ddae4")
+		(uuid "d6f3b935-a6be-5591-9d00-b4c10b93e807")
 	)
 	(label "ENC"
-		(at 384.81 160.02 270)
+		(at 387.35 160.02 270)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "8e3a9524-47d5-5e5a-a16a-79685cfdcebe")
+		(uuid "b1b8374b-f986-5285-b7f0-8030f7305dd1")
 	)
 	(symbol
 		(lib_id "Device:R")
-		(at 403.86 153.67 0)
+		(at 406.4 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -25842,52 +26858,52 @@
 		(dnp no)
 		(uuid "2bc56992-9668-5fd3-9545-f367e3b769c9")
 		(property "Reference" "R24"
-			(at 406.4 151.13 0)
+			(at 408.94 151.13 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "100k"
-			(at 406.4 153.67 0)
+			(at 408.94 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
-			(at 403.86 153.67 0)
+			(at 406.4 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 403.86 153.67 0)
+			(at 406.4 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Resistor"
-			(at 403.86 153.67 0)
+			(at 406.4 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Tolerance" "1%"
-			(at 403.86 153.67 0)
+			(at 406.4 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "f0cb2afa-74e7-57ba-b19f-0a3190710cb6")
+			(uuid "84ef431b-3dff-5029-bdfc-df74556f69e1")
 		)
 		(pin "2"
-			(uuid "aa4e5e44-bed5-5d99-abaa-e2fbaef2a9d3")
+			(uuid "aab46330-dca5-5e7e-be0b-8b98eb0247ea")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25900,47 +26916,47 @@
 	)
 	(wire
 		(pts
-			(xy 403.86 149.86)
-			(xy 403.86 147.32)
+			(xy 406.4 149.86)
+			(xy 406.4 147.32)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "b9da470a-6e94-5d3e-b644-f07477ea6c46")
+		(uuid "c8d32e3b-55df-5233-a465-ed2342c7c42f")
 	)
 	(label "ENC_B"
-		(at 403.86 147.32 90)
+		(at 406.4 147.32 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "4ae0f7d6-c2c0-5312-94b8-93a199e7f812")
+		(uuid "1d0e8dc0-5568-59de-a9cd-b07a2c64cd44")
 	)
 	(wire
 		(pts
-			(xy 403.86 157.48)
-			(xy 403.86 160.02)
+			(xy 406.4 157.48)
+			(xy 406.4 160.02)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "362caf16-567b-5a76-885b-0d4610b60191")
+		(uuid "1236d124-96b1-5206-8354-e3260e91f137")
 	)
 	(label "ENC"
-		(at 403.86 160.02 270)
+		(at 406.4 160.02 270)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "8036e1fd-18d0-579c-b571-405cf7de17ca")
+		(uuid "446160bb-2e27-5c63-b702-cc3f7f846038")
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 422.91 153.67 0)
+		(at 425.45 153.67 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -25948,45 +26964,45 @@
 		(dnp no)
 		(uuid "eb864592-7e9c-5c95-9d9b-186a21039bb8")
 		(property "Reference" "C5"
-			(at 426.72 151.13 0)
+			(at 429.26 151.13 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Value" "1n"
-			(at 426.72 153.67 0)
+			(at 429.26 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 422.91 153.67 0)
+			(at 425.45 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" "~"
-			(at 422.91 153.67 0)
+			(at 425.45 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 422.91 153.67 0)
+			(at 425.45 153.67 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "401ceef5-4ed9-5a74-9758-940dc09db413")
+			(uuid "addb4782-e824-5816-a843-117f9afdcfba")
 		)
 		(pin "2"
-			(uuid "d08c0ebf-39e1-5f0a-9420-e1f9d08d8cc1")
+			(uuid "189979b3-c725-50e3-98b4-d191cba54788")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -25999,46 +27015,46 @@
 	)
 	(wire
 		(pts
-			(xy 422.91 149.86)
-			(xy 422.91 147.32)
+			(xy 425.45 149.86)
+			(xy 425.45 147.32)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "e7da3207-e54b-53de-b348-ed984931d3de")
+		(uuid "3ec5c34e-ba9b-5a94-910a-b8b4274ec0b7")
 	)
 	(label "ENC"
-		(at 422.91 147.32 90)
+		(at 425.45 147.32 90)
 		(fields_autoplaced yes)
 		(effects
 			(font (size 1.27 1.27))
 			(justify left bottom)
 		)
-		(uuid "1049ad0e-7f93-5607-aa98-b137bcf4d629")
+		(uuid "400605cb-916e-5118-8a12-1227820691d0")
 	)
 	(wire
 		(pts
-			(xy 422.91 157.48)
-			(xy 422.91 160.02)
+			(xy 425.45 157.48)
+			(xy 425.45 160.02)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "8f48b2cb-22f7-5f97-8a6e-8fb9c4304cfd")
+		(uuid "7b20de23-53ec-55c7-8ebd-a65e312bbf53")
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 422.91 160.02 0)
+		(at 425.45 160.02 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "d548a273-d32d-5558-a6db-aebc6d7e67f4")
-		(property "Reference" "#PWR153"
-			(at 425.45 161.29 0)
+		(uuid "0fa6e43b-355c-5f04-8bae-fa35271b47bb")
+		(property "Reference" "#PWR164"
+			(at 427.99 161.29 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
@@ -26046,40 +27062,40 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 425.45 163.83 0)
+			(at 427.99 163.83 0)
 			(effects
 				(font (size 1.27 1.27))
 				(justify left)
 			)
 		)
 		(property "Footprint" ""
-			(at 422.91 160.02 0)
+			(at 425.45 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Datasheet" ""
-			(at 422.91 160.02 0)
+			(at 425.45 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 422.91 160.02 0)
+			(at 425.45 160.02 0)
 			(effects
 				(font (size 1.27 1.27))
 				(hide yes)
 			)
 		)
 		(pin "1"
-			(uuid "e129f1e1-593c-5953-a863-fc54246041fd")
+			(uuid "529b43c0-806c-5052-86e5-414a162fa27b")
 		)
 		(instances
 			(project "vgacorne-satellite"
 				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
-					(reference "#PWR153")
+					(reference "#PWR164")
 					(unit 1)
 				)
 			)
@@ -26092,7 +27108,7 @@
 			(font (size 1.8 1.8))
 			(justify left bottom)
 		)
-		(uuid "6475efc4-762e-5fca-9f08-201cee33142c")
+		(uuid "89929f92-2713-5f54-9513-86733efa653a")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -26140,7 +27156,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "396ea764-2dc7-5b20-b6e6-a7dd3e273970")
+			(uuid "dbb30cb9-6236-517a-9adf-7c96d0b36805")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -26160,7 +27176,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "8da25983-6d2b-59bc-b75f-9ef5c97d8d6f")
+		(uuid "e24d4bc7-254a-5568-a95c-9a1fc2e03b5c")
 	)
 	(label "+5V_LINK"
 		(at 25.4 27.94 270)
@@ -26169,7 +27185,7 @@
 			(font (size 1.27 1.27))
 			(justify right bottom)
 		)
-		(uuid "d709dd5b-3314-5054-881d-a6417bd912e6")
+		(uuid "18802828-c855-5e3f-b271-537bffa51424")
 	)
 	(symbol
 		(lib_id "power:PWR_FLAG")
@@ -26217,7 +27233,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "f23ae28a-caa7-5c7a-85dd-942e6f48eb45")
+			(uuid "bd3fdb46-ed6e-5140-8c1f-66b148ef0cf4")
 		)
 		(instances
 			(project "vgacorne-satellite"
@@ -26237,7 +27253,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "922eec0e-7881-5e4c-9cb9-737122261a47")
+		(uuid "f42d285f-961c-5059-b086-9c5bd8df73d4")
 	)
 	(symbol
 		(lib_id "power:GND")
@@ -26247,8 +27263,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "d19730e7-1a60-5733-8aaf-be5ae3179b4a")
-		(property "Reference" "#PWR154"
+		(uuid "ed9e5254-e87b-5b12-89aa-56214e8bd51d")
+		(property "Reference" "#PWR165"
 			(at 45.72 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -26285,12 +27301,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "920d71b1-fdec-535d-be3a-e19fa7d950f5")
+			(uuid "f13382ab-c4b6-569e-9c9b-1875d1602c3e")
 		)
 		(instances
 			(project "vgacorne-satellite"
 				(path "/24abffe2-a11b-5244-81d2-3dbf71932fed"
-					(reference "#PWR154")
+					(reference "#PWR165")
 					(unit 1)
 				)
 			)

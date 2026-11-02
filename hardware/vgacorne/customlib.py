@@ -6,8 +6,11 @@
 * ``vgacorne.pretty`` -- Hall-effect MX switch footprints: two 1.75 mm NPTH
   side pegs, no centre post (the magnet lives there) and no pins. The sensor is
   a separate SOT-23 on B.Cu directly under the switch centre. Also the MCU
-  module's castellated edge and the matching landing pads on the main PCB, and
-  the VGA socket's footprint adapted to the Amphenol part.
+  module's castellated edge and the matching landing pads on the main PCB, the
+  VGA socket's footprint adapted to the Amphenol part, the grounded M2 plate
+  standoff and the case-grounding spring finger (docs/grounding.md).
+* ``RotaryEncoder_SH`` -- KiCad's RotaryEncoder with a pin for the mounting
+  legs, so the knob's frame can be grounded.
 """
 
 from __future__ import annotations
@@ -99,10 +102,33 @@ def at32_symbol() -> list:
              S("embedded_fonts", Sym("no")))
 
 
+def rotary_encoder_sh_symbol() -> list:
+    """Device:RotaryEncoder plus an ``SH`` pin for the two mounting legs (the
+    PEC12R footprint's ``SH`` pads), so the metal frame, and a metal knob on
+    its shaft, can be tied to GND."""
+    from . import symlib
+    from .sexpr import find, find_all
+    name = "RotaryEncoder_SH"
+    node = symlib._flatten("Device", "RotaryEncoder")
+    node[1] = name
+    for prop in find_all(node, "property"):
+        key = str(prop[1])
+        if key == "Value":
+            prop[2] = name
+        elif key == "Description":
+            prop[2] = "Rotary encoder, dual channel, incremental quadrature outputs, with a pin for the mounting legs"
+    for sub in find_all(node, "symbol"):
+        sub[1] = str(sub[1]).replace("RotaryEncoder_", f"{name}_", 1)
+        if str(sub[1]).endswith("_1_1"):
+            sub.append(S("pin", Sym("passive"), Sym("line"), S("at", 7.62, 0, 180), S("length", 2.54),
+                         S("name", "SH", FONT), S("number", "SH", FONT)))
+    return node
+
+
 def write_symbol_lib() -> Path:
     LIB_DIR.mkdir(parents=True, exist_ok=True)
     lib = S("kicad_symbol_lib", S("version", 20241209), S("generator", "vgacorne"),
-            S("generator_version", "1.0"), at32_symbol())
+            S("generator_version", "1.0"), at32_symbol(), rotary_encoder_sh_symbol())
     path = LIB_DIR / "vgacorne.kicad_sym"
     path.write_text(dumps(lib) + "\n")
     return path
@@ -185,13 +211,17 @@ def _circle(r, layer, width=0.05):
 def standoff_footprint() -> tuple[str, list]:
     """M2 PCB-to-plate standoff: 3.5 mm hex standoff on top, M2 screw head below.
 
-    Courtyards are sized for the real parts (4.04 mm across corners) so the
-    standoff fits in the 5.05 mm gap between two MX switch bodies.
+    The hole is plated, with a 3.4 mm GND pad under the standoff and the screw
+    head, so the brass standoffs tie an aluminium plate to ground
+    (docs/grounding.md). Courtyards are sized for the real parts (4.04 mm
+    across corners) so the standoff fits in the 5.05 mm gap between two MX
+    switch bodies.
     """
     name = "Standoff_M2"
     fp = S("footprint", name, S("version", 20241229), S("generator", "vgacorne"),
            S("generator_version", "1.0"), S("layer", "F.Cu"),
-           S("descr", "M2 plate standoff: 2.2 mm NPTH, 3.5 mm hex standoff (F), M2 low-profile head (B)"),
+           S("descr", "M2 plate standoff: 2.2 mm PTH with a 3.4 mm GND pad, 3.5 mm hex standoff (F), "
+                      "M2 low-profile head (B); grounds the plate"),
            S("tags", "mounting standoff M2 plate"),
            _text_prop("Reference", "REF**", 0, -3, "F.Fab"),
            _text_prop("Value", name, 0, 3, "F.Fab", hidden=True),
@@ -205,8 +235,39 @@ def standoff_footprint() -> tuple[str, list]:
         fp.append(_line(*a, *b, "F.Fab", 0.1))
     fp.append(_circle(2.1, "F.CrtYd"))
     fp.append(_circle(2.1, "B.CrtYd"))
-    fp.append(S("pad", "", Sym("np_thru_hole"), Sym("circle"), S("at", 0, 0), S("size", 2.2, 2.2),
-                S("drill", 2.2), S("layers", "*.Cu", "*.Mask"), S("uuid", _uid())))
+    fp.append(S("pad", "1", Sym("thru_hole"), Sym("circle"), S("at", 0, 0), S("size", 3.4, 3.4),
+                S("drill", 2.2), S("layers", "*.Cu", "*.Mask"), S("remove_unused_layers", Sym("no")),
+                S("uuid", _uid())))
+    fp.append(S("embedded_fonts", Sym("no")))
+    return name, fp
+
+
+FINGER_NAME = "EMI_Finger_WE-SECF_3.6x2.5mm"
+
+
+def finger_footprint() -> tuple[str, list]:
+    """Wurth WE-SECF SMT EMI contact finger, 3.6 x 2.5 mm, 5.3 mm tall (331236362553).
+
+    Soldered to the PCB underside, it presses on a bare pad in the case floor
+    4.0 mm below (3.4-5.0 mm working height). Land pattern from the datasheet:
+    two 3.1 x 1.0 mm pads 0.9 mm apart, both pad "1" (one net)."""
+    name = FINGER_NAME
+    fp = S("footprint", name, S("version", 20241229), S("generator", "vgacorne"),
+           S("generator_version", "1.0"), S("layer", "F.Cu"),
+           S("descr", "Wurth WE-SECF SMT EMI contact finger 331236362553: 3.6 x 2.5 mm, 5.3 mm free height, "
+                      "3.4-5.0 mm working height; https://www.we-online.com/components/products/datasheet/331236362553.pdf"),
+           S("tags", "EMI spring finger ground contact chassis"),
+           _text_prop("Reference", "REF**", 0, -2.8, "F.SilkS"),
+           _text_prop("Value", name, 0, 2.8, "F.Fab", hidden=True),
+           _text_prop("Footprint", "", 0, 0, "F.Fab", hidden=True),
+           _text_prop("Datasheet", "", 0, 0, "F.Fab", hidden=True),
+           _text_prop("Description", "", 0, 0, "F.Fab", hidden=True),
+           S("attr", Sym("smd")))
+    fp.append(_rect(-1.8, -1.25, 1.8, 1.25, "F.Fab", 0.1))
+    fp.append(_rect(-2.3, -1.75, 2.3, 1.75, "F.CrtYd"))
+    for y in (-0.95, 0.95):
+        fp.append(S("pad", "1", Sym("smd"), Sym("rect"), S("at", 0, y), S("size", 3.1, 1.0),
+                    S("layers", "F.Cu", "F.Paste", "F.Mask"), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 
@@ -342,6 +403,8 @@ def write_footprints() -> Path:
         (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
     name, text = dsub_amphenol_footprint()
     (pretty / f"{name}.kicad_mod").write_text(text)
+    name, fp = finger_footprint()  # last: the pad UUIDs count up, so earlier footprints stay as committed
+    (pretty / f"{name}.kicad_mod").write_text(dumps(fp) + "\n")
     return pretty
 
 

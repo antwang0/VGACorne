@@ -284,6 +284,15 @@ def switch_bodies(b: Builder) -> list[Polygon]:
     return [k.square(15.0) for k in geo.keys_for(b.side)]
 
 
+def place_fingers(b: Builder, near: tuple[tuple[float, float], tuple[float, float]]) -> None:
+    """The two case-grounding spring fingers (G1 by the connectors, G2 at the
+    front outer corner) on the underside, over plain floor: clear of the mount
+    bosses (a keepout already), the USB ear's floor pocket and the board edge."""
+    avoid = [box(*geo.USB_EAR).buffer(2.0)] if b.side == geo.MAIN_SIDE else []
+    for ref, at in zip(("G1", "G2"), near):
+        b.autoplace(ref, at, 0, max_r=30, avoid=avoid)
+
+
 def place_muxes(b: Builder) -> None:
     for i, (mux, ref) in enumerate(MUX_REFS.items()):
         x, y = geo.anchor(f"MUX_{mux}", "left")
@@ -355,6 +364,8 @@ def build_main(c: Circuit, pcb_path: Path) -> Builder:
         if ref in b.fps:
             b.autoplace(ref, (fx, fy), rot, max_r=20)
 
+    place_fingers(b, ((ux - 9, uy + 9), geo.corne(-112.0, 33.0)))
+
     outline = b.outline
     b.edge(outline)
     b.ground_zones(outline)
@@ -391,6 +402,7 @@ def build_satellite(c: Circuit, pcb_path: Path) -> Builder:
         b.autoplace(ref, (tx, ty), 90, max_r=24)
     for ref in ("U2", "C1", "C2", "C3"):
         b.autoplace(ref, (tx - 4, ty + 5), 0, max_r=26)
+    place_fingers(b, ((lx - 6, ly + 10), geo.corne(-112.0, 33.0)))
 
     b.edge(b.outline)
     b.ground_zones(b.outline)

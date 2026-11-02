@@ -208,8 +208,9 @@ def case_foam(side: str, board_pcb: Path | None) -> tuple[Polygon, list[Polygon]
 
 
 # Bottom-side parts taller than STACK.bottom_parts get a relief in the case
-# foam, and so do the rotary encoder's through-hole legs.
-TALL_PARTS = {"J1", "J2", "J3", "SW22", "SW23", "ENC1"}
+# foam, and so do the rotary encoder's through-hole legs. The spring fingers
+# G1/G2 reach the floor by design (docs/grounding.md).
+TALL_PARTS = {"J1", "J2", "J3", "SW22", "SW23", "ENC1", "G1", "G2"}
 
 
 def bottom_side(pcb_path: Path) -> list[tuple[Polygon, float]]:

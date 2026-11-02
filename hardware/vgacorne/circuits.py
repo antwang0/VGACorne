@@ -170,10 +170,25 @@ def sensor_array(select_nets: tuple[str, str, str], com_nets: dict[str, str], si
 
 
 def standoffs(side: str, block="mech") -> list[Part]:
+    """Plated, grounded: the brass standoffs tie an aluminium plate to GND (docs/grounding.md)."""
     from .geometry import standoffs as pts
-    return [Part(f"H{i + 1}", "Mechanical:MountingHole", "M2 standoff", "vgacorne:Standoff_M2", {}, block,
-                 description="PCB-to-plate M2 standoff")
+    return [Part(f"H{i + 1}", "Mechanical:MountingHole_Pad", "M2 standoff", "vgacorne:Standoff_M2",
+                 {"1": "GND"}, block, description="PCB-to-plate M2 standoff, plated and grounded")
             for i in range(len(pts(side)))]
+
+
+FINGER_MPN = "331236362553"  # Wurth WE-SECF, 3.6 x 2.5 x 5.3 mm, working height 3.4-5.0 mm
+
+
+def fingers(block="mech") -> list[Part]:
+    """Two spring fingers on the PCB underside press on bare pads in the case
+    floor, 4.0 mm below, and bond an aluminium case to GND (docs/grounding.md).
+    Fit them for an aluminium case; leave them off for a printed one."""
+    return [Part(f"G{i}", "Mechanical:MountingHole_Pad", f"WE-SECF {FINGER_MPN}",
+                 "vgacorne:EMI_Finger_WE-SECF_3.6x2.5mm", {"1": "GND"}, block,
+                 fields={"MPN": FINGER_MPN}, in_bom=True,
+                 description="SMT EMI spring finger to the case floor: grounds an aluminium case")
+            for i in (1, 2)]
 
 
 def link_esd(block="link") -> list[Part]:
@@ -352,6 +367,7 @@ def main() -> Circuit:
     p += sensor_array(("MUX_S0", "MUX_S1", "MUX_S2"),
                       {"A": "ADC_L_A", "B": "ADC_L_B", "C": "ADC_L_C"}, MAIN_SIDE)
     p += standoffs(MAIN_SIDE)
+    p += fingers()
     blocks = [
         ("power", "USB-C, protection, regulators", (20.32, 38.1), 260),
         ("mcu", "MCU module landing pads, boot/reset, SWD", (292.1, 38.1), 290),
@@ -398,13 +414,14 @@ def satellite() -> Circuit:
     p += sensor_array(("LINK_S0", "LINK_S1", "LINK_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"},
                       SATELLITE_SIDE)
     p += standoffs(SATELLITE_SIDE)
+    p += fingers()
     # Rotary encoder (mouse column): read through mux C's last channel, see ENCODER_SUM.
     p += [
-        Part("ENC1", "Device:RotaryEncoder", "PEC12R-4220F-N0024",
+        Part("ENC1", "vgacorne:RotaryEncoder_SH", "PEC12R-4220F-N0024",
              "Rotary_Encoder:RotaryEncoder_Bourns_Vertical_PEC12R-3x17F-Nxxxx",
-             {"A": "ENC_A", "B": "ENC_B", "C": "GND"}, "encoder", fields={"MPN": "PEC12R-4220F-N0024"},
+             {"A": "ENC_A", "B": "ENC_B", "C": "GND", "SH": "GND"}, "encoder", fields={"MPN": "PEC12R-4220F-N0024"},
              description="Rotary encoder with a knob: 24 detents, 20 mm shaft, no bushing, no switch "
-                         "(same PCB layout as the -3 bushing version)"),
+                         "(same PCB layout as the -3 bushing version); mounting legs grounded for the knob"),
         R("R21", f"{ENCODER_PULL_UP / 1e3:g}k", "ENC_A", "+3.3VA", "encoder"),
         R("R22", f"{ENCODER_PULL_UP / 1e3:g}k", "ENC_B", "+3.3VA", "encoder"),
         R("R23", f"{ENCODER_SUM['A'] / 1e3:g}k", "ENC_A", "ENC", "encoder", fields={"Tolerance": "1%"}),

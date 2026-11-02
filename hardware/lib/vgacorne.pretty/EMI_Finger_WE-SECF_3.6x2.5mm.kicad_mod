@@ -1,0 +1,88 @@
+(footprint "EMI_Finger_WE-SECF_3.6x2.5mm"
+	(version 20241229)
+	(generator "vgacorne")
+	(generator_version "1.0")
+	(layer "F.Cu")
+	(descr "Wurth WE-SECF SMT EMI contact finger 331236362553: 3.6 x 2.5 mm, 5.3 mm free height, 3.4-5.0 mm working height; https://www.we-online.com/components/products/datasheet/331236362553.pdf")
+	(tags "EMI spring finger ground contact chassis")
+	(property "Reference" "REF**"
+		(at 0 -2.8 0)
+		(layer "F.SilkS")
+		(uuid "8cff3dec-c839-5fa1-816d-d65279f6756b")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Value" "EMI_Finger_WE-SECF_3.6x2.5mm"
+		(at 0 2.8 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "372bbaca-529b-5803-8a27-b6e7384e94cc")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Footprint" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "2f1951cf-b989-50f2-a967-b9f273460c0b")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Datasheet" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "43491807-086e-56eb-81e4-92015f2b1004")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(property "Description" ""
+		(at 0 0 0)
+		(layer "F.Fab")
+		(hide yes)
+		(uuid "456ce520-acdd-5c2f-a90a-e2a13ba5c00e")
+		(effects
+			(font (size 1 1) (thickness 0.15))
+		)
+	)
+	(attr smd)
+	(fp_rect
+		(start -1.8 -1.25)
+		(end 1.8 1.25)
+		(stroke
+			(width 0.1)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.Fab")
+		(uuid "ff56d620-acd7-5364-b171-0a6de4198c8b")
+	)
+	(fp_rect
+		(start -2.3 -1.75)
+		(end 2.3 1.75)
+		(stroke
+			(width 0.05)
+			(type solid)
+		)
+		(fill no)
+		(layer "F.CrtYd")
+		(uuid "81c82bce-1c1a-51ff-8980-b90acee0f1a7")
+	)
+	(pad "1" smd rect
+		(at 0 -0.95)
+		(size 3.1 1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "3f30f7b7-ef52-5817-823b-9b89b9eb1d91")
+	)
+	(pad "1" smd rect
+		(at 0 0.95)
+		(size 3.1 1)
+		(layers "F.Cu" "F.Paste" "F.Mask")
+		(uuid "aa311044-6164-5b2c-bacb-d176babeb858")
+	)
+	(embedded_fonts no)
+)

@@ -137,7 +137,9 @@ of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
 ## Plate
 
 - `plate-left.dxf` / `plate-right.dxf`: 14.0 mm switch cutouts (0.3 mm
-  corner radius), 2.2 mm standoff holes, eight 10 × 4.5 mm gasket tabs. On the
+  corner radius), 2.2 mm standoff holes, eight 10 × 4.5 mm gasket tabs. The
+  standoffs are grounded on the PCB, so an aluminium plate is grounded through
+  them ([grounding.md](grounding.md)). On the
   right half the plate stops at the keys: the trackpad sits over the inner
   column beside it, with the MCU module under it and the VGA bay behind. On the left half
   it covers the mouse column too, including a switch cutout for the rotary
@@ -169,7 +171,8 @@ of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
 | `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
 
 Each half is a **bottom tray** and a **top frame**, split at the plate's
-underside (see [3D case](#3d-case) below). The tray carries the floor, the walls
+underside (see [3D case](#3d-case) below). Grounding the aluminium parts, the plate and the
+knob is planned in [grounding.md](grounding.md). The tray carries the floor, the walls
 and the lower tab pockets. The frame carries the bezel around the keys, the
 upper tab pockets and the **1.5 mm roof** (`ROOF`), which covers the VGA bay,
 the tab and the USB-C ear. Eight M3 screws per half come up from below through
@@ -408,6 +411,8 @@ would overhang the print bed.
   takes thread and Helicoil callouts from the drawing.
 
 Not modelled; tell the machinist or add them later:
+- Bare (unanodised) faces for grounding: the seam faces, the DE-15 flange
+  seat and two floor pads per half ([grounding.md](grounding.md)).
 - Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
   break all edges.
 - The wordmark on the roof.

@@ -3,7 +3,7 @@
 	(generator "vgacorne")
 	(generator_version "1.0")
 	(layer "F.Cu")
-	(descr "M2 plate standoff: 2.2 mm NPTH, 3.5 mm hex standoff (F), M2 low-profile head (B)")
+	(descr "M2 plate standoff: 2.2 mm PTH with a 3.4 mm GND pad, 3.5 mm hex standoff (F), M2 low-profile head (B); grounds the plate")
 	(tags "mounting standoff M2 plate")
 	(property "Reference" "REF**"
 		(at 0 -3 0)
@@ -132,11 +132,12 @@
 		(layer "B.CrtYd")
 		(uuid "7011bf0e-0b9d-50cc-a509-192b88123f51")
 	)
-	(pad "" np_thru_hole circle
+	(pad "1" thru_hole circle
 		(at 0 0)
-		(size 2.2 2.2)
+		(size 3.4 3.4)
 		(drill 2.2)
 		(layers "*.Cu" "*.Mask")
+		(remove_unused_layers no)
 		(uuid "df059a39-c8b4-5002-8ad1-eeffc1904977")
 	)
 	(embedded_fonts no)

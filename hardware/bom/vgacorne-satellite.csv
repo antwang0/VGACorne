@@ -5,6 +5,7 @@
 "C5","1n","","Capacitor_SMD:C_0402_1005Metric","","1",""
 "C201-C223","4.7n","","Capacitor_SMD:C_0402_1005Metric","","23",""
 "ENC1","PEC12R-4220F-N0024","","Rotary_Encoder:RotaryEncoder_Bourns_Vertical_PEC12R-3x17F-Nxxxx","PEC12R-4220F-N0024","1",""
+"G1,G2","WE-SECF 331236362553","","vgacorne:EMI_Finger_WE-SECF_3.6x2.5mm","331236362553","2",""
 "HE1-HE23","DRV5055A3QDBZR","","Package_TO_SOT_SMD:SOT-23","DRV5055A3QDBZR","23",""
 "J3","SM10B-SRSS-TB","","Connector_JST:JST_SH_SM10B-SRSS-TB_1x10-1MP_P1.00mm_Horizontal","SM10B-SRSS-TB","1",""
 "R1-R3","75","","Resistor_SMD:R_0402_1005Metric","","3",""
