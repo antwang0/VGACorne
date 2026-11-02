@@ -104,7 +104,7 @@ PADS = {
         board_t=1.0, parts=4.7, well_grow=0.3, overlay_margin=3.0, gloss=True,
         fpc=(8.9, -12.8), fpc_mouth=(0, 1), channel=None,
         connector_fp="Connector_FFC-FPC:Jushuo_AFC07-S06FCA-00_1x6-1MP_P0.50_Horizontal",
-        connector_mpn="AFC07-S06FCA-00 (LCSC C262553)",
+        connector_mpn="AFC07-S06FCA-00",  # LCSC C262553 (fab.py)
         connector_pins={"2": "TP_NRST", "3": "GND", "4": "+3V3", "5": "I2C_SCL", "6": "I2C_SDA", "MP": "GND"},
         connector_note="6-pin 0.5 mm FFC to the TPS65's J1: 1 RDY (unused), 2 NRST, 3 GND, 4 VDDHI, 5 SCL, 6 SDA. "
                        "Same-side (type A) cable folded back under the module; check the pin order on a paper mock-up",

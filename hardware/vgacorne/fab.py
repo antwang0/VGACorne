@@ -54,6 +54,8 @@ LCSC: dict[str, str] = {
     "SMD0805-075": "C883110",  # BHFUSE BSMD0805-075-6V: 0.75 A hold, 1.5 A trip
     "HRO TYPE-C-31-M-12": "C165948",
     "SM10B-SRSS-TB": "C160409",  # not C5306083, a discontinued duplicate
+    "AFC07-S06FCA-00": "C262553",  # trackpad FFC connector J5, top side: two-sided assembly
+    "PEC12R-4220F-N0024": "C143785",  # encoder ENC1, THT on top; LCSC stock was 0 in 2025, JLC may pre-order
     "TS-1187A-B-A-B": "C318884",  # Basic
     "AT32F405RCT7": "C47090415",  # 10x10 mm (the -7 suffix is 7x7); low stock
     "STM32F446RET6": "C69336",

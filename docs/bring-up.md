@@ -26,9 +26,9 @@
 
 | Item | Qty | Notes |
 |---|---|---|
-| Main PCB (right half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the trackpad FFC connector J5 on top (hand-solderable); J4 is bare landing pads for the module |
+| Main PCB (right half), 2-layer 1.6 mm | 1 | two-sided assembly (the trackpad FFC connector J5 is on top); J4 is bare landing pads for the module, soldered on by hand |
 | MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. JLC's standard 1.0 mm 4-layer stack-up (the USB pair assumes ~0.1 mm to the In1 ground plane), with the castellated-hole option |
-| Satellite PCB (left half), 2-layer 1.6 mm | 1 | bottom-side assembly, plus the rotary encoder ENC1 on top (hand-solder) |
+| Satellite PCB (left half), 2-layer 1.6 mm | 1 | two-sided assembly; the rotary encoder ENC1 on top is THT (LCSC C143785, check stock: JLC may have to pre-order it, or hand-solder it) |
 | VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | aluminium: leave it bare or bead-blasted; the grounded standoffs tie it to GND ([grounding.md](grounding.md)) |

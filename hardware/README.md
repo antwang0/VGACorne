@@ -122,8 +122,9 @@ board file to regenerate it unrouted.
 A part is placed if it has an LCSC number: its symbol's `LCSC` field, or the
 `LCSC` table in `vgacorne/fab.py` (by MPN, or by value and footprint for
 passives). The step lists the parts without one; they are the parts fitted by
-hand: J4/J5 and ENC1 on top, and the daughterboard's socket and pigtail (its
-0402 cap is in its BOM, if you have JLC fit it).
+hand: the MCU module on J4, the spring fingers G1/G2, and the daughterboard's
+socket and pigtail (its 0402 cap is in its BOM, if you have JLC fit it). J5
+and ENC1 sit on top, so the main and satellite boards are two-sided assembly.
 
 Check the placements in JLC's preview before paying: KiCad and JLC disagree
 on the zero rotation of some packages.

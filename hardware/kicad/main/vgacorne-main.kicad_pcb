@@ -2439,7 +2439,7 @@
 				)
 			)
 		)
-		(property "MPN" "AFC07-S06FCA-00 (LCSC C262553)"
+		(property "MPN" "AFC07-S06FCA-00"
 			(at 0 0 0)
 			(layer "F.SilkS")
 			(hide yes)
