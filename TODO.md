@@ -12,6 +12,8 @@ single-ended, as the connector cluster leaves no room to move the vias.
 
 - [ ] Run `hardware/generate.py fab` and order (see
       [bring-up](docs/bring-up.md#before-ordering)).
+      Costs: [docs/cost.md](docs/cost.md) (about 860-1,030 for one aluminium
+      unit, five board sets included).
 
 ## Also open
 

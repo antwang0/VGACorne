@@ -24,6 +24,8 @@
 
 ## What to order
 
+What it comes to: [cost.md](cost.md).
+
 | Item | Qty | Notes |
 |---|---|---|
 | Main PCB (right half), 2-layer 1.6 mm | 1 | two-sided assembly (the trackpad FFC connector J5 is on top); J4 is bare landing pads for the module, soldered on by hand |

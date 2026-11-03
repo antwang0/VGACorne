@@ -55,6 +55,7 @@ docs/
   sensors.md          Hall/TMR sensor options and the field the common HE switches give
   mounting.md         tenting stands and desk/chair mounts for the 1/4"-20 sockets
   grounding.md        grounding plan for the aluminium case, plate and knob
+  cost.md             what a build costs: JLC quotes and estimates, one unit and a batch of five
 hardware/
   generate.py         regenerates everything below (see hardware/README.md)
   vgacorne/           the generator: layout, circuits, schematic/PCB writers, checks
