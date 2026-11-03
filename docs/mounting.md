@@ -132,6 +132,98 @@ flexes it more than the typing does. No vendor publishes stiffness figures.
 - **Tray adapter:** a 4–5 mm aluminium strip that bolts two Arca clamps to a
   tray at shoulder width.
 
+## Plan: tented, under the desk
+
+The setup this plan builds: each half hangs just below and in front of the
+desk's front edge on its own arm, tented 20–30°, at lap height, so the
+forearms stay level and the wrists straight. Nothing is drilled; the arms
+clamp to the desk edge and the halves click on and off. The alternatives at
+the end are for when this one has shown what angles and positions you like.
+
+### Geometry
+
+Set these on the first evening and write them down; everything else follows.
+
+| Parameter | Start at | Why |
+|---|---|---|
+| Tent angle | 25° (20–30°) | the usual comfortable range; the sockets and ball/tilt heads give any angle |
+| Height | the home row 20–60 mm below the desk top | elbows at about 90°, shoulders down; the desk edge must not touch the forearms |
+| Fore-aft | the inner (thumb) edge about level with the desk's front edge | hands clear the desk when typing; the halves tuck under when you stand |
+| Splay (yaw) | 10–20° each, inner edges forward | follows the forearms; the VGA cable lengthens |
+| Gap between halves | shoulder width, 45–60 cm at the thumbs | wider than on the desk: the arms let you |
+| Clearance to the desk underside | at least 40 mm above the half's highest point | the knob (left) and the keycaps; the encoder knob is the tallest thing |
+| Back face | free: 70 mm behind it | the VGA plug and its bend, the USB-C plug |
+
+The half's back face points at the desk's underside when tented, so the
+cables run up and back along the arm, not toward your legs.
+
+### Loads
+
+Design for **3 kg per half**: the aluminium halves weigh 0.4 kg, and resting
+hands add 1–2 kg at the end of the arm. Pick parts rated at or above that, and
+prefer joints that lock positively over friction balls: a ball head creeps
+under a resting hand over weeks; a tilt head or a single-knob friction arm
+doesn't. Keep the arm's reach under 25 cm. Flex is what you'll notice first,
+not strength.
+
+### Parts, per half
+
+| Part | Pick | Rated | Price | Role |
+|---|---|---|---|---|
+| Arca plate, two-screw, slotted 28–40 mm | any Arca-Swiss-type two-screw plate (SmallRig, Leofoto, Desmond) | – | $10–20 | on both sockets, so the half can't twist. The sockets are 5.5 mm deep blind holes: use the plate's own short screws and check they don't bottom; add a washer if they do |
+| Quick release | Falcam F38 (or Ulanzi Claw Gen II) | 15 kg | $30 | click on and off without tools; no magnets |
+| Tilt / angle | Neewer Z-Flex tilt head | 3 kg | ~$25 | the tent angle, locked by a lever; flat base |
+| Arm | Manfrotto 244N variable-friction arm | 3 kg | $139 | one knob locks every joint; 53 cm reach, used short |
+| Clamp | Manfrotto 035RL Super Clamp | 15 kg | $45 | 13–55 mm desk edges; the 244N plugs into its socket |
+| Budget arm + clamp instead | Neewer ST20 11" arm with clamp | 2 kg | $26 | fine for a printed half; add spring washers to its joints |
+
+**Premium pair:** about $500 with the F38s and Z-Flex heads. **Budget pair:**
+about $190. Mixed: premium arm on the right (heavier half, trackpad hand),
+budget on the left.
+
+Cables: the halves end up 45–60 cm apart under the desk and the arms add a
+loop, so a **1 m VGA cable** replaces the 30 cm one, and the USB-C cable to
+the host needs to reach from under the desk: 1.5–2 m.
+
+### Assembly
+
+1. Fit the Arca plate to the half with both screws, snug, not tight: the
+   sockets are tapped aluminium (or heat-set inserts in a printed case).
+2. Super Clamp on the desk edge, jaw fully onto the edge, where the half's
+   inner edge should end up; the arm's socket faces forward and down.
+3. 244N into the clamp, Z-Flex on the arm's far end, F38 on the Z-Flex.
+4. Click the half on. Loosen the 244N's knob, hold the half where the
+   geometry table says, tighten. Set the tent with the Z-Flex, splay by
+   turning the F38 on the Z-Flex's screw.
+5. Plug in the VGA cable behind each half, then USB. Tie the cables to the
+   arms with velcro so they don't tug the DE-15 jackscrews.
+6. Rest your hands and type for a minute. If the half sinks, the arm knob is
+   not tight enough or the arm is too long: shorten the reach before adding
+   force.
+
+### First week
+
+- Expect to move the clamps two or three times; mark the desk edge with tape
+  once the position settles.
+- Check the key readings in hmkconf's debug view once mounted
+  ([mechanical.md](mechanical.md#foam-and-gaskets)): the arm's steel is
+  12 mm or more from the nearest sensor and unmagnetised, so nothing should
+  change, but confirm it.
+- The arm bonds the case to the desk frame electrically through the clamp;
+  that's fine, and the case grounding ([grounding.md](grounding.md)) is
+  unaffected.
+- Standing desk: the arms rise with the desk. Make sure the cables have the
+  slack for the full travel, and that the halves clear anything under the desk
+  at the lowest height.
+
+### Alternatives
+
+| If you want | Use | Trade |
+|---|---|---|
+| The rigidity of a fixed mount, once the position is known | a 2040 aluminium extrusion under the desk's front edge (clamped, or screwed into the desk), with a Z-Flex on an adapter plate per half | cheapest and stiffest; no quick repositioning; needs an adapter plate (M5 T-nuts to 1/4"-20, [below](#to-manufacture-only-if-wanted)) |
+| The halves to slide away under the desk | Humanscale 6G track with the 6G500 Big Board, a ball or tilt head bolted through the board per half | $320–485; the board limits the tent to what the heads give above it, and the track's tilt is small |
+| The keyboard to follow the chair | the MoErgo captain's-chair build on the chair's arm posts | $150–200; nothing on the desk at all |
+
 ## Sources
 
 - **Tenting:**

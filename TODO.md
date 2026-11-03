@@ -20,8 +20,8 @@ single-ended, as the connector cluster leaves no room to move the vias.
 Details are in the linked docs.
 
 - [ ] **Case:** print `mechanical/case-printed/` and check the fit, then quote
-      `mechanical/case-machined/` in aluminium (STEP + `.dxf` drawing). Pick a tenting
-      and desk setup ([mounting.md](docs/mounting.md)).
+      `mechanical/case-machined/` in aluminium (STEP + `.dxf` drawing). Tenting
+      and under-desk mounting: the plan in [mounting.md](docs/mounting.md#plan-tented-under-the-desk).
       The grounding plan ([grounding.md](docs/grounding.md)) is in the boards
       and the drawings: order the four spring fingers and ask the shop to mask
       the `BARE` areas.
