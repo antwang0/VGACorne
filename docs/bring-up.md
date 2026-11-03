@@ -33,7 +33,7 @@
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | aluminium: leave it bare or bead-blasted; the grounded standoffs tie it to GND ([grounding.md](grounding.md)) |
 | Würth WE-SECF 331236362553 spring fingers (G1, G2) | 4 | aluminium case only; Farnell/RS/Mouser, no LCSC number, hand-soldered on the PCB underside |
-| Case: tray + frame per half | 1 + 1 | print the `inserts` build, or order the `tapped` build in aluminium with its `.dxf` hole drawings ([mechanical.md](mechanical.md#3d-case)) |
+| Case: tray + frame per half | 1 + 1 | print `mechanical/case-printed/`, or order `mechanical/case-machined/` in aluminium with its `.dxf` drawings ([mechanical.md](mechanical.md#3d-case)) |
 | M3 × 12 button-head screws (ISO 7380) | 16 | tray to frame, eight per half |
 | M3 × 4.0 heat-set inserts (ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3) | 16 | printed case only |
 | 1/4"-20 × 6.4 heat-set inserts (CNC Kitchen or ruthex "short") | 4 | printed case only: the tripod/Arca mounts |

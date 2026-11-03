@@ -25,7 +25,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 | `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board |
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
-| `case` | `mechanical/case-*-{tray,frame}-{tapped,inserts}.step`, `.stl` for printing, `.dxf` hole drawings for machining (+ `.svg` preview), after a fit check | yes |
+| `case` | `mechanical/case-machined/` (STEP + `.dxf` hole drawing per part) and `mechanical/case-printed/` (STEP + `.stl` per part), plus `mechanical/case-*.svg` previews, after a fit check | yes |
 | `bom` | `bom/*.csv` from the schematics | yes |
 | `fab` | `fab/<board>/`: JLC Gerber/drill zip, BOM and CPL (git-ignored) | yes |
 | `check` | nothing | — |

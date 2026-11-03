@@ -489,7 +489,7 @@ $SKPOLY
   9
 $TDCREATE
  40
-2461347.967233796
+2461348.0047685187
   9
 $TDUCREATE
  40
@@ -497,7 +497,7 @@ $TDUCREATE
   9
 $TDUPDATE
  40
-2461347.967233796
+2461348.0047685187
   9
 $TDUUPDATE
  40
@@ -549,7 +549,7 @@ $SPLINESEGS
   9
 $HANDSEED
   5
-B9
+AE
   9
 $SURFTAB1
  70
@@ -929,11 +929,11 @@ $PSTYLEMODE
   9
 $FINGERPRINTGUID
   2
-{D55580C1-4074-440B-93D7-9CF733F51888}
+{8B18C5AB-7421-4FA9-9647-2819C526CA9D}
   9
 $VERSIONGUID
   2
-{5ECC21DC-44AD-489E-8EDF-FBE3FCAB603F}
+{86C9659F-BB1B-404E-B731-0D627FDC6084}
   9
 $EXTNAMES
 290
@@ -1323,9 +1323,9 @@ ISM
   0
 CLASS
   1
-ACDBPLACEHOLDER
+LAYOUT
   2
-AcDbPlaceHolder
+AcDbLayout
   3
 ObjectDBX Classes
  90
@@ -1339,9 +1339,9 @@ ObjectDBX Classes
   0
 CLASS
   1
-LAYOUT
+ACDBPLACEHOLDER
   2
-AcDbLayout
+AcDbPlaceHolder
   3
 ObjectDBX Classes
  90
@@ -3181,7 +3181,7 @@ ACAD
   0
 APPID
   5
-B6
+AB
 330
 3
 100
@@ -3195,7 +3195,7 @@ HATCHBACKGROUNDCOLOR
   0
 APPID
   5
-B7
+AC
 330
 3
 100
@@ -18841,45 +18841,9 @@ AcDbPolyline
  20
 -42.72633939498594
   0
-LWPOLYLINE
-  5
-91
-330
-17
-100
-AcDbEntity
-  8
-BARE
-100
-AcDbPolyline
- 90
-5
- 70
-1
- 10
-156.2625
- 20
--22.450000000000003
- 10
-188.2625
- 20
--22.450000000000003
- 10
-188.2625
- 20
--20.85
- 10
-156.2625
- 20
--20.85
- 10
-156.2625
- 20
--22.450000000000003
-  0
 CIRCLE
   5
-92
+91
 330
 17
 100
@@ -18895,11 +18859,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-93
+92
 330
 17
 100
@@ -18917,7 +18881,7 @@ AcDbText
  40
 2.0
   1
-B1
+A1
  11
 152.8875
  21
@@ -18929,7 +18893,7 @@ AcDbText
   0
 CIRCLE
   5
-94
+93
 330
 17
 100
@@ -18945,11 +18909,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-95
+94
 330
 17
 100
@@ -18967,7 +18931,7 @@ AcDbText
  40
 2.0
   1
-B2
+A2
  11
 240.64211901703783
  21
@@ -18979,7 +18943,7 @@ AcDbText
   0
 CIRCLE
   5
-96
+95
 330
 17
 100
@@ -18995,11 +18959,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-97
+96
 330
 17
 100
@@ -19017,7 +18981,7 @@ AcDbText
  40
 2.0
   1
-B3
+A3
  11
 295.98750000034363
  21
@@ -19029,7 +18993,7 @@ AcDbText
   0
 CIRCLE
   5
-98
+97
 330
 17
 100
@@ -19045,11 +19009,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-99
+98
 330
 17
 100
@@ -19067,7 +19031,7 @@ AcDbText
  40
 2.0
   1
-B4
+A4
  11
 295.096927760232
  21
@@ -19079,7 +19043,7 @@ AcDbText
   0
 CIRCLE
   5
-9A
+99
 330
 17
 100
@@ -19095,11 +19059,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-9B
+9A
 330
 17
 100
@@ -19117,7 +19081,7 @@ AcDbText
  40
 2.0
   1
-B5
+A5
  11
 261.9176342016513
  21
@@ -19129,7 +19093,7 @@ AcDbText
   0
 CIRCLE
   5
-9C
+9B
 330
 17
 100
@@ -19145,11 +19109,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-9D
+9C
 330
 17
 100
@@ -19167,7 +19131,7 @@ AcDbText
  40
 2.0
   1
-B6
+A6
  11
 229.31250000018633
  21
@@ -19179,7 +19143,7 @@ AcDbText
   0
 CIRCLE
   5
-9E
+9D
 330
 17
 100
@@ -19195,11 +19159,11 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
   0
 TEXT
   5
-9F
+9E
 330
 17
 100
@@ -19217,7 +19181,7 @@ AcDbText
  40
 2.0
   1
-B7
+A7
  11
 204.8895375842419
  21
@@ -19229,7 +19193,7 @@ AcDbText
   0
 CIRCLE
   5
-A0
+9F
 330
 17
 100
@@ -19245,241 +19209,41 @@ AcDbCircle
  30
 0.0
  40
-1.7
+1.25
+  0
+TEXT
+  5
+A0
+330
+17
+100
+AcDbEntity
+  8
+TEXT
+100
+AcDbText
+ 10
+170.851890141344
+ 20
+-132.3657094118039
+ 30
+0.0
+ 40
+2.0
+  1
+A8
+ 11
+170.851890141344
+ 21
+-132.3657094118039
+ 31
+0.0
+100
+AcDbText
   0
 TEXT
   5
 A1
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-170.851890141344
- 20
--132.3657094118039
- 30
-0.0
- 40
-2.0
-  1
-B8
- 11
-170.851890141344
- 21
--132.3657094118039
- 31
-0.0
-100
-AcDbText
-  0
-CIRCLE
-  5
-A2
-330
-17
-100
-AcDbEntity
-  8
-HOLES
-100
-AcDbCircle
- 10
-192.8625
- 20
--58.8
- 30
-0.0
- 40
-2.55
-  0
-TEXT
-  5
-A3
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-195.8625
- 20
--57.8
- 30
-0.0
- 40
-2.0
-  1
-C1
- 11
-195.8625
- 21
--57.8
- 31
-0.0
-100
-AcDbText
-  0
-CIRCLE
-  5
-A4
-330
-17
-100
-AcDbEntity
-  8
-HOLES
-100
-AcDbCircle
- 10
-192.8625
- 20
--97.0
- 30
-0.0
- 40
-2.55
-  0
-TEXT
-  5
-A5
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-195.8625
- 20
--96.0
- 30
-0.0
- 40
-2.0
-  1
-C2
- 11
-195.8625
- 21
--96.0
- 31
-0.0
-100
-AcDbText
-  0
-CIRCLE
-  5
-A6
-330
-17
-100
-AcDbEntity
-  8
-BARE
-100
-AcDbCircle
- 10
-213.508677
- 20
--51.584287
- 30
-0.0
- 40
-4.0
-  0
-TEXT
-  5
-A7
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-216.508677
- 20
--50.584287
- 30
-0.0
- 40
-2.0
-  1
-D1
- 11
-216.508677
- 21
--50.584287
- 31
-0.0
-100
-AcDbText
-  0
-CIRCLE
-  5
-A8
-330
-17
-100
-AcDbEntity
-  8
-BARE
-100
-AcDbCircle
- 10
-273.108147
- 20
--95.97641900000005
- 30
-0.0
- 40
-4.0
-  0
-TEXT
-  5
-A9
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-276.108147
- 20
--94.97641900000005
- 30
-0.0
- 40
-2.0
-  1
-D2
- 11
-276.108147
- 21
--94.97641900000005
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-AA
 330
 17
 100
@@ -19497,7 +19261,7 @@ AcDbText
  40
 2.5
   1
-case-right-tray-tapped: aluminium (CNC 6061, or printed AlSi10Mg)
+case-right-frame: aluminium (CNC 6061, or printed AlSi10Mg)
  11
 95.16000000000003
  21
@@ -19509,7 +19273,7 @@ AcDbText
   0
 TEXT
   5
-AB
+A2
 330
 17
 100
@@ -19539,7 +19303,7 @@ AcDbText
   0
 TEXT
   5
-AC
+A3
 330
 17
 100
@@ -19569,7 +19333,7 @@ AcDbText
   0
 TEXT
   5
-AD
+A4
 330
 17
 100
@@ -19599,7 +19363,7 @@ AcDbText
   0
 TEXT
   5
-AE
+A5
 330
 17
 100
@@ -19629,7 +19393,7 @@ AcDbText
   0
 TEXT
   5
-AF
+A6
 330
 17
 100
@@ -19659,7 +19423,7 @@ AcDbText
   0
 TEXT
   5
-B0
+A7
 330
 17
 100
@@ -19689,7 +19453,7 @@ AcDbText
   0
 TEXT
   5
-B1
+A8
 330
 17
 100
@@ -19719,7 +19483,7 @@ AcDbText
   0
 TEXT
   5
-B2
+A9
 330
 17
 100
@@ -19749,7 +19513,7 @@ AcDbText
   0
 TEXT
   5
-B3
+AA
 330
 17
 100
@@ -19767,71 +19531,11 @@ AcDbText
  40
 2.5
   1
-B1-B8 (8x): Clearance 3.4 thru, counterbore 6.0 x 4.5 deep*
+A1-A8 (8x): M3 x 0.5: M3 x 0.5 tapped, ~3.5 mm full thread (2.5 mm drill, 5 mm deep)
  11
 95.16000000000003
  21
 -187.6410382291507
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-B4
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-95.16000000000003
- 20
--192.1410382291507
- 30
-0.0
- 40
-2.5
-  1
-C1-C2 (2x): 1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)*
- 11
-95.16000000000003
- 21
--192.1410382291507
- 31
-0.0
-100
-AcDbText
-  0
-TEXT
-  5
-B5
-330
-17
-100
-AcDbEntity
-  8
-TEXT
-100
-AcDbText
- 10
-95.16000000000003
- 20
--196.6410382291507
- 30
-0.0
- 40
-2.5
-  1
-D1-D2 (2x): Bare pad dia 8 on the floor top, no anodising
- 11
-95.16000000000003
- 21
--196.6410382291507
  31
 0.0
 100
@@ -20927,7 +20631,7 @@ CREATED_BY_EZDXF
   3
 WRITTEN_BY_EZDXF
 350
-B8
+AD
   0
 DICTIONARYVAR
   5
@@ -20939,7 +20643,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-11-02T23:12:49.605284+00:00
+1.4.4 @ 2026-11-03T00:06:52.010109+00:00
   0
 VISUALSTYLE
   5
@@ -21643,7 +21347,7 @@ X-Ray
   0
 DICTIONARYVAR
   5
-B8
+AD
 330
 2D
 100
@@ -21651,7 +21355,7 @@ DictionaryVariables
 280
 0
   1
-1.4.4 @ 2026-11-02T23:12:49.629355+00:00
+1.4.4 @ 2026-11-03T00:06:52.026303+00:00
   0
 ENDSEC
   0

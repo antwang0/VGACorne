@@ -67,6 +67,7 @@ class Build:
     bottom: float                   # extra floor under the case (z 0 is the aluminium case's underside)
     mount_hole: tuple[float, float]  # each 1/4"-20 mount: diameter, depth up from the underside
     mount: str
+    folder: str                     # output directory under hardware/mechanical
 
 
 # The mounts sit in bosses that stop 1 mm under the PCB, which moves down
@@ -77,10 +78,10 @@ class Build:
 # Hole sizes for prints are CAD sizes: printed holes come out ~0.2 mm small.
 TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 3.4, (6.0, 4.5), (2.5, 5.0),
                "M3 x 0.5 tapped, ~3.5 mm full thread (2.5 mm drill, 5 mm deep)", 0.0, (5.1, 5.5),
-               '1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)')
+               '1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)', "case-machined")
 INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.5, (6.2, 6.5), (4.2, 5.0),
                 "M3 x 4.0 heat-set insert (ruthex RX-M3Sx4.0, or CNC Kitchen M3 x 3), flush", 2.0, (8.2, 7.4),
-                '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside')
+                '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside', "case-printed")
 BOSS_TOP = ST.pcb_bottom - 1.0
 BUILDS = (TAPPED, INSERTS)
 SCREW = "M3 x 12 ISO 7380"
@@ -508,15 +509,18 @@ def _stl(part: Part, path: Path) -> None:
 
 
 def write(side: str, out: Path) -> tuple[list[Path], list[str]]:
-    """Write ``case-<side>-<tray|frame>-<build>.step`` for every build (and an STL
-    of each printed part) plus a ``case-<side>.svg`` preview; return the paths
-    written and any fit problems."""
+    """Write each build's ``case-<side>-<tray|frame>.step`` into its own folder
+    (``case-machined/`` with a hole drawing per part, ``case-printed/`` with an
+    STL per part) plus a ``case-<side>.svg`` preview; return the paths written
+    and any fit problems."""
     written, problems = [], []
     for build in BUILDS:
         half = Half(side, build)
         tray, frame = half.tray(), half.frame()
+        folder = out / build.folder
+        folder.mkdir(parents=True, exist_ok=True)
         for name, part in (("tray", tray), ("frame", frame)):
-            path = out / f"case-{side}-{name}-{build.name}.step"
+            path = folder / f"case-{side}-{name}.step"
             stl = path.with_suffix(".stl")
             if _export(part, path):
                 written.append(path)
@@ -526,8 +530,8 @@ def write(side: str, out: Path) -> tuple[list[Path], list[str]]:
         problems += fit_check(half, tray, frame)
         if build is TAPPED:
             written += [p for p in [preview(tray, frame, side, out / f"case-{side}.svg"),
-                                    drawing(half, "tray", out / f"case-{side}-tray-tapped.dxf"),
-                                    drawing(half, "frame", out / f"case-{side}-frame-tapped.dxf")] if p]
+                                    drawing(half, "tray", folder / f"case-{side}-tray.dxf"),
+                                    drawing(half, "frame", folder / f"case-{side}-frame.dxf")] if p]
     return written, problems
 
 
@@ -540,7 +544,7 @@ def check() -> list[str]:
             tray, frame = half.tray(), half.frame()
             problems += fit_check(half, tray, frame)
             for name, part in (("tray", tray), ("frame", frame)):
-                path = mech.OUT / f"case-{side}-{name}-{build.name}.step"
+                path = mech.OUT / build.folder / f"case-{side}-{name}.step"
                 tmp = path.with_suffix(".check")
                 part.label = path.stem
                 export_step(part, str(tmp))

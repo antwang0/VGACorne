@@ -338,8 +338,8 @@ of the 2D plan.
 
 | Build | Files per half | For |
 |---|---|---|
-| `tapped` | `case-<side>-{tray,frame}-tapped.step`, plus a `.dxf` drawing of each part's holes and threads | aluminium: CNC 6061, or printed AlSi10Mg |
-| `inserts` | `case-<side>-{tray,frame}-inserts.step` and `.stl` | FDM prints (PLA, ABS/ASA, nylon) with heat-set inserts |
+| `tapped` | `case-machined/case-<side>-{tray,frame}.step`, plus a `.dxf` drawing of each part's holes, threads and bare areas | aluminium: CNC 6061, or printed AlSi10Mg |
+| `inserts` | `case-printed/case-<side>-{tray,frame}.step` and `.stl` | FDM prints (PLA, ABS/ASA, nylon) with heat-set inserts |
 
 | Part | Height | Contents |
 |---|---|---|

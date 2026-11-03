@@ -60,7 +60,8 @@ hardware/
   vgacorne/           the generator: layout, circuits, schematic/PCB writers, checks
   lib/                project symbols/footprints (AT32F405RCT7, HE switch, M2 standoff...)
   kicad/{main,satellite,link,module_at32,module_f446}/   KiCad 10 projects
-  mechanical/         plate, foam and case-plan DXFs (+ SVG previews), FR4 plate boards, case STEP files
+  mechanical/         plate, foam and case-plan DXFs (+ SVG previews), FR4 plate boards;
+                      case-machined/ (STEP + hole drawings) and case-printed/ (STEP + STL)
   bom/                grouped BOM CSVs
 firmware/libhmk/keyboards/vgacorne_{at32,f446}/   libhmk keyboards, one per MCU module
 firmware/libhmk/detachable.patch, tests/          libhmk hot-plug patch + host test
