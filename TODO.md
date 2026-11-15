@@ -10,10 +10,22 @@ vias beside the ESD array U4, with a trombone on `USB_DN` that matches the
 lengths to 0.01 mm (41.46 vs 41.45 mm). The last 1–6 mm into U4 stay
 single-ended, as the connector cluster leaves no room to move the vias.
 
+A pre-fab review (2026-11-15: electrical, modules, footprints and JLC files,
+layout, mechanical, firmware) found no blockers in the circuits; its fixes are
+in: JLC rotation corrections in the CPL, select-line resistors and finger
+placement for ESD, ground-only module undersides, a pin-1 mark on the modules,
+and machinable case details.
+
+- [ ] **Wait for DRV5055A3QDBZR stock** (JLC 2, LCSC 0, TI out of stock on
+      2026-11-15, no date): set stock alerts, or a Digi-Key backorder shows
+      TI's expected date.
 - [ ] Run `hardware/generate.py fab` and order (see
-      [bring-up](docs/bring-up.md#before-ordering)).
+      [bring-up](docs/bring-up.md#before-ordering)). Check the sensors, LQFPs,
+      USB-C, FFC and encoder in JLC's placement preview.
       Costs: [docs/cost.md](docs/cost.md) (about 860-1,030 for one aluminium
       unit, five board sets included).
+- [ ] Before or at bring-up, check one sensor's polarity with your switch
+      (`invert_adc`, [sensors.md](docs/sensors.md#notes)).
 
 ## Also open
 

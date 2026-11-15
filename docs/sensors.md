@@ -94,6 +94,12 @@ seating plane. Two readings of the vendor figures give two estimates:
   - A bipolar part only needs `invert_adc`. That also chooses the
     cable-unplugged pulls (R11–R13 or R14–R16), so changing sensor family means
     regenerating both.
+- **This board's DRV5055s are on the underside**, marking facing away from the
+  switch. By TI's convention (positive = flux from the package bottom to its
+  top, SBAS640C 6.3.1) an N-pole-down magnet then *raises* the output, which
+  would want `invert_adc` false; it is true today, following HE60's notes for
+  top-mounted sensors. Bring-up step "sensor polarity" settles it; flipping it
+  also swaps which of R11–R13 / R14–R16 should be fitted (three 0402s by hand).
 - **Unipolar parts** (DRV5056, TMAG5253UA): TI's convention with the sensor on
   the underside gives positive field for an N pole facing the PCB. The HE60
   README's inversion notes don't all agree with that, so bench-check one

@@ -74,8 +74,11 @@ cable**. Both halves have female DE-15 ports, like a PC or a monitor.
 **Cable requirement:** pins 1–3, 5–10 and 12–15 must be wired. Most "full" or
 "3+6" cables are, but some cheap ones leave out pin 9. Check with a meter. If
 yours has no pin 9, re-jumper **both** daughterboards: cut JP1/JP2 and bridge
-the other side. That puts +5 V on pin 15, and cable-detect then can't be used.
-Never set JP1 and JP2 to the same pin.
+the other side. JP1 then puts +5 V on pin 15, and JP2 ties `LINK_DET` to GND,
+so the main half always sees a satellite attached (cable-detect is lost, and
+unplugging the cable with the board running leaves the left keys at whatever
+the pull resistors read). Never bridge JP1 to pin 15 while JP2 still selects
+pin 15.
 
 **Plugged into a PC or monitor by mistake:** the analog lines see 75 Ω
 terminations, the logic lines meet sync/DDC pins, and +5 V meets +5 V. The
@@ -120,7 +123,10 @@ drop doesn't move with key state.
 
 **Select lines.** PC1–PC3 drive the local muxes directly and the cable
 through 470 Ω. That slows the edges (≈50 ns into the cable), damps ringing,
-and limits current into an unpowered satellite.
+and limits current into an unpowered satellite. On the satellite, each select
+line passes its ESD clamp and then 1 kΩ (R5–R7) before it fans out to the
+three muxes: the SRV05-4 still lets 12–17 V through during a hit, and the
+resistor keeps that from reaching all three muxes' inputs at once.
 
 **Cable unplugged.** R11–R13 pull the remote ADC inputs toward the
 "key released" end of the range. Released means high when `invert_adc` is true;
@@ -161,7 +167,8 @@ Two figures where the DRV5055's process matters (LBC9 / older LBC8 parts):
   LBC8 sensors the main half's analog one drops 1.7 V at ~0.2 A, about 0.36 W:
   that is ~125 °C at the junction at 40 °C ambient with minimal copper (JEDEC,
   231 °C/W), but about 75 °C with a generous copper pour (TI's EVM, 101 °C/W).
-  Pour copper round U2 and U3.
+  U2 and U3 sit in ground pour with GND vias under their bodies, and their
+  input and output caps within 2 mm of the pins.
 - No RGB.
 
 ## Trackpad (optional)
@@ -231,8 +238,8 @@ The encoder is a Bourns PEC12R-4220F-N0024 (24 detents, no push switch). It
 needs no extra pins or cable conductors: it takes the satellite's last spare
 mux channel (mux C, channel 7). Its A and B contacts switch to ground; each
 has a 10 kΩ pull-up (R21/R22) and feeds the `ENC` node through its own
-resistor, 47 kΩ for A and 100 kΩ for B (R23/R24, 1 %), with 1 nF (C5) to
-ground. The four contact states give four levels:
+resistor, 47 kΩ for A and 100 kΩ for B (R23/R24, 1 %), with 100 pF (C5) to
+ground: τ ≈ 4 µs, so the node settles within one channel's settling delay. The four contact states give four levels:
 
 | A | B | `ENC` | ADC counts |
 |---|---|---|---|
@@ -244,6 +251,9 @@ ground. The four contact states give four levels:
 `generate.py firmware` works the levels out from the resistor values and writes
 them to `he_wiring.h`. QMK's matrix scan keeps the reading, picks the nearest
 level, and hands the two contact states to QMK's own quadrature encoder driver.
+A new state only counts once two scans in a row agree: on the way between two
+levels the node passes through a third one's band, and a scan landing there
+would otherwise read as a step backwards.
 The levels are at least 1 V apart, so a few percent of supply difference
 between the halves doesn't matter. With the cable out, the encoder reads as
 resting. libhmk has no encoder support: under libhmk the two keys still work,
@@ -269,7 +279,14 @@ modules.
 pitch) along its top and bottom edges, every part on its top side and a flat
 underside. It is a 1.0 mm **4-layer** board:
 - **Planes:** In1 is solid ground and In2 is +3V3. Every cap and supply pin
-  drops a via, and the signals, USB included, run over unbroken ground.
+  drops a via, and the signals, USB included, run on F.Cu over unbroken ground.
+- **Underside:** B.Cu is a solid, stitched ground pour with no tracks. Once
+  soldered it sits about 0.1 mm above the main board's top-layer tracks, with
+  only two solder masks between them, so nothing on the module may run there.
+  The few slow signals that can't stay on F.Cu (NRST, MUX_S0–S2, and DET on
+  the F446) take short tracks on In2 inside the +3V3 pour.
+- **Marking:** a pin-1 triangle and a "USB-C edge" arrow on top: the 2 × 12
+  pattern also fits J4 turned round, which would put +5 V on an ADC pin.
 - **Placement:** each decoupling cap sits beside its supply pin, and the
   crystal at the oscillator pins. It is soldered flat onto the landing pads J4 on top of the main
 PCB's tab, under the trackpad and beside Y/H/N. Solder, a 1.0 mm board and the
@@ -389,9 +406,10 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
 ## Open items
 
-1. **Main PCB routing: done.** Every board is autorouted
-   (`hardware/route.py`); the main board's USB pair was then laid by hand as a
-   differential pair, since Freerouting has none.
+1. **Main PCB routing: done.** The 2-layer boards are autorouted
+   (`hardware/route.py`) with hand-laid changes since; the main board's USB pair
+   was laid by hand as a differential pair, since Freerouting has none. Both
+   modules are routed by hand, to keep their underside free of tracks.
    - The USB-C sits on an ear behind column 4 so it can share the back face
      with the DE-15, and the module sits on the tab beyond column 5. D+/D−
      therefore run about 41 mm to the module's back-corner pads, along the
@@ -406,8 +424,10 @@ A host test runs the real matrix code against simulated sensors. VIA support and
    - On the 1.6 mm 2-layer main board that comes to about 97 Ω differential as
      bare copper, a few ohms less under solder mask (2D field-solver estimate).
      That is inside USB's 90 Ω ±15%.
-   - On the 4-layer module the pair is 0.2 mm tracks 0.15 mm apart over the
-     ground plane, about 91 Ω.
+   - On the AT32 module (high speed) the pair is 0.15 mm tracks 0.15 mm apart
+     on F.Cu over In1, no vias, matched to 0.1 mm: about 100 Ω bare and 91 Ω
+     under mask on the 3313 stack (2D field solve). The F446 module (full
+     speed) uses 0.2/0.15 mm, matched to 0.3 mm.
 
    Route analog nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the
    select lines.
@@ -423,12 +443,14 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 4. **Parts to confirm at ordering:**
    - The VGA socket's board-to-flange height on the first part (Amphenol FCI
      10090929-S154XLF, [mechanical.md](mechanical.md#vga-daughterboard)).
-   - JLC stock. On 2026-10-01 every part in `hardware/vgacorne/fab.py` was in
-     stock, mostly by the thousand. The exception is the AT32F405RCT7: 73 at JLC.
+   - JLC stock. On 2026-11-15 every part in `hardware/vgacorne/fab.py` was in
+     stock except the **DRV5055A3QDBZR: 2 at JLC, 0 at LCSC, out of stock at
+     TI** with no restock date. Order once it's back (or via JLC's global
+     sourcing). Low but enough: AT32F405RCT7 195, STM32F446RET6 338, PEC12R 76.
    - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
    - Second-source sensor: MT9102ET ([sensors.md](sensors.md)).
-5. **USB IDs.** `0x1209:0x0001` (AT32) and `:0x0002` (F446) are pid.codes
-   test IDs. Request real PIDs before sharing boards.
+5. **USB IDs.** `0x1209:0x0001` (AT32, libhmk), `:0x0002` (F446, libhmk) and
+   `:0x0003` (F446, QMK) are pid.codes test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real
    sensor data (see [firmware/README.md](../firmware/README.md#qmk-stm32f446-module)).
    Move the trackpad reads to their own thread, and give libhmk the rotary encoder

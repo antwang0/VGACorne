@@ -4,12 +4,15 @@ Everything comes from the 2D case plan (:func:`mechanical.case`, the layers of
 ``case-plan-*.dxf``) and the Z stack-up (:data:`mechanical.STACK`):
 
 * **Tray** (z 0 to the seam at the plate's underside): the floor with its
-  access holes and pockets, the walls, the lower gasket pockets, and M3
+  access holes and pockets, the walls, the lower gasket pockets, and M2.5
   clearance holes counterbored from below.
 * **Frame** (seam to the top): the walls, the upper gasket pockets, the bezel
   opening round the plate, the 1.5 mm roof over the tab, bay and USB ear,
-  the trackpad's counterbore and well, and blind M3 tap holes.
-* Both: the DE-15, USB-C and jackscrew holes through the flat back face.
+  the trackpad's counterbore and well (open down to the seam), and blind M2.5
+  tap holes.
+* Both: the DE-15's D cutout and the USB-C opening through the flat back face.
+  The jackscrew holes are U-slots in the tray, open to the seam: the frame
+  closes them.
 * Underneath: two 1/4"-20 mounts for tripods, tenting heads and desk arms, in
   bosses that rise into clear spots under the PCB.
 
@@ -54,10 +57,12 @@ GASKET_SET = ST.gasket * (1 - GASKET_COMPRESSION)  # each strip, compressed
 
 @dataclass(frozen=True)
 class Build:
-    """How a case is made, and so how its M3 x 12 button-head screws (ISO 7380,
-    5.7 mm head) hold the frame to the tray. The frame is only 6.5 mm tall, so
-    the heads sit 1 mm above the floor's top, up deep counterbores, leaving
-    ~4 mm of thread in the frame and 1.5 mm of material over its blind hole."""
+    """How a case is made, and so how its M2.5 x 12 button-head screws (ISO 7380,
+    4.7 mm head) hold the frame to the tray. The frame is only 6.5 mm tall, so
+    the heads sit 1 mm above the floor's top, up deep counterbores: the screw
+    reaches 3.9 mm into the frame (4.25 at the +0.35 length tolerance). The
+    walls are 7.25 mm thick, so a 5.0 mm counterbore on their midline leaves
+    1.1 mm of skin each side (an M3's 6.0 left 0.6)."""
     name: str                       # file suffix
     material: str
     clear: float                    # screw clearance hole through the tray
@@ -71,21 +76,30 @@ class Build:
 
 
 # The mounts sit in bosses that stop 1 mm under the PCB, which moves down
-# 0.15-0.44 mm under a hard press on the gaskets; the floor and boss give 6.5 mm. Tapped aluminium needs 5.5 mm of it (ISO 1222: a 5.5 mm socket
-# with 4 mm of full thread; tripod screws stand 4.5 mm proud). A 6.4 mm insert
-# needs 7.4 mm, so the printed floor is 2 mm thicker underneath: a pad round
-# just the mounts would leave the rest of the floor overhanging the print bed.
+# 0.15-0.44 mm under a hard press on the gaskets; the floor and boss give 6.5 mm.
+# Tapped aluminium uses 6.0 of it, flat-bottomed (a drill point would break
+# through), leaving 0.5 mm under the PCB side. Tripod screws stand up to 4.5 mm
+# proud (ISO 1222), so the thread must be full for 4.5 mm: a plug tap's 3-5
+# chamfered threads (4-6 mm at 1.27 mm pitch) can't do that in a 6 mm hole, a
+# thread mill or bottoming tap can. A 6.4 mm insert needs 7.4 mm, so the printed
+# floor is 2 mm thicker underneath: a pad round just the mounts would leave the
+# rest of the floor overhanging the print bed.
+# Frame holes: the screw reaches 3.9 mm above the seam (4.25 at its +0.35 length
+# tolerance), so tapped ones need >= 4.5 mm of full thread in a 5.3 mm hole,
+# which leaves 1.2 mm under the top face (0.6 under a 118 degree drill point).
 # Hole sizes for prints are CAD sizes: printed holes come out ~0.2 mm small.
-TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 3.4, (6.0, 4.5), (2.5, 5.0),
-               "M3 x 0.5 tapped, ~3.5 mm full thread (2.5 mm drill, 5 mm deep)", 0.0, (5.1, 5.5),
-               '1/4"-20 UNC tapped, 4.5 mm full thread (#7 = 5.1 mm drill, 5.5 mm deep)', "case-machined")
-INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.5, (6.2, 6.5), (4.2, 5.0),
-                "M3 x 4.0 heat-set insert (ruthex RX-M3Sx4.0, or CNC Kitchen M3 x 3), flush", 2.0, (8.2, 7.4),
+TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 2.9, (5.0, 4.5), (2.05, 5.3),
+               "M2.5 x 0.45-6H: 2.05 drill 5.3 deep, thread mill or bottoming tap, full thread >= 4.5 min",
+               0.0, (5.1, 6.0),
+               '1/4"-20 UNC-2B: #7 (5.1) hole 6.0 deep FLAT bottom (no drill point: 0.5 left), '
+               'thread mill or bottoming tap, full thread >= 4.5 min', "case-machined")
+INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.1, (5.2, 6.5), (4.2, 5.0),
+                "M2.5 x 4.0 heat-set insert (CNC Kitchen M2.5 standard: 4.0 mm hole), flush", 2.0, (8.2, 7.4),
                 '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside', "case-printed")
 BOSS_TOP = ST.pcb_bottom - 1.0
 BUILDS = (TAPPED, INSERTS)
-SCREW = "M3 x 12 ISO 7380"
-SCREW_EDGE = 0.5                # material between the counterbore and the cavity
+SCREW = "M2.5 x 12 ISO 7380"
+SCREW_EDGE = 1.0                # material between the counterbore and the cavity (and the outside)
 SCREW_KEEP = 2.0                # from gasket pockets, ports and the trackpad
 
 DB_HEIGHT = 13.0                # pcb.LINK_H: the daughterboard stands on edge, the DE-15 at its centre
@@ -234,6 +248,12 @@ def _through_back(cx: float, cz: float, w: float, h: float, r: float, y0: float,
     return extrude(sk, amount=(y1 - y0) / 2, both=True).moved(Location((cx, -(y0 + y1) / 2, cz)))
 
 
+def _through_back_poly(poly: Polygon, y0: float, y1: float) -> Part:
+    """A polygon in (board x, height) coordinates cut through the back face, from board y ``y0`` to ``y1``."""
+    face = Face(_wire(orient(poly).exterior)).moved(Plane.XZ.location)  # local (u, v) -> (x, 0, z)
+    return extrude(face, amount=(y1 - y0) / 2, both=True).moved(Location((0, -(y0 + y1) / 2, 0)))
+
+
 def _hole(x: float, y: float, d: float, z0: float, z1: float) -> Part:
     return Cylinder(d / 2, z1 - z0).moved(Location((x, -y, (z0 + z1) / 2)))
 
@@ -286,13 +306,23 @@ class Half:
 
     # -- ports ---------------------------------------------------------------
 
-    def _ports(self) -> list[Part]:
-        y0, y1 = self.through
-        cut = [_through_back(self.vga_x, mech.VGA_Z, *mech.DE15_CUTOUT, 1.0, y0, y1)]
+    def jackscrew_slots(self) -> list[Polygon]:
+        """The jackscrew holes as U-slots in (board x, height): a hole would leave
+        only 0.5 mm of wall up to the seam, so each opens up through it and the
+        frame closes it."""
+        out = []
         for hole in self.layers["JACKSCREWS"]:
             x0, _, x1, _ = hole.bounds
-            cut.append(Cylinder((x1 - x0) / 2, y1 - y0, rotation=(90, 0, 0)).moved(
-                Location(((x0 + x1) / 2, -(y0 + y1) / 2, mech.VGA_Z))))
+            x, r = (x0 + x1) / 2, (x1 - x0) / 2
+            out.append(unary_union([Point(x, mech.VGA_Z).buffer(r, 64),
+                                    box(x - r, mech.VGA_Z, x + r, SEAM + 1.0)]))
+        return out
+
+    def _ports(self, slots: bool = True) -> list[Part]:
+        y0, y1 = self.through
+        cut = [_through_back_poly(mech.de15_cutout(self.vga_x, mech.VGA_Z), y0, y1)]
+        if slots:
+            cut += [_through_back_poly(s, y0, y1) for s in self.jackscrew_slots()]
         if self.main:
             ux, _ = geo.anchor("USB", self.side)
             cut.append(_through_back(ux, mech.USB_Z, *mech.USB_OPENING, 1.0, y0, y1))
@@ -321,11 +351,14 @@ class Half:
         # OpenCascade's booleans).
         part = prism(self.outer.difference(self.inner), SEAM, TOP)
         part = part + prism(self.roof.buffer(0.05, join_style="mitre"), TOP - ST.roof, TOP)
-        cutters = [prism(self.pockets, SEAM - 1, ST.plate_top + GASKET_SET), *self._ports()]
+        cutters = [prism(self.pockets, SEAM - 1, ST.plate_top + GASKET_SET), *self._ports(slots=False)]
         for pad in self.layers.get("TRACKPAD", []):
             cutters.append(prism(pad, TOP - PAD.board_t, TOP + 1))
+        # The well goes right down to the seam: stopping at the module's depth
+        # would leave a 0.8 mm web over the tray outside the cavity (and a 45 mm
+        # bridge in a print). The overlay still sits on the counterbore's ledge.
         for well in self.layers.get("TRACKPAD_WELL", []):
-            cutters.append(prism(well, TOP - PAD.board_t - PAD.parts, TOP - PAD.board_t + 0.01))
+            cutters.append(prism(well, SEAM - 1, TOP - PAD.board_t + 0.01))
         for x, y in self.screws:
             cutters.append(_hole(x, y, self.build.hole[0], SEAM - 1, SEAM + self.build.hole[1]))
         return _cut(part, cutters)
@@ -435,27 +468,76 @@ def preview(tray: Part, frame: Part, side: str, path: Path) -> Path | None:
 DRAWING_NOTES = [
     "Units mm. Plan view from above; holes marked * are drilled from below.",
     "Material: aluminium 6061-T6 (CNC) or AlSi10Mg (SLM). General tolerance +/-0.1.",
-    "Threads as tabulated, cutting taps. Mask all tapped holes when anodising.",
-    "Break all sharp edges 0.2-0.5. Bead blast, then anodise.",
+    "Threads as tabulated: thread mill or bottoming tap (not a plug tap); full-thread depths are minimums.",
+    "Mask all tapped holes when anodising.",
+    f"Back face behind the ports: {mech.PORT_WALL:g} +0/-0.1 thick (the plugs only mate fully through it).",
+    f"Gasket pockets: depth +/-0.05 (tray {GASKET_SET:.2f} below the seam; frame to {ST.plate_top + GASKET_SET - SEAM:.2f} above it).",
+    f"Trackpad counterbore (frame, right): {PAD.board_t:.1f} +0.1/-0 deep.",
+    "Inside corners r >= 1.5 except the port cutouts (r 1.0, through the 1.6 back face).",
+    "Break all sharp edges 0.2-0.5 (outside edges of the underside <= 0.5: the counterbores are 1.1 in).",
+    "Bead blast, then anodise.",
     "BARE layer: no anodising (mask, or skim 0.05 after). Chem film per MIL-DTL-5541 Type II Class 3.",
     "Bare areas: the seam face (tray top / frame underside), the DE-15 flange seat inside the back wall",
     "and the D pads on the floor top. Under 0.1 ohm between any two bare areas of a part.",
 ]
 
 
+def _back_view(half: Half, part: str) -> tuple[dict[str, list], list[str], float]:
+    """The back wall of one part seen from inside the case (board x to the right,
+    as in the plan; height up): its outline, the port cutouts and the bare
+    flange seat, as (layer -> rings in (x, z)), notes, and the view's lowest z."""
+    from shapely.geometry import LineString
+
+    z0, z1 = (0.0 - half.build.bottom, SEAM) if part == "tray" else (SEAM, TOP)
+    seg = half.outer.intersection(LineString([(half.outer.bounds[0] - 1, half.face + 0.01),
+                                              (half.outer.bounds[2] + 1, half.face + 0.01)]))
+    x0, _, x1, _ = seg.bounds
+    band = box(x0, z0, x1, z1)
+    cuts = [mech.de15_cutout(half.vga_x, mech.VGA_Z)]
+    if part == "tray":
+        cuts += half.jackscrew_slots()
+    if half.main:
+        ux, _ = geo.anchor("USB", half.side)
+        w, h = mech.USB_OPENING
+        cuts.append(box(ux - w / 2, mech.USB_Z - h / 2, ux + w / 2, mech.USB_Z + h / 2).buffer(-1.0).buffer(1.0))
+    fw, fh = mech.FLANGE_SEAT
+    seat = box(half.vga_x - fw / 2, mech.VGA_Z - fh / 2, half.vga_x + fw / 2, mech.VGA_Z + fh / 2)
+    rings = {"OUTLINE": [band.exterior], "HOLES": [], "BARE": []}
+    for c in cuts:
+        g = c.intersection(band)
+        rings["HOLES"] += [p.exterior for p in getattr(g, "geoms", [g]) if not p.is_empty]
+    g = seat.intersection(band).difference(unary_union(cuts))
+    rings["BARE"] += [r for p in getattr(g, "geoms", [g]) for r in [p.exterior, *p.interiors]]
+    w, h = mech.DE15_CUTOUT
+    notes = [f"Back wall seen from inside (x as in the plan, z up from the case underside): "
+             f"z {z0:g} to {z1:g}, {mech.PORT_WALL:g} +0/-0.1 thick.",
+             f"DE-15: D cutout {w:g} wide at the top x {h:g}, {mech.DE15_FLANK:g} deg flanks, r {mech.DE15_CUTOUT_R:g}, "
+             f"centre x {half.vga_x:.2f}, z {mech.VGA_Z:g} (wide side up)."]
+    if part == "tray":
+        notes.append(f"Jackscrews: {mech.JACKSCREW_D:g} U-slots, centres {mech.JACKSCREW_PITCH:g} apart at z {mech.VGA_Z:g}, "
+                     "open to the seam (the frame closes them).")
+    else:
+        notes.append("No jackscrew holes in the frame: it closes the tray's U-slots.")
+    if half.main:
+        notes.append(f"USB-C: {mech.USB_OPENING[0]:g} x {mech.USB_OPENING[1]:g} r 1, centre z {mech.USB_Z:.2f}.")
+    notes.append(f"BARE: DE-15 flange seat {fw:g} x {fh:g}, centred on the D, inside face.")
+    return rings, notes, z0
+
+
 def drawing(half: Half, part: str, path: Path) -> Path | None:
     """The tapped holes of one part of a ``tapped`` half as a DXF drawing: what
-    CNC shops need beside the STEP, since none reads threads from it."""
+    CNC shops need beside the STEP, since none reads threads from it. Below the
+    plan and its notes, a view of the back wall from inside."""
     import ezdxf
 
     b = half.build
     holes = []
     bare = [half.layers["BARE"][0]]                      # the seam face, on both parts
     if part == "frame":
-        holes += [("A", xy, f"M3 x 0.5: {b.fastener}") for xy in half.screws]
+        holes += [("A", xy, b.fastener) for xy in half.screws]
     else:
-        holes += [("B", xy, f"Clearance {b.clear} thru, counterbore {b.head[0]} x {b.head[1]} deep*")
-                  for xy in half.screws]
+        holes += [("B", xy, f"Clearance {b.clear:g} thru, counterbore {b.head[0]:g} x {b.head[1]:g} deep, "
+                            f"flat bottom* (for {SCREW})") for xy in half.screws]
         holes += [("C", xy, f"{b.mount}*") for xy in geo.mounts(half.side)]
         holes += [("D", (p.centroid.x, p.centroid.y), f"Bare pad dia {mech.BARE_PAD_D:g} on the floor top, no anodising")
                   for p in half.layers.get("BARE_FLOOR", [])]
@@ -485,6 +567,14 @@ def drawing(half: Half, part: str, path: Path) -> Path | None:
         lines.append(f"{refs[0]}-{refs[-1]} ({len(refs)}x): {rows[refs[0]]}")
     for i, line in enumerate(lines):
         msp.add_text(line, height=2.5, dxfattribs={"layer": "TEXT"}).set_placement((x0, -y1 - 10 - 4.5 * i))
+    # The back wall from inside, below the notes: same x as the plan.
+    view, notes, z0 = _back_view(half, part)
+    base = -y1 - 10 - 4.5 * len(lines) - 10 - TOP
+    for layer, rings in view.items():
+        for ring in rings:
+            msp.add_lwpolyline([(x, base + z) for x, z in ring.coords], close=True, dxfattribs={"layer": layer})
+    for i, line in enumerate(notes):
+        msp.add_text(line, height=2.5, dxfattribs={"layer": "TEXT"}).set_placement((x0, base + z0 - 6 - 4.5 * i))
     tmp = path.with_suffix(".tmp")
     doc.saveas(tmp)
     # ezdxf stamps a time and fresh handles: keep the old file unless the drawing changed.

@@ -29,22 +29,22 @@ What it comes to: [cost.md](cost.md).
 | Item | Qty | Notes |
 |---|---|---|
 | Main PCB (right half), 2-layer 1.6 mm | 1 | two-sided assembly (the trackpad FFC connector J5 is on top); J4 is bare landing pads for the module, soldered on by hand |
-| MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. JLC's standard 1.0 mm 4-layer stack-up (the USB pair assumes ~0.1 mm to the In1 ground plane), with the castellated-hole option |
+| MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order options: **ENIG** (JLC plates castellations only with ENIG, no HASL), "Castellated holes: yes", and a 3313-prepreg 1.0 mm stack-up (JLC04101H-3313 or whatever the order page calls it today): the USB pair assumes ~0.1 mm from F.Cu to the In1 ground plane, and a 7628 stack would make it ~65 Ω. Ask for assembly rails on the 25 mm edges; the 19.4 mm edges carry the castellations |
 | Satellite PCB (left half), 2-layer 1.6 mm | 1 | two-sided assembly; the rotary encoder ENC1 on top is THT (LCSC C143785, check stock: JLC may have to pre-order it, or hand-solder it) |
 | VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
 | Plate (aluminium DXF or FR4 KiCad board) | 1 + 1 mirrored | aluminium: leave it bare or bead-blasted; the grounded standoffs tie it to GND ([grounding.md](grounding.md)) |
 | Würth WE-SECF 331236362553 spring fingers (G1, G2) | 4 | aluminium case only; Farnell/RS/Mouser, no LCSC number, hand-soldered on the PCB underside |
 | Case: tray + frame per half | 1 + 1 | print `mechanical/case-printed/`, or order `mechanical/case-machined/` in aluminium with its `.dxf` drawings ([mechanical.md](mechanical.md#3d-case)) |
-| M3 × 12 button-head screws (ISO 7380) | 16 | tray to frame, eight per half |
-| M3 × 4.0 heat-set inserts (ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3) | 16 | printed case only |
+| M2.5 × 12 button-head screws (ISO 7380, Ø4.7 head) | 16 | tray to frame, eight per half |
+| M2.5 × 4.0 heat-set inserts (CNC Kitchen M2.5 "standard") | 16 | printed case only |
 | 1/4"-20 × 6.4 heat-set inserts (CNC Kitchen or ruthex "short") | 4 | printed case only: the tripod/Arca mounts |
 | Stick-on rubber feet, ~10 mm across | 8 | at the `FEET` marks in the case plan |
 | Tenting or desk mount (optional) | | a mini tripod with a ball head, or an arm with an Arca clamp ([mounting.md](mounting.md)) |
 | HE switches (Gateron KS-20 magnetic, GEON Raw HE, ...) | 44 | 42 + the two mouse-button keys |
 | Bourns PEC12R-4220F-N0024 encoder | 1 | knob beside B (left half) |
 | Knob, ~16 mm across, ~11.5 mm tall, 6 mm D-shaft bore ≥ 9.5 mm deep | 1 | up to 17 mm across; a taller knob needs a ≥ 7.5 mm recess underneath for the encoder's collar ([mechanical.md](mechanical.md#mouse-column-and-rotary-encoder-left-half)) |
-| M2 hex standoffs 3.5 mm, brass | 15 | plus 30 × M2 × 3 mm screws |
+| M2 hex standoffs 3.5 mm, brass | 15 | plus 30 × M2 × 3 mm screws. The 15 on the plate side need a head ≤ Ø3.4 mm (the switch housings leave 1.72 mm radius at H7): NBK SNSS-M2-3-SD small-head socket cap (Ø3.0 × 2.0, 10 per bag, also via Misumi). The 15 under the PCB can be any M2 × 3 with a head up to Ø3.8 |
 | 10-pin JST-SH pigtail, ~5 cm, single-ended | 2 | plugs into J3, right in front of the daughterboard |
 | VGA cable, male–male | 1 | the classic blue monitor cable is fine. It needs pins 1–3, 5–10 and 12–15 (check pin 9, see JP1/JP2 below). Both ends plug into the back of the case, so ~30 cm reaches round behind the gap |
 | Azoteq TPS65-201A-S trackpad (optional) | 1 | end-of-life at Azoteq and out of stock at LCSC; Keycapsss still sells it. GR-Trackpad65 is an open clone |
@@ -66,7 +66,9 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
    the silk bar and carries +5 V. Wire *n* must end up on pin *n* of the J3
    plug, so check the pigtail's colour order with a meter.
 4. Leave JP1/JP2 bridged 1–2 (the default) unless your VGA cable lacks pin 9.
-   In that case, cut both and bridge 2–3 on **both** boards.
+   In that case, cut both and bridge 2–3 on **both** boards: +5 V moves to
+   pin 15, and `DET` is tied to GND, so hot-plug detection is lost (see
+   [architecture](architecture.md#vga-link-pinout)).
 
 ## First power-up (main half alone)
 

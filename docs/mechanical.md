@@ -20,7 +20,8 @@ So the build is two assemblies:
    (3.5 mm hex, 3.5 mm tall, brass): seven on the right half, eight on the
    left, whose mouse column gets its own. They sit in the gaps between switch
    bodies, and the positions are shared by the PCB, plate and foam
-   (`geometry._STANDOFFS`).
+   (`geometry._STANDOFFS`). Each takes two M2 × 3 screws, 30 in all; see
+   [Plate](#plate) for the head size limit on the plate side.
 2. **Case:** CNC aluminium top frame + bottom tray. The sandwich floats between
    them on **gaskets** around eight plate tabs.
 
@@ -48,7 +49,7 @@ Heights are from the underside of the case.
 | 14.2 – 19.2 | encoder body top (flush with the plate) and the ~7 mm collar round its shaft (left half) |
 | 19.6 – 31.1 | encoder knob (left half): clears the collar, top about 2 mm above the keycaps |
 | 17.6 | underside of the 1.5 mm roof over the VGA bay and USB-C ear |
-| 18.1 – 19.1 | trackpad overlay, flush with the top (right half) |
+| 18.1 – 19.1 | trackpad overlay, flush with the top (right half); its well below opens down to the seam |
 | 19.1 | top of case (frame 5 mm above the plate) |
 
 The frame height is set by the parts under the roof: the VGA bay needs more
@@ -148,7 +149,20 @@ of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
   bottom-out.
 - **FR4:** `hardware/mechanical/plate-{left,right}/*.kicad_pcb` are
   board-outline-only KiCad projects. Order them at 1.5 mm with the PCBs.
+- **Switch cutouts:** 14.0 +0.1/−0. Undersize cutouts crack switch housings
+  or won't take them; ask the plate maker for that tolerance.
 - Like the Corne, the 1.5u thumb key needs no stabiliser.
+- **Plate screws:** the standoff screws on the plate side sit in the gaps
+  between the switches' top housings (about 15.6 mm square on the plate top).
+  At the col1/col2 bottom-row standoff there is only 1.72 mm from the screw's
+  centre to a housing, and 1.81 mm at the col2/col3 and col4/col5 standoffs,
+  so **the head must be no larger than Ø3.4 mm** (and no taller than about
+  2 mm, under the keycap skirts). An ISO 7380 M2 button head is Ø3.5 and a
+  DIN 912 / ISO 4762 cap head Ø3.8: both too big. Use small-head socket caps,
+  **NBK SNSS-M2-3-SD** (Ø3.0 × 2.0 mm head, A2-70 stainless, also sold through
+  Misumi), which leave 0.2 mm. The 15 screws under the PCB can be the same, or
+  any M2 × 3 with a head up to Ø3.8 × 2.0 mm (the case foam has Ø6 reliefs
+  for them).
 
 ## Case (CNC aluminium)
 
@@ -163,12 +177,12 @@ of 8.5 × 11 in per grade (ask solutions@rogerscorp.com). Small amounts:
 | `ROOF` | where the top frame is a 1.5 mm roof: over the tab, the VGA bay and the USB-C ear |
 | `DAUGHTERBOARD` | plan-view envelope of the vertical VGA board |
 | `MCU_MODULE` | the soldered MCU module on the tab, under the trackpad |
-| `PORTS` | DE-15 shell cutout and USB-C opening (right half), through the back face |
-| `JACKSCREWS` | two Ø3.2 mm holes through the back face for the 4-40 jackscrews, 24.99 mm apart |
+| `PORTS` | DE-15 D cutout (plan: its 19.74 mm top width) and USB-C opening (right half), through the back face |
+| `JACKSCREWS` | the two Ø3.2 mm 4-40 jackscrew holes, 24.99 mm apart: U-slots in the tray, open to the seam |
 | `FLOOR_ACCESS` | Ø3 mm floor holes under the BOOT and RESET buttons (right half) |
-| `FLOOR_POCKETS` | 1 mm pockets in the floor top under the USB-C (right half) and the encoder's pins (left half) |
+| `FLOOR_POCKETS` | 1 mm pockets in the floor top under the USB-C (right half: its courtyard + 1.0 mm) and the encoder's pins (left half: pads + 1.5 mm), corners r ≥ 1.5 |
 | `TRACKPAD` | counterbore for the trackpad's overlay, 1.0 mm deep (right half; TPS65: 55.4 × 71.4 mm) |
-| `TRACKPAD_WELL` | well under it for the pad module and FFC, 4.7 mm deeper; it opens into the cavity over the tab and the PCB tongue |
+| `TRACKPAD_WELL` | well under it for the pad module and FFC, right through the frame: over the tab and PCB tongue it opens into the cavity, outside the cavity it stops on the tray's top |
 | `BARE` | left unanodised ([grounding.md](grounding.md)): the seam face (the wall ring: tray top and frame underside) and the DE-15 flange seat inside the back wall |
 | `BARE_FLOOR` | Ø8 bare pads on the floor top under the spring fingers G1/G2 |
 
@@ -177,7 +191,7 @@ underside (see [3D case](#3d-case) below). Grounding the aluminium parts, the pl
 knob is planned in [grounding.md](grounding.md). The tray carries the floor, the walls
 and the lower tab pockets. The frame carries the bezel around the keys, the
 upper tab pockets and the **1.5 mm roof** (`ROOF`), which covers the VGA bay,
-the tab and the USB-C ear. Eight M3 screws per half come up from below through
+the tab and the USB-C ear. Eight M2.5 screws per half come up from below through
 the wall thickness, clear of the gasket pockets. The left half is about
 150 × 116 mm. The right half is 202 × 116 mm with the TPS65 trackpad (171 mm
 with the 40 mm Cirque).
@@ -191,9 +205,13 @@ Milling:
 - **Back face:** flat and 1.6 mm thick behind the VGA bay and USB-C, so both
   plugs mate fully. The ports are plain through-cuts from one side setup; no
   counterbores are needed.
-- **Inside:** no radius under 1.5 mm (a 3 mm end mill). The inner side's
-  gasket pocket is on the 1.5u thumb key's inner edge on the right half (below
-  the trackpad) and on the mouse column beside M1 on the left.
+- **Inside:** no radius under 1.5 mm (a 3 mm end mill), floor pockets
+  included. The only exceptions are the port cutouts through the 1.6 mm back
+  face (r 1.0). The inner side's gasket pocket is on the 1.5u thumb key's inner
+  edge on the right half (below the trackpad) and on the mouse column beside M1
+  on the left.
+- **Webs:** at least 1.5 mm everywhere in the back face: 1.6 mm between each
+  jackscrew slot and the D cutout, 1.76 mm under the USB-C opening.
 
 ### VGA daughterboard
 
@@ -224,7 +242,10 @@ Milling:
   into `J3`, which sits on the edge of the inner tab directly in front of the
   board, so a short (~5 cm) pigtail is enough.
 - Two **4-40 female jackscrews** (Keystone 7229: 0.187" hex, 0.25" stud) go
-  through the back face into the clinch nuts. They clamp the flange to the
+  through the back face into the clinch nuts. Their holes are U-slots in the
+  tray, open up to the seam, and the frame closes them: a round hole would have
+  left only 0.5 mm of wall above it. The hex bears on about 2 mm of wall beside
+  the D cutout. They clamp the flange to the
   inside of the wall; that's the only fixing, and it sends cable forces
   straight into the case. The cable's thumbscrews thread into them.
   - A board-lock part can stop a long stud, so use a 0.25" one.
@@ -233,8 +254,12 @@ Milling:
 - The back face is 1.6 mm thick here, so the plug mates fully without a relief.
 - Centre the shell about 7 mm above the floor top: the flange (12.55 mm) sits
   between the floor and the roof, with 14.1 mm clear.
-- `PORTS` has the standard rear-mount cutout for shell size E, 20.5 × 11.4 mm
-  (CECC 75 301-802); check it against your connector's datasheet.
+- `PORTS` has the standard D-shaped rear-mount cutout for shell size E (from
+  Spectrum Control's D-sub panel-cutout table): 19.74 mm wide at the top,
+  11.18 mm tall, 10° flanks (15.80 mm at the bottom), r 1.0, on the jackscrews'
+  centreline, wide side up like the connector. A 20.5 × 11.4 mm rectangle left
+  only 0.65 mm between it and each jackscrew hole. Check it against your
+  connector's datasheet.
 - At full mating the plug's shell reaches about 1 mm into the 1.6 mm wall.
   That is the most D-sub makers allow with standard hardware, so the
   jackscrews' hex must be no taller than 4.8 mm (0.189"), or the plug won't
@@ -256,11 +281,20 @@ principle.
   - The top is a 1 mm glass or acrylic overlay, 71 × 55 mm (the module plus
     3 mm all round) with about 7 mm corner radii. It sits flush in the
     `TRACKPAD` counterbore.
+  - That counterbore is 1.0 mm deep (drawn +0.1/−0) for a 1.0 mm overlay, so
+    it has no allowance for the tape or adhesive that holds the overlay on its
+    ledge: with 0.1–0.2 mm of tape the overlay stands proud by that much. Either
+    bond it with a thin liquid adhesive, use a 0.8–0.9 mm overlay, or make the
+    counterbore 1.1–1.2 mm deep (`Pad.board_t` in `trackpad.py`) before
+    ordering.
   - The 2 mm module is bonded to it with its own adhesive, centred.
   - The module hangs in `TRACKPAD_WELL` (module + 0.3 mm), so there is no
     aluminium under or right beside its electrodes.
-  - The well is 4.7 mm deep under the overlay, for the module, its 2 mm ZIF
-    connector and the fold of the FFC.
+  - The well needs 4.7 mm under the overlay, for the module, its 2 mm ZIF
+    connector and the fold of the FFC. It goes right through the frame (5.5 mm
+    under the overlay): stopping at 4.7 mm left a 0.8 mm aluminium web over
+    the tray outside the cavity, which was useless to mill and a 45 mm bridge
+    to print. The overlay still rests on the counterbore's 2.9 mm ledge.
 - **Cable:** the module's ZIF connector is 9.2 mm in from a long edge and
   25.3 mm from an end. Turn the module so that is the back edge and the end
   nearer the keys: the connector then sits right over J5 on a PCB tongue,
@@ -324,8 +358,14 @@ reaches the back face behind column 4, beside the DE-15.
   is therefore 13.95 × 8.1 mm: the largest overmould the spec allows
   (12.85 × 7.0 mm) plus 0.55 mm all round for the floating sandwich. It is a
   plain through-cut.
+- **Plug limit:** the receptacle face is 1.89 mm behind the back face, so the
+  plug's overmould has to enter the opening. A straight plug whose overmould
+  is larger than about 13.9 × 8.0 mm, or any right-angle plug, stops on the
+  back face before it seats fully. Most cables are within the spec's
+  12.85 × 7.0 mm; check chunky ones (some braided or 240 W cables) first.
 - **Floor:** the shell hangs to 0.74 mm above the floor top, so the floor has a
-  1 mm pocket under it (`FLOOR_POCKETS`), and gasket travel can't bottom it out.
+  1 mm pocket under it (`FLOOR_POCKETS`: the courtyard + 1.0 mm, corners
+  r 1.5), and gasket travel can't bottom it out.
 
 ## 3D case
 
@@ -343,23 +383,28 @@ of the 2D plan.
 
 | Part | Height | Contents |
 |---|---|---|
-| Tray | 0 – 12.6 mm | 3.5 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.4 mm deep; two 1/4"-20 mounts in bosses; the lower part of the ports and both jackscrew holes |
-| Frame | 12.6 – 19.1 mm | walls; upper tab pockets up to 16.5 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well (right half); the upper part of the DE-15 cutout |
+| Tray | 0 – 12.6 mm | 3.5 mm floor with `FLOOR_ACCESS` holes and 1 mm `FLOOR_POCKETS`; walls (`OUTER_WALL` − `INNER_WALL`); lower tab pockets, 2.4 mm deep; two 1/4"-20 mounts in bosses; the lower part of the ports and both jackscrew U-slots |
+| Frame | 12.6 – 19.1 mm | walls; upper tab pockets up to 16.5 mm; 1.5 mm roof over `ROOF`; the bezel opening round the plate; trackpad counterbore and well, right through (right half); the upper part of the DE-15 cutout, closing the jackscrew slots |
 
 - **Seam:** at the plate's underside, so the tab sits in the frame's pocket and
   the lower gasket strip in the tray's.
 - **Gaskets:** each pocket gives 6.27 mm for the 1.5 mm tab and two 3.18 mm
   PORON strips, which is 25 % compression ([Foam and gaskets](#foam-and-gaskets)).
-- **Screws:** eight M3 × 12 button heads (ISO 7380) per half, from below,
-  placed automatically on the wall's midline clear of the gasket pockets,
-  ports and trackpad. The same places and screws in both builds.
+- **Screws:** eight **M2.5 × 12 button heads (ISO 7380, Ø4.7 head)** per half,
+  16 in all, from below, placed automatically on the wall's midline clear of
+  the gasket pockets, ports and trackpad. The same places and screws in both
+  builds. The heads sit 1 mm above the floor's top, up Ø5.0 counterbores
+  (Ø5.2 printed), which leave 1.1 mm of skin to the outside and the cavity
+  (1.0 printed) in the 7.25 mm wall. M3 heads needed Ø6.0 and left 0.6 mm,
+  which an edge break would cut through. Each screw reaches 3.9 mm into the
+  frame.
 - **Mounts:** two 1/4"-20 sockets per half for tripods, tenting heads and desk
   arms (see [Tenting and desk mounting](#tenting-and-desk-mounting)). Each sits
   in a 15.4 mm boss that rises from the floor to 1 mm under the PCB, in a
   spot its underside leaves clear (`geometry.mounts`). The PCB generator keeps
   parts out of these spots, the case foam has a relief round each, and the fit
   check fails if a part on the PCB moves onto one.
-- **Weight**, in 6061: about 275 g for the left half and 405 g for the right
+- **Weight**, in 6061: about 275 g for the left half and 400 g for the right
   (the `tapped` build).
 - **Fit check:** `generate.py case` and `check` build what goes inside as solids
   and fail if any runs into the tray or frame:
@@ -377,20 +422,25 @@ of the 2D plan.
 
 | | `tapped` (aluminium) | `inserts` (FDM) |
 |---|---|---|
-| Frame screw holes | 2.5 mm drill, 5 mm deep, tapped M3 (about 3.5 mm of full thread) | 4.2 mm × 5 mm (CAD size) for an M3 × 4.0 insert: ruthex RX-M3Sx4.0, or CNC Kitchen M3 × 3 |
-| Tray screw holes | 3.4 mm through, counterbore 6.0 × 4.5 mm | 3.5 mm through, counterbore 6.2 × 6.5 mm |
-| 1/4"-20 mounts | #7 (5.1 mm) drill, 5.5 mm deep, tapped (4.5 mm of full thread) | 8.2 mm × 7.4 mm (CAD size) for a 1/4"-20 × 6.4 "short" insert (CNC Kitchen or ruthex) |
+| Frame screw holes | M2.5 × 0.45: 2.05 mm drill, 5.3 mm deep, thread mill or bottoming tap, ≥ 4.5 mm full thread (the screw reaches 3.9 mm, 4.25 at its length tolerance); 1.2 mm left under the top face, 0.6 under a drill point | 4.2 mm × 5 mm (CAD size) for an M2.5 × 4.0 insert: CNC Kitchen M2.5 "standard" (4.0 mm hole, the same as the M3 insert's) |
+| Tray screw holes | 2.9 mm through, counterbore 5.0 × 4.5 mm | 3.1 mm through, counterbore 5.2 × 6.5 mm (CAD sizes) |
+| 1/4"-20 mounts | #7 (5.1 mm) hole, 6.0 mm deep with a **flat bottom** (a drill point would break through the 0.5 mm left under the boss top), thread mill or bottoming tap, ≥ 4.5 mm full thread | 8.2 mm × 7.4 mm (CAD size) for a 1/4"-20 × 6.4 "short" insert (CNC Kitchen or ruthex) |
 | Floor | 3.5 mm | 5.5 mm: 2 mm more underneath, so the 6.4 mm insert fits under the PCB |
 
 Both meet ISO 1222 for the tripod socket: at least 5.5 mm deep with 4 mm of
-full thread; tripod screws stand 4.5 mm proud. The printed floor is thicker all
+full thread; tripod screws stand 4.5 mm proud, so the tapped socket asks for
+4.5 mm. A plug tap can't give that in a blind hole: its 3–5 chamfered threads
+take 4–6 mm at 1.27 mm pitch. The same goes for the frame's M2.5 holes. The
+drawings say "thread mill or bottoming tap" and give full-thread depths as
+minimums. The printed floor is thicker all
 over rather than in a pad round the mounts, because the rest of a padded floor
 would overhang the print bed.
 
 **Printing** (`inserts`):
 - **Orientation:** print the tray floor-down and the frame upside down (top on
-  the bed). Neither needs supports. The trackpad's counterbore ledge bridges
-  2.7 mm.
+  the bed). Neither needs supports. The trackpad's counterbore ledge
+  overhangs 2.9 mm; the well under it is open right through, so nothing
+  bridges it.
 - **Calibrate the holes first:** print a coupon with 4.0–4.3 mm and 8.0–8.4 mm
   holes. Printed holes come out about 0.2 mm under their CAD size.
 - **Installing the inserts:** use an iron at about 225 °C for PLA and 265 °C for
@@ -405,7 +455,10 @@ would overhang the print bed.
 **Aluminium** (`tapped`):
 - **CNC** (JLCCNC, PCBWay, Xometry): none of them reads threads from a STEP
   file. Send each STEP together with its `.dxf`, which tabulates every hole and
-  thread and outlines the `BARE` areas, and tick "threads" on the order. Ask
+  thread, outlines the `BARE` areas, gives the tolerances that matter (back
+  face 1.6 +0/−0.1, gasket pocket depths ±0.05, trackpad counterbore
+  +0.1/−0), and shows the back wall from inside with the D cutout, jackscrew
+  slots and bare flange seat. Tick "threads" on the order. Ask
   for the tapped holes and the `BARE` areas to be masked when anodising (or
   skimmed after), and chem-filmed. JLCCNC doesn't anodise threads under M5.
 - **Printed AlSi10Mg (SLM):** JLC3DP doesn't offer aluminium; PCBWay and
@@ -415,7 +468,8 @@ would overhang the print bed.
 
 Not modelled; tell the machinist or add them later:
 - Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
-  break all edges.
+  break all edges. Keep the underside's outside edge to 0.5 mm or less: the
+  screw counterbores are 1.1 mm in from it.
 - The wordmark on the roof.
 - Rubber feet. `FEET` in the case plan marks a spot near each corner, outside the
   mount zone and clear of the screw counterbores. Use stick-on feet about

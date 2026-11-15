@@ -6532,7 +6532,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "1k"
 			(at 217.17 189.23 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -6553,7 +6553,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "BOOT0 pull-down"
+		(property "Description" "BOOT0 pull-down (DS v2.02 Table 9 note 7: 3.3k or less)"
 			(at 214.63 189.23 0)
 			(effects
 				(font (size 1.27 1.27))

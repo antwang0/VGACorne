@@ -268,11 +268,29 @@ def _tall_parts(pcb_path: Path) -> list[Polygon]:
 # Case planning
 # ---------------------------------------------------------------------------
 
-# Rear-mount D cutout for shell size E (CECC 75 301-802, as in Harting's catalogue):
-# the plug's shell reaches ~1 mm into the 1.6 mm wall. That wall is at the limit
-# for full mating, so the 4-40 jackscrews outside it must have hexes <= 4.8 mm tall.
-DE15_CUTOUT = (20.5, 11.4)
+# Rear-mount D cutout for shell size E (Spectrum Control's D-sub panel-cutout
+# table): a D 19.74 mm wide at its top and 11.18 mm tall with 10 degree flanks,
+# centred on the jackscrew holes 24.99 mm apart. It leaves ~2 mm of web beside
+# each hole, where a 20.5 x 11.4 rectangle left 0.65. The wide side is up, as the
+# footprint's pins 1-5 are on the link board's top edge. The plug's shell reaches
+# ~1 mm into the 1.6 mm wall. That wall is at the limit for full mating, so the
+# 4-40 jackscrews outside it must have hexes <= 4.8 mm tall.
+DE15_CUTOUT = (19.74, 11.18)   # width at the top, height
+DE15_FLANK = 10.0              # degrees off vertical: the bottom is 15.80 wide
+DE15_CUTOUT_R = 1.0
+JACKSCREW_PITCH = 24.99
+JACKSCREW_D = 3.2
 VGA_Z = STACK.floor + 7.0  # DE-15 shell centre: its 12.55 mm flange between floor and roof
+
+
+def de15_cutout(cx: float, cz: float) -> Polygon:
+    """The D cutout in the back face, in (board x, height) coordinates: wide side up."""
+    w, h = DE15_CUTOUT
+    r = DE15_CUTOUT_R
+    bottom = w - 2 * h * math.tan(math.radians(DE15_FLANK))
+    d = Polygon([(cx - w / 2, cz + h / 2), (cx + w / 2, cz + h / 2),
+                 (cx + bottom / 2, cz - h / 2), (cx - bottom / 2, cz - h / 2)])
+    return d.buffer(-r, join_style="mitre").buffer(r, join_style="round")
 DB_WIDTH = 33.0                # pcb.LINK_W
 # Wall to the back of the daughterboard's wiring: the Amphenol 10090929's flange
 # face is 6.1 +/-0.3 mm from the board (its drawing may mean the flange's back
@@ -303,7 +321,10 @@ def access_holes(pcb_path: Path) -> list[Polygon]:
 def floor_pockets(pcb_path: Path) -> list[Polygon]:
     """FLOOR_POCKET-deep pockets in the floor top under the parts that come closest
     to it: the USB-C shell (0.7 mm above the floor otherwise) and the encoder's
-    pins and legs (trim them to ~2 mm after soldering)."""
+    pins and legs (trim them to ~2 mm after soldering). :func:`case` clips them to
+    the cavity and rounds their corners to TOOL_R, so each is grown enough that
+    the rounding still clears the part: the USB-C's courtyard by 1.0 mm (0.8 at
+    its corners), the encoder's pads by 1.5."""
     import pcbnew
 
     if not pcb_path.exists():
@@ -315,13 +336,18 @@ def floor_pockets(pcb_path: Path) -> list[Polygon]:
             pads = [p.GetBoundingBox() for p in fp.Pads()]
             out.append(box(min(pcbnew.ToMM(b.GetX()) for b in pads), min(pcbnew.ToMM(b.GetY()) for b in pads),
                            max(pcbnew.ToMM(b.GetRight()) for b in pads),
-                           max(pcbnew.ToMM(b.GetBottom()) for b in pads)).buffer(1.0))
+                           max(pcbnew.ToMM(b.GetBottom()) for b in pads)).buffer(TOOL_R))
         elif ref == "J1" and fp.GetLayer() == pcbnew.B_Cu and fp.GetFPID().GetLibItemName().wx_str().startswith("USB_C"):
             fp.BuildCourtyardCaches()
             bb = fp.GetCourtyard(pcbnew.B_CrtYd).BBox()
             out.append(box(pcbnew.ToMM(bb.GetX()), pcbnew.ToMM(bb.GetY()),
-                           pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())).buffer(0.5))
+                           pcbnew.ToMM(bb.GetRight()), pcbnew.ToMM(bb.GetBottom())).buffer(1.0, join_style="mitre"))
     return out
+
+
+def _tool_round(poly: Polygon) -> Polygon:
+    """``poly`` with every corner a pocket cutter can't reach rounded to TOOL_R."""
+    return poly.buffer(-TOOL_R, join_style="round").buffer(TOOL_R, join_style="round")
 
 
 BARE_PAD_D = 8.0        # bare floor pad under each spring finger (docs/grounding.md)
@@ -390,7 +416,8 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     cx = (minx + maxx) / 2
     through = (face - 1.0, miny + 0.5)
     ports = [box(cx - DE15_CUTOUT[0] / 2, through[0], cx + DE15_CUTOUT[0] / 2, through[1])]
-    jackscrews = [box(x - 1.6, through[0], x + 1.6, through[1]) for x in (cx - 12.5, cx + 12.5)]
+    jackscrews = [box(x - JACKSCREW_D / 2, through[0], x + JACKSCREW_D / 2, through[1])
+                  for x in (cx - JACKSCREW_PITCH / 2, cx + JACKSCREW_PITCH / 2)]
     if main:
         ux, _ = geo.anchor("USB", side)
         ports.append(box(ux - USB_OPENING[0] / 2, through[0], ux + USB_OPENING[0] / 2, through[1]))
@@ -419,7 +446,7 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
         pcb_path = HARDWARE / "kicad" / board / f"vgacorne-{board}.kicad_pcb"
         if main:
             layers["FLOOR_ACCESS"] = access_holes(pcb_path)
-        layers["FLOOR_POCKETS"] = [p.intersection(inner_wall) for p in floor_pockets(pcb_path)]
+        layers["FLOOR_POCKETS"] = [_tool_round(p.intersection(inner_wall)) for p in floor_pockets(pcb_path)]
         layers["BARE_FLOOR"] = ground_pads(pcb_path)   # under the spring fingers
     layers["FEET"] = feet(side, outer, layers.get("FLOOR_ACCESS", []))
     return layers

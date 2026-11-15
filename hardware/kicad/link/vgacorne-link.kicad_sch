@@ -2563,7 +2563,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Cable-detect on VGA pin 15 (default) or pin 9; always set opposite to JP1"
+		(property "Description" "Cable-detect on VGA pin 15 (default), or tied to GND (always connected) when JP1 moves +5 V to pin 15"
 			(at 90.17 171.45 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -2639,14 +2639,62 @@
 		)
 		(uuid "cb72d8dc-f8f1-571b-b962-d074e2dbd018")
 	)
-	(label "VGA_P9"
-		(at 97.79 171.45 0)
-		(fields_autoplaced yes)
-		(effects
-			(font (size 1.27 1.27))
-			(justify left bottom)
+	(symbol
+		(lib_id "power:GND")
+		(at 97.79 171.45 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom no)
+		(on_board no)
+		(dnp no)
+		(uuid "2e9212e2-431d-5d0b-a52c-024a1c86e202")
+		(property "Reference" "#PWR007"
+			(at 101.6 171.45 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+				(hide yes)
+			)
 		)
-		(uuid "1a12f656-758b-5d43-b3a1-53aaa46c0a10")
+		(property "Value" "GND"
+			(at 101.6 173.99 0)
+			(effects
+				(font (size 1.27 1.27))
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 97.79 171.45 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 97.79 171.45 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 97.79 171.45 0)
+			(effects
+				(font (size 1.27 1.27))
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "5cdff152-3bb1-5a56-92c7-88c6d054ef3d")
+		)
+		(instances
+			(project "vgacorne-link"
+				(path "/6c8c1982-d650-5c52-8c9c-77d9b895e034"
+					(reference "#PWR007")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "Device:C")
@@ -2746,8 +2794,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "2e9212e2-431d-5d0b-a52c-024a1c86e202")
-		(property "Reference" "#PWR007"
+		(uuid "8130d595-248e-57a9-b1ad-7e19c976768a")
+		(property "Reference" "#PWR008"
 			(at 125.73 181.61 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -2784,12 +2832,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "ace02a2e-9162-53ee-a201-3540340777d8")
+			(uuid "aa1b4fe3-dd28-513d-bbdb-88ddcdf02492")
 		)
 		(instances
 			(project "vgacorne-link"
 				(path "/6c8c1982-d650-5c52-8c9c-77d9b895e034"
-					(reference "#PWR007")
+					(reference "#PWR008")
 					(unit 1)
 				)
 			)
@@ -2880,8 +2928,8 @@
 		(in_bom no)
 		(on_board no)
 		(dnp no)
-		(uuid "8130d595-248e-57a9-b1ad-7e19c976768a")
-		(property "Reference" "#PWR008"
+		(uuid "f79ead2d-37a3-5d4b-a42a-74958f3b2628")
+		(property "Reference" "#PWR009"
 			(at 27.94 29.21 0)
 			(effects
 				(font (size 1.27 1.27))
@@ -2918,12 +2966,12 @@
 			)
 		)
 		(pin "1"
-			(uuid "28f58282-78c3-5226-ad8e-79f8f04d7083")
+			(uuid "2ac580ef-0568-59c4-845c-c17dd903f236")
 		)
 		(instances
 			(project "vgacorne-link"
 				(path "/6c8c1982-d650-5c52-8c9c-77d9b895e034"
-					(reference "#PWR008")
+					(reference "#PWR009")
 					(unit 1)
 				)
 			)

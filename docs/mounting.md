@@ -170,7 +170,7 @@ not strength.
 
 | Part | Pick | Rated | Price | Role |
 |---|---|---|---|---|
-| Arca plate, two-screw, slotted 28–40 mm | any Arca-Swiss-type two-screw plate (SmallRig, Leofoto, Desmond) | – | $10–20 | on both sockets, so the half can't twist. The sockets are 5.5 mm deep blind holes: use the plate's own short screws and check they don't bottom; add a washer if they do |
+| Arca plate, two-screw, slotted 28–40 mm | any Arca-Swiss-type two-screw plate (SmallRig, Leofoto, Desmond) | – | $10–20 | on both sockets, so the half can't twist. The sockets are 6.0 mm deep, flat-bottomed blind holes with ≥ 4.5 mm of full thread: use the plate's own short screws and check they don't bottom; add a washer if they do |
 | Quick release | Falcam F38 (or Ulanzi Claw Gen II) | 15 kg | $30 | click on and off without tools; no magnets |
 | Tilt / angle | Neewer Z-Flex tilt head | 3 kg | ~$25 | the tent angle, locked by a lever; flat base |
 | Arm | Manfrotto 244N variable-friction arm | 3 kg | $139 | one knob locks every joint; 53 cm reach, used short |

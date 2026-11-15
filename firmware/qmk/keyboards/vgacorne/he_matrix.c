@@ -79,7 +79,13 @@ static adcsample_t        samples[HE_INPUT_COUNT];
 
 #ifdef HE_ENCODER_INPUT
 static const uint16_t encoder_levels[4] = HE_ENCODER_LEVELS;
-static adcsample_t    encoder_sample    = ADC_MAX; // both contacts open, as with the cable out
+// Contact state (A | B << 1, 1 = open): both open, as with the cable out. A new
+// state counts only once two scans in a row decode it: between two levels the
+// node's RC ramp can pass through a third level's band, and a scan landing
+// there would otherwise read as a step backwards.
+static uint8_t encoder_state     = 3;
+static uint8_t encoder_candidate = 3;
+static void    encoder_update(adcsample_t sample);
 #endif
 
 // ---------------------------------------------------------------------------
@@ -260,7 +266,7 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
         for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
 #ifdef HE_ENCODER_INPUT
             if (in == HE_ENCODER_INPUT && ch == HE_ENCODER_CHANNEL) {
-                encoder_sample = remote_connected ? samples[in] : ADC_MAX;
+                encoder_update(remote_connected ? samples[in] : ADC_MAX);
             }
 #endif
             if (!((used_mask[in] >> ch) & 1)) continue;
@@ -292,12 +298,12 @@ bool matrix_scan_custom(matrix_row_t current_matrix[]) {
 // ---------------------------------------------------------------------------
 
 #ifdef HE_ENCODER_INPUT
-// Contact state (A | B << 1, 1 = open) whose level is nearest the last reading.
-static uint8_t encoder_contacts(void) {
+// Contact state (A | B << 1, 1 = open) whose level is nearest the reading.
+static uint8_t encoder_decode(adcsample_t sample) {
     uint8_t  best = 3;
     uint16_t err  = UINT16_MAX;
     for (uint8_t s = 0; s < 4; s++) {
-        const uint16_t e = encoder_sample > encoder_levels[s] ? encoder_sample - encoder_levels[s] : encoder_levels[s] - encoder_sample;
+        const uint16_t e = sample > encoder_levels[s] ? sample - encoder_levels[s] : encoder_levels[s] - sample;
         if (e < err) {
             err  = e;
             best = s;
@@ -306,11 +312,17 @@ static uint8_t encoder_contacts(void) {
     return best;
 }
 
+static void encoder_update(adcsample_t sample) {
+    const uint8_t s = encoder_decode(sample);
+    if (s == encoder_candidate) encoder_state = s;
+    encoder_candidate = s;
+}
+
 // QMK's quadrature encoder driver (ENCODER_ENABLE, no ENCODER_A_PINS) calls this
 // for each contact instead of reading GPIOs.
 uint8_t encoder_quadrature_read_pin(uint8_t index, bool pad_b) {
     (void)index;
-    return (encoder_contacts() >> (pad_b ? 1 : 0)) & 1;
+    return (encoder_state >> (pad_b ? 1 : 0)) & 1;
 }
 #endif
 

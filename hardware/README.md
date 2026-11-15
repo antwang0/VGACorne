@@ -73,6 +73,9 @@ cp -r kicad/link /tmp/link && ../.venv/bin/python route.py /tmp/link/vgacorne-li
    its net. Freerouting doesn't reliably connect pads to inner planes itself.
 2. One run then routes the signals, with no tracks on the planes.
 
+The modules as committed were since re-laid by hand (B.Cu is ground only, since
+it faces the main board's tracks), so don't re-route them with this.
+
 **Either way:** it puts the pours back and adds ground stitching vias
 wherever both outer layers are poured, and into every pour island.
 
@@ -126,8 +129,15 @@ hand: the MCU module on J4, the spring fingers G1/G2, and the daughterboard's
 socket and pigtail (its 0402 cap is in its BOM, if you have JLC fit it). J5
 and ENC1 sit on top, so the main and satellite boards are two-sided assembly.
 
-Check the placements in JLC's preview before paying: KiCad and JLC disagree
-on the zero rotation of some packages.
+JLC places each part by the EasyEDA footprint of its LCSC number, which need
+not share KiCad's zero angle or origin, so the CPL step corrects both:
+`CORRECTION` in `vgacorne/fab.py` gives a turn and an origin offset per LCSC
+number, each found by fitting the EasyEDA footprint onto the KiCad pads, and
+parts not listed fall back to a turn by package (SOT-23 180, SOIC/TSSOP/QFP
+270, anything else 0). Bottom parts get JLC's bottom-side angle, 180 minus
+KiCad's, before the correction. Still look over the hall sensors, the LQFP,
+the USB-C socket J1, the FFC connector J5 and the encoder ENC1 in JLC's
+placement preview before paying.
 
 ## Renders
 

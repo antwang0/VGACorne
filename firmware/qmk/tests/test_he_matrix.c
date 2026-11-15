@@ -184,6 +184,17 @@ int main(void) {
         }
     }
     CHECK(decoded, "encoder: every contact state decodes from its summed level");
+    // A single scan caught mid-ramp on another state's level is ignored.
+    enc_offset = 0;
+    enc_ab     = 1;
+    scan_ms(1);
+    enc_ab = 2; // one scan's worth of a wrong level ...
+    matrix_scan_custom(matrix);
+    enc_ab = 0; // ... then the real next state
+    const int mid = encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1;
+    scan_ms(1);
+    const int end = encoder_quadrature_read_pin(0, false) | encoder_quadrature_read_pin(0, true) << 1;
+    CHECK(mid == 1 && end == 0, "encoder: a one-scan transient level is not taken as a state");
     CHECK(pressed_count() == 0, "encoder: its channel never registers as a key");
     enc_ab        = 0;
     cable_plugged = false;

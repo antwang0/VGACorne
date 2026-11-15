@@ -57,7 +57,7 @@ the order remarks, or scrape the few bare spots after anodising
 | Keycaps (Corne set with 1.5u thumbs) | 30-80 | |
 | Trackpad TPS65, overlay, FFC (optional) | 45-60 | Keycapsss; EOL at Azoteq |
 | Plate, 2 × 1.5 mm aluminium, laser or waterjet | 30-60 | |
-| Standoffs, screws, feet, VGA cable | 25-35 | |
+| Standoffs, screws, feet, VGA cable | 35-50 | includes 2 bags of NBK SNSS-M2-3-SD small-head plate screws (about ¥1,780 a bag) |
 | PORON gaskets and foams | 15-25 | or CustomKBD 3 mm PORON cut from the DXFs, ~6 a side |
 | **Everything else** | **~170-260** | |
 | **Total, one unit** | **~860-1,030** | with four spare board sets |
@@ -80,11 +80,15 @@ after the first unit, the PCBs for the next four are paid for.
 
 ## Before paying
 
-- Module: the AT32F405RCT7 must show as in stock and placed (73 at JLC on
-  2026-10-01).
+- Sensors: the DRV5055A3QDBZR must show as in stock for 44 per set (JLC had
+  2 on 2026-11-15, LCSC 0, TI out of stock with no date).
+- Module: the AT32F405RCT7 must show as in stock and placed (195 at JLC on
+  2026-11-15). ENIG, "Castellated holes: yes", the 3313 1.0 mm stack-up
+  ([bring-up](bring-up.md#what-to-order)).
 - Satellite: the encoder (LCSC C143785) had no stock in 2025; if JLC can't
   source it, drop it from the BOM and hand-solder it.
-- Case: finish bead blast + anodise, threads ticked, `.dxf` drawings
-  attached, `BARE` masking in the remarks.
+- Case: finish bead blast + anodise, threads ticked (per half: 8 × M2.5 in the
+  frame, 2 × 1/4"-20 in the tray, flat-bottomed, thread mill or bottoming tap
+  as the drawing says), `.dxf` drawings attached, `BARE` masking in the remarks.
 - Check the part rotations in JLC's placement preview
   ([hardware/README.md](../hardware/README.md#ordering-from-jlc)).

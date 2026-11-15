@@ -13,16 +13,18 @@ The design uses one ground. The USB-C shell is tied straight to GND, so the
 case ties to GND too; a separate chassis net with an RC or ferrite between
 them would only add impedance to the discharge path.
 
-## What is grounded today
+## What is grounded
+
+The state with the changes below in the boards (rev 0.1 as ordered):
 
 | Conductor | Tied to | How | State |
 |---|---|---|---|
 | USB-C shell (J1, right half) | GND | four soldered shell pads | fine; the case opening clears it by 0.55 mm, so it never touches the case |
 | DE-15 shell (both halves) | daughterboard GND | soldered board locks | fine |
-| Case | DE-15 shell | the flange clamped against the inside of the back wall by the two 4-40 jackscrews | **only if that face is bare**; anodising is an insulator. From there to the main or satellite GND over the pigtail's two GND wires, about 50 mm of 28 AWG: a thin, inductive path (below) |
-| Frame to tray | each other | eight M3 screws in masked (bare) tapped holes; heads on anodised counterbores | **unreliable** |
-| Plate | nothing | the standoff holes are 2.2 mm NPTH without copper; the gaskets are insulators | **floating** |
-| Encoder frame and shaft (the knob) | nothing | the footprint's two mounting-leg pads (`SH`) are plated but have no net | **floating**, 2 mm from your fingers with a metal knob |
+| Case | DE-15 shell, and the PCB through G1/G2 | the flange clamped against the bare inside of the back wall by the two 4-40 jackscrews; two spring fingers per half on bare floor pads | fine with the `BARE` areas masked. The jackscrew path alone is thin and inductive (below); the fingers are the main path |
+| Frame to tray | each other | the bare seam face, clamped by the eight case screws | fine with the seam masked |
+| Plate | GND | plated standoff holes (2.2 mm PTH, 3.4 mm GND pads) and the metal standoffs and M2 screws | fine if the plate is bare under the screw heads |
+| Encoder frame and shaft (the knob) | GND | ENC1's two mounting-leg pads (`SH`) | fine |
 | Tripod / arm | tray | bare 1/4"-20 threads | fine once the tray is grounded |
 | Trackpad bezel (frame) | case | | needs the case grounded: Azoteq wants grounded, not floating, metal near the electrodes |
 
@@ -72,10 +74,13 @@ fit them by hand (or leave them off for a printed case). Other candidates
 checked: the 1.5–2.5 mm WE-SECF sizes and Harwin's EZ-BoardWare range don't
 reach 4 mm; 331011452048 (4.8 mm) works only at 4.0–4.5 mm.
 
-- **Where:** right half, G1 behind column 3 (the autoplacer's nearest free
-  spot to the USB-C corner, so a discharge into the case leaves through the
-  USB cable instead of crossing the pour) and G2 at the front outer corner.
-  Left half, G1 below the VGA bay, G2 at the front outer corner. Both halves'
+- **Where:** each finger sits in solid ground pour on both layers, with no
+  signal track within about 3.5 mm on either layer and four GND vias at its
+  pads: a discharge from the case enters the board here, so nothing sensitive
+  may run over it. Right half: G1 behind columns 3/4 near the back edge, about
+  13 mm from the USB-C (so a discharge leaves through the USB cable instead of
+  crossing the board), G2 at the front outer corner. Left half: G1 behind
+  column 5 at the back edge, G2 at the front edge under column 2. All four
   spots were checked against the case plan: plain floor, clear of the bosses,
   pockets and access holes. The case foam gets a relief like the other tall
   bottom-side parts (`TALL_PARTS`); the fit check models them 3.3 mm deep,

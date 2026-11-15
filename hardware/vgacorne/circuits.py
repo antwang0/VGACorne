@@ -52,7 +52,7 @@ SENSOR = SensorChoice(
     lib_id="Sensor_Magnetic:DRV5055A3xDBZxQ1",
     mpn="DRV5055A3QDBZR",
     invert_adc=True,
-    initial_rest_value=2400,
+    initial_rest_value=2700,  # only ever lowered by calibration; strong-rest switches sit near 2400
     # The firmware starts each key's bottom-out this far from rest and extends it
     # the first time the key goes further, so too small is harmless and too big
     # leaves the key short of full travel. HE60 uses 650 counts (~35 mT at
@@ -205,7 +205,7 @@ def link_esd(block="link") -> list[Part]:
 
 def link_connector(block="link") -> Part:
     return Part("J3", "Connector_Generic_MountingPin:Conn_01x10_MountingPin", "SM10B-SRSS-TB", JST10_FP,
-                dict(LINK_PINS), block, fields={"MPN": "SM10B-SRSS-TB"},
+                {**LINK_PINS, "MP": "GND"}, block, fields={"MPN": "SM10B-SRSS-TB"},
                 description="Link cable to the VGA daughterboard (JST-SH 10p, 1:1 cable)")
 
 
@@ -344,6 +344,7 @@ def main() -> Circuit:
              description="Satellite supply switch: 0.55 ms soft start and a 0.65-1.05 A limit, so plugging "
                          "in the VGA cable can't drag +5V down (and brown out the MCU)"),
         C("C18", "100n", "+5V", "GND", "link"),
+        C("C19", "100n", "LINK_5V_F", "GND", "link", description="At U8 OUT"),
         Part("D1", "Device:D_Schottky", "B5819W", "Diode_SMD:D_SOD-123",
              {"A": "LINK_5V_F", "K": "+5V_LINK"}, "link", fields={"MPN": "B5819W"},
              description="Blocks back-feed if the port meets a PC's VGA +5 V"),
@@ -361,7 +362,8 @@ def main() -> Circuit:
         R("R16", "100k", "ADC_R_C", "GND", "link", dnp=pull_up),
         R("R17", "10k", "LINK_DET", "+3V3", "link"),
         R("R18", "1k", "LINK_DET", "DET", "link"),
-        C("C15", "1u", "+5V_LINK", "GND", "link", fp=C0603),
+        # TPS2051C (SLVSAU6I 8.2.2.1): >= 10 uF ceramic where the output drives a cable
+        C("C15", "10u", "+5V_LINK", "GND", "link", fp=C0805),
         *link_esd(),
     ]
     p += sensor_array(("MUX_S0", "MUX_S1", "MUX_S2"),
@@ -411,7 +413,11 @@ def satellite() -> Circuit:
         R("R2", "75", "OPA_B", "LINK_B", "buffer"),
         R("R3", "75", "OPA_C", "LINK_C", "buffer"),
     ]
-    p += sensor_array(("LINK_S0", "LINK_S1", "LINK_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"},
+    # The SRV05-4 still lets 12-17 V through; 1k limits what reaches the three muxes' select inputs.
+    p += [R(f"R{5 + i}", "1k", f"LINK_S{i}", f"MUX_S{i}", "link",
+            description="ESD: limits the clamp's let-through into the mux select inputs" if i == 0 else None)
+          for i in range(3)]
+    p += sensor_array(("MUX_S0", "MUX_S1", "MUX_S2"), {"A": "MUX_A", "B": "MUX_B", "C": "MUX_C"},
                       SATELLITE_SIDE)
     p += standoffs(SATELLITE_SIDE)
     p += fingers()
@@ -426,7 +432,7 @@ def satellite() -> Circuit:
         R("R22", f"{ENCODER_PULL_UP / 1e3:g}k", "ENC_B", "+3.3VA", "encoder"),
         R("R23", f"{ENCODER_SUM['A'] / 1e3:g}k", "ENC_A", "ENC", "encoder", fields={"Tolerance": "1%"}),
         R("R24", f"{ENCODER_SUM['B'] / 1e3:g}k", "ENC_B", "ENC", "encoder", fields={"Tolerance": "1%"}),
-        C("C5", "1n", "ENC", "GND", "encoder"),
+        C("C5", "100p", "ENC", "GND", "encoder"),  # tau ~4 us: settled within the mux settle time
     ]
     blocks = [
         ("link", "Link to main half (VGA daughterboard)", (20.32, 38.1), 250),
@@ -463,8 +469,9 @@ def link() -> Circuit:
              {"1": "VGA_P9", "2": "+5V_LINK", "3": "VGA_P15"}, "jumpers",
              description="+5 V on VGA pin 9 (default) or pin 15 (for 3+4 cables without pin 9)"),
         Part("JP2", "Jumper:SolderJumper_3_Bridged12", "DET pin", "Jumper:SolderJumper-3_P1.3mm_Bridged12_RoundedPad1.0x1.5mm",
-             {"1": "VGA_P15", "2": "LINK_DET", "3": "VGA_P9"}, "jumpers",
-             description="Cable-detect on VGA pin 15 (default) or pin 9; always set opposite to JP1"),
+             {"1": "VGA_P15", "2": "LINK_DET", "3": "GND"}, "jumpers",
+             description="Cable-detect on VGA pin 15 (default), or tied to GND (always connected) when "
+                         "JP1 moves +5 V to pin 15"),
         C("C1", "100n", "+5V_LINK", "GND", "jumpers"),
     ]
     blocks = [
@@ -522,7 +529,7 @@ def module_at32() -> Circuit:
         C("C7", XTAL_CAP, "HSE_IN", "GND", "mcu"), C("C8", XTAL_CAP, "HSE_OUT", "GND", "mcu"),
         R("R1", "12k", "OTGHS_R", "GND", "mcu", description="USB HS PHY reference resistor",
           fields={"Tolerance": "1%"}),
-        R("R2", "10k", "BOOT", "GND", "mcu", description="BOOT0 pull-down"),
+        R("R2", "1k", "BOOT", "GND", "mcu", description="BOOT0 pull-down (DS v2.02 Table 9 note 7: 3.3k or less)"),
         C("C9", "100n", "NRST", "GND", "mcu"),
     ]
     return _module("vgacorne-module-at32", "VGACorne MCU module - AT32F405RCT7 (libhmk, USB HS)", mcu, parts,
