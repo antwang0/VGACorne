@@ -85,7 +85,7 @@
 	)
 	(pad "1" thru_hole oval
 		(at -6.985 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -96,7 +96,7 @@
 	)
 	(pad "2" thru_hole oval
 		(at -6.985 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -107,7 +107,7 @@
 	)
 	(pad "3" thru_hole oval
 		(at -5.715 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -118,7 +118,7 @@
 	)
 	(pad "4" thru_hole oval
 		(at -5.715 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -129,7 +129,7 @@
 	)
 	(pad "5" thru_hole oval
 		(at -4.445 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -140,7 +140,7 @@
 	)
 	(pad "6" thru_hole oval
 		(at -4.445 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -151,7 +151,7 @@
 	)
 	(pad "7" thru_hole oval
 		(at -3.175 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -162,7 +162,7 @@
 	)
 	(pad "8" thru_hole oval
 		(at -3.175 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -173,7 +173,7 @@
 	)
 	(pad "9" thru_hole oval
 		(at -1.905 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -184,7 +184,7 @@
 	)
 	(pad "10" thru_hole oval
 		(at -1.905 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -195,7 +195,7 @@
 	)
 	(pad "11" thru_hole oval
 		(at -0.635 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -206,7 +206,7 @@
 	)
 	(pad "12" thru_hole oval
 		(at -0.635 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -217,7 +217,7 @@
 	)
 	(pad "13" thru_hole oval
 		(at 0.635 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -228,7 +228,7 @@
 	)
 	(pad "14" thru_hole oval
 		(at 0.635 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -239,7 +239,7 @@
 	)
 	(pad "15" thru_hole oval
 		(at 1.905 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -250,7 +250,7 @@
 	)
 	(pad "16" thru_hole oval
 		(at 1.905 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -261,7 +261,7 @@
 	)
 	(pad "17" thru_hole oval
 		(at 3.175 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -272,7 +272,7 @@
 	)
 	(pad "18" thru_hole oval
 		(at 3.175 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -283,7 +283,7 @@
 	)
 	(pad "19" thru_hole oval
 		(at 4.445 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -294,7 +294,7 @@
 	)
 	(pad "20" thru_hole oval
 		(at 4.445 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -305,7 +305,7 @@
 	)
 	(pad "21" thru_hole oval
 		(at 5.715 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -316,7 +316,7 @@
 	)
 	(pad "22" thru_hole oval
 		(at 5.715 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)
@@ -327,7 +327,7 @@
 	)
 	(pad "23" thru_hole oval
 		(at 6.985 -12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 0.35)
 		)
@@ -338,7 +338,7 @@
 	)
 	(pad "24" thru_hole oval
 		(at 6.985 12.5)
-		(size 0.95 1.8)
+		(size 1 1.8)
 		(drill 0.6
 			(offset 0 -0.35)
 		)

@@ -266,8 +266,9 @@ def finger_footprint() -> tuple[str, list]:
     fp.append(_rect(-1.8, -1.25, 1.8, 1.25, "F.Fab", 0.1))
     fp.append(_rect(-2.3, -1.75, 2.3, 1.75, "F.CrtYd"))
     for y in (-0.95, 0.95):
+        # No paste: fitted by hand (no LCSC part), so JLC would only leave solder bumps
         fp.append(S("pad", "1", Sym("smd"), Sym("rect"), S("at", 0, y), S("size", 3.1, 1.0),
-                    S("layers", "F.Cu", "F.Paste", "F.Mask"), S("uuid", _uid())))
+                    S("layers", "F.Cu", "F.Mask"), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 
@@ -290,7 +291,7 @@ def wire_pads_footprint(n: int = 10, pitch: float = 1.6) -> tuple[str, list]:
     fp.append(_line(-w / 2 - 0.9, 1.1, -w / 2 - 0.9, -1.1, "F.SilkS"))  # pin-1 side marker
     for i in range(n):
         fp.append(S("pad", str(i + 1), Sym("smd"), Sym("rect"), S("at", -w / 2 + i * pitch, 0),
-                    S("size", 1.0, 1.8), S("layers", "F.Cu", "F.Paste", "F.Mask"), S("uuid", _uid())))
+                    S("size", 1.0, 1.8), S("layers", "F.Cu", "F.Mask"), S("uuid", _uid())))  # hand-soldered: no paste
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 
@@ -340,7 +341,7 @@ def module_edge_footprint(w: float, h: float) -> tuple[str, list]:
         # Solid to the pours and planes: at the board edge a thermal relief can
         # only get spokes in from one side.
         fp.append(S("pad", pin, Sym("thru_hole"), Sym("oval"), S("at", x, sy * h / 2),
-                    S("size", 0.95, 1.8), S("drill", CASTELLATION_DRILL, S("offset", 0, -sy * 0.35)),
+                    S("size", 1.0, 1.8), S("drill", CASTELLATION_DRILL, S("offset", 0, -sy * 0.35)),
                     S("property", Sym("pad_prop_castellated")), S("layers", "*.Cu", "*.Mask"),
                     S("zone_connect", 2), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
@@ -360,8 +361,9 @@ def module_landing_footprint(w: float, h: float) -> tuple[str, list]:
     x1 = _module_pad_x(0) - 1.0
     fp.append(_line(x1, -h / 2 - 1.3, x1, -h / 2 + 0.2, "F.SilkS"))  # pin-1 marker
     for pin, x, sy in _module_pins():
+        # No paste: soldered by hand, and reflowed paste bumps would tilt the module
         fp.append(S("pad", pin, Sym("smd"), Sym("roundrect"), S("at", x, sy * h / 2), S("size", 0.85, 2.4),
-                    S("layers", "F.Cu", "F.Paste", "F.Mask"), S("roundrect_rratio", 0.25), S("uuid", _uid())))
+                    S("layers", "F.Cu", "F.Mask"), S("roundrect_rratio", 0.25), S("uuid", _uid())))
     fp.append(S("embedded_fonts", Sym("no")))
     return name, fp
 

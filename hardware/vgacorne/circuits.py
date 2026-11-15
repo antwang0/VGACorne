@@ -299,8 +299,11 @@ def main() -> Circuit:
              {"IN": "+5V", "EN": "+5V", "GND": "GND", "OUT": "+3V3"}, "power",
              fields={"MPN": "TLV75733PDBVR"},
              description="Digital 3.3 V: MCU module and trackpad (the AT32 with its USB HS PHY draws up to ~0.1 A)"),
-        C("C1", "2.2u", "+5V", "GND", "power", fp=C0603),
-        C("C2", "2.2u", "+5V", "GND", "power", fp=C0603),
+        # 2 x 4.7u nominal keeps VBUS under USB's 10 uF and damps the hot-plug ring
+        # (cable L against these caps, with F1's resistance) to ~5.5 V, under the
+        # TLV757's and TPS2051C's 6 V absolute maximum.
+        C("C1", "4.7u", "+5V", "GND", "power", fp=C0603),
+        C("C2", "4.7u", "+5V", "GND", "power", fp=C0603),
         C("C3", "2.2u", "+3.3VA", "GND", "power", fp=C0603),
         C("C4", "10u", "+3.3VA", "GND", "power", fp=C0805),
         C("C5", "2.2u", "+3V3", "GND", "power", fp=C0603),
@@ -321,15 +324,19 @@ def main() -> Circuit:
              "Connector:Tag-Connect_TC2030-IDC-NL_2x03_P1.27mm_Vertical",
              {"1": "+3V3", "2": "SWDIO", "3": "NRST", "4": "SWCLK", "5": "GND"}, "mcu"),
     ]
+    TP_BUS = {"I2C_SCL": "TP_SCL", "I2C_SDA": "TP_SDA"}  # connector side of R24/R25
     # Optional trackpad (trackpad.MODEL) on the module's I2C1: an FFC to the pad,
     # which runs from the digital +3V3. Pads carry no I2C pull-ups of their own.
     n = max(int(k) for k in PAD.connector_pins if k.isdigit())  # unused pins get no-connect flags
     p += [
         Part("J5", f"Connector_Generic_MountingPin:Conn_01x{n:02d}_MountingPin", "Trackpad", PAD.connector_fp,
-             dict(PAD.connector_pins), "trackpad", fields={"MPN": PAD.connector_mpn},
-             description=PAD.connector_note),
+             {k: TP_BUS.get(v, v) for k, v in PAD.connector_pins.items()}, "trackpad",
+             fields={"MPN": PAD.connector_mpn}, description=PAD.connector_note),
         R("R19", "4.7k", "I2C_SCL", "+3V3", "trackpad"),
         R("R20", "4.7k", "I2C_SDA", "+3V3", "trackpad"),
+        # Series resistors at the connector: the pad sits under a hand, behind a thin overlay
+        R("R24", "100", "I2C_SCL", "TP_SCL", "trackpad", description="ESD: limits current into the MCU's I2C pins"),
+        R("R25", "100", "I2C_SDA", "TP_SDA", "trackpad"),
         C("C16", "1u", "+3V3", "GND", "trackpad", fp=C0603),
     ]
     if "TP_NRST" in PAD.connector_pins.values():  # internal pull-up; Azoteq recommends 100 nF
@@ -362,6 +369,9 @@ def main() -> Circuit:
         R("R16", "100k", "ADC_R_C", "GND", "link", dnp=pull_up),
         R("R17", "10k", "LINK_DET", "+3V3", "link"),
         R("R18", "1k", "LINK_DET", "DET", "link"),
+        # The MCU leaves PC1-PC3 floating through reset and DFU; hold the six muxes' selects low
+        *[R(f"R{21 + i}", "100k", f"MUX_S{i}", "GND", "link",
+            description="Select line idles low while the MCU is in reset or DFU" if i == 0 else None) for i in range(3)],
         # TPS2051C (SLVSAU6I 8.2.2.1): >= 10 uF ceramic where the output drives a cable
         C("C15", "10u", "+5V_LINK", "GND", "link", fp=C0805),
         *link_esd(),
@@ -516,7 +526,8 @@ def module_at32() -> Circuit:
     pins = {**MCU_SIGNAL_PINS,
             "1": "+3V3", "36": "+3V3", "64": "+3V3", "13": "+3.3VA",
             "31": "GND", "63": "GND", "12": "GND",
-            "5": "HSE_IN", "6": "HSE_OUT", "33": "OTGHS_R", "34": "USB_DN", "35": "USB_DP"}
+            "5": "HSE_IN", "6": "HSE_OUT", "33": "OTGHS_R", "34": "USB_DN", "35": "USB_DP",
+            "43": "USART1_RX"}
     mcu = Part("U1", "vgacorne:AT32F405RCT7", "AT32F405RCT7", "Package_QFP:LQFP-64_10x10mm_P0.5mm",
                pins, "mcu", fields={"MPN": "AT32F405RCT7"})
     parts = [
@@ -530,6 +541,8 @@ def module_at32() -> Circuit:
         R("R1", "12k", "OTGHS_R", "GND", "mcu", description="USB HS PHY reference resistor",
           fields={"Tolerance": "1%"}),
         R("R2", "1k", "BOOT", "GND", "mcu", description="BOOT0 pull-down (DS v2.02 Table 9 note 7: 3.3k or less)"),
+        R("R3", "10k", "USART1_RX", "+3V3", "mcu",
+          description="Holds the ROM bootloader's USART1 RX (PA10) idle so noise can't select it over USB"),
         C("C9", "100n", "NRST", "GND", "mcu"),
     ]
     return _module("vgacorne-module-at32", "VGACorne MCU module - AT32F405RCT7 (libhmk, USB HS)", mcu, parts,

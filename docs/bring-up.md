@@ -29,7 +29,7 @@ What it comes to: [cost.md](cost.md).
 | Item | Qty | Notes |
 |---|---|---|
 | Main PCB (right half), 2-layer 1.6 mm | 1 | two-sided assembly (the trackpad FFC connector J5 is on top); J4 is bare landing pads for the module, soldered on by hand |
-| MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order options: **ENIG** (JLC plates castellations only with ENIG, no HASL), "Castellated holes: yes", and a 3313-prepreg 1.0 mm stack-up (JLC04101H-3313 or whatever the order page calls it today): the USB pair assumes ~0.1 mm from F.Cu to the In1 ground plane, and a 7628 stack would make it ~65 Ω. Ask for assembly rails on the 25 mm edges; the 19.4 mm edges carry the castellations |
+| MCU module, **4-layer 1.0 mm**, castellated holes | 1 | AT32F405 (libhmk, 8 kHz) or STM32F446 (QMK / libhmk); everything on top. Order options: **ENIG** (JLC plates castellations only with ENIG, no HASL), "Castellated holes: yes", and a 3313-prepreg 1.0 mm stack-up (JLC04101H-3313 or whatever the order page calls it today): the USB pair assumes ~0.1 mm from F.Cu to the In1 ground plane, and a 7628 stack would make it ~65 Ω. Ask for assembly rails on the 25 mm edges, joined by tab routing (mouse bites), not V-cut: copper and the crystal sit 0.3–0.4 mm from those edges; the 19.4 mm edges carry the castellations |
 | Satellite PCB (left half), 2-layer 1.6 mm | 1 | two-sided assembly; the rotary encoder ENC1 on top is THT (LCSC C143785, check stock: JLC may have to pre-order it, or hand-solder it) |
 | VGA daughterboard | 2 | hand-solder: DE-15 (Amphenol FCI 10090929-S154XLF), 10-wire pigtail, 0402 cap |
 | 4-40 female jackscrews, 0.187" hex, 0.25" stud (Keystone 7229) | 4 | two per DE-15, through the case wall into its clinch nuts |
@@ -79,8 +79,12 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
      2 mA each means LBC9 parts, about 6 mA the older LBC8 ones.
    - Much more than 6 mA each means the [power budget](architecture.md#power-budget-usb-500-ma)
      needs another look.
-2. Solder the module on: tack two opposite corner pads, check it sits flat and
-   square on J4, then solder the rest along both edges. Plug in again: expect
+2. Solder the module on: J4 comes without solder (no paste, so no bumps to
+   tilt it). Tack two opposite corner pads, check it sits flat and square on
+   J4 with the pin-1 triangle and the "USB-C edge" arrow toward the USB-C,
+   then solder the rest along both edges. Leave pad 9 (marked on the module)
+   unsoldered: it is +5 V on J4, unused on the module, and 0.27 mm from the
+   +3V3 pad 11. Check 9–11 and 19–21 for bridges with a meter. Plug in again: expect
    the step 1 current plus 50–90 mA for the MCU.
 3. Hold **BOOT** while plugging in. The factory DFU bootloader (AT32 or STM32)
    should enumerate. SWD (Tag-Connect J2) is the fallback; it needs the bottom

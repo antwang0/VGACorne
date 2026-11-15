@@ -126,7 +126,9 @@ through 470 Ω. That slows the edges (≈50 ns into the cable), damps ringing,
 and limits current into an unpowered satellite. On the satellite, each select
 line passes its ESD clamp and then 1 kΩ (R5–R7) before it fans out to the
 three muxes: the SRV05-4 still lets 12–17 V through during a hit, and the
-resistor keeps that from reaching all three muxes' inputs at once.
+resistor keeps that from reaching all three muxes' inputs at once. On the
+main board, 100 kΩ pull-downs (R21–R23) hold the selects low while the MCU is
+in reset or DFU, when PC1–PC3 float.
 
 **Cable unplugged.** R11–R13 pull the remote ADC inputs toward the
 "key released" end of the range. Released means high when `invert_adc` is true;
@@ -163,6 +165,9 @@ Two figures where the DRV5055's process matters (LBC9 / older LBC8 parts):
   0.65–1.05 A, so plugging the cable in with USB live can't pull +5V down far
   enough to brown out the MCU. It also keeps the satellite's capacitance off
   VBUS when USB is plugged in.
+- **VBUS:** 2 × 4.7 µF (C1/C2, ~9.5 µF nominal, under USB's 10 µF). Against
+  the cable's inductance, with F1's resistance, that damps the hot-plug ring to
+  about 5.5 V, under the 6 V absolute maximum of the TLV757 and TPS2051C.
 - **Regulators:** both 3.3 V rails use a TLV75733 (1 A, SOT-23-5). With the old
   LBC8 sensors the main half's analog one drops 1.7 V at ~0.2 A, about 0.36 W:
   that is ~125 °C at the junction at 40 °C ambient with minimal copper (JEDEC,
@@ -186,7 +191,10 @@ To switch, change `MODEL`, then run `generate.py --force schematics pcbs` and
 `generate.py firmware mechanical bom`.
 
 Both pads share the same bus: I2C1 on PB6/PB7 (module pins 7/5) at 400 kHz,
-4.7 kΩ pull-ups (R19/R20) and the digital +3V3 with 1 µF (C16). Both are
+4.7 kΩ pull-ups (R19/R20) and the digital +3V3 with 1 µF (C16). 100 Ω in
+series at the connector (R24/R25) limits what a discharge through the overlay
+can push into the MCU's I2C pins. The FFC must go in the right way up: flipped,
+some pads get GND and +3V3 swapped, so check with a meter before first use. Both are
 **QMK only**, since libhmk has no pointing-device support. Without a pad
 fitted, QMK's init fails once at boot and it stops polling.
 
@@ -349,6 +357,8 @@ They differ in supplies, USB and boot:
     as the nBOOT1 user option bit stays erased.
   - Firmware must never clear nBOOT1 or set the boot memory to "flash
     extension" mode: that disables BOOT0 DFU for good.
+  - The ROM bootloader also listens on USART1 and others, so PA10 (USART1 RX)
+    has a 10 kΩ pull-up (R3), as on the F446.
 - **F446:** VBAT, a 4.7 µF VCAP capacitor on pin 30, and USB on PA11/PA12
   (pins 44/45).
   - Its bootloader needs BOOT1 (PB2) low as well as BOOT0 high, so PB2 has a
