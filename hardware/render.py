@@ -11,20 +11,26 @@ KiCad one:
     uv venv --python 3.13 .venv-render
     uv pip install --python .venv-render/bin/python bpy shapely ezdxf
 
-The case, plate, switch positions and ports come from vgacorne.geometry and
-vgacorne.mechanical, so the renders follow layout changes. Keycaps, switches,
-plugs, cables and the encoder knob are stand-in models.
+The case is the CAD itself: the aluminium build's tray and frame, meshed by
+vgacorne.case3d in the KiCad venv (bpy's Python has no build123d), or read
+from --case. The plate, switch positions and ports come from
+vgacorne.geometry and vgacorne.mechanical, so the renders follow layout
+changes. Keycaps, switches, plugs, cables and the encoder knob are stand-in
+models.
 """
 
 from __future__ import annotations
 
 import argparse
 import math
+import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import bpy  # first: it provides bmesh and mathutils
 import bmesh
+import numpy as np
 from mathutils import Matrix, Vector
 from shapely.geometry import Point, box
 from shapely.ops import unary_union
@@ -45,7 +51,7 @@ SPLAY = 8.0     # each half turned this many degrees, tops inward
 KEYCAP_Z = ST.plate_top + 7.0  # keycap skirt above the plate, MX stem at rest
 VGA_Z = mech.VGA_Z            # DE-15 shell centre
 USB_Z = mech.USB_Z             # USB-C centre above the case underside
-CASE_EDGE_R = 1.2
+CASE_DIR: Path | None = None   # the case parts as STLs (main() sets it)
 
 # Cherry-like sculpt: (height at the dish edge, tilt in degrees; + faces the typist).
 PROFILE = {0: (8.6, 6.0), 1: (7.5, 0.0), 2: (8.1, -6.0), 3: (7.8, 0.0), 4: (7.8, 0.0), 5: (7.8, 0.0)}
@@ -318,6 +324,17 @@ def switch_mesh() -> bpy.types.Mesh:
 # One half
 # ---------------------------------------------------------------------------
 
+def stl_mesh(name: str, path: Path, xy) -> bpy.types.Mesh:
+    """A binary STL in the case CAD's coordinates (board mm, Y up) as a mesh in a half's local metres."""
+    raw = np.fromfile(path, dtype=np.dtype([("n", "<f4", 3), ("v", "<f4", (3, 3)), ("a", "<u2")]), offset=84)
+    pts, faces = np.unique(raw["v"].reshape(-1, 3).round(4), axis=0, return_inverse=True)
+    x0, y0 = xy(0.0, 0.0)  # xy flips Y; the CAD already has
+    verts = np.column_stack((pts[:, 0] * MM + x0, pts[:, 1] * MM + y0, pts[:, 2] * MM))
+    me = bpy.data.meshes.new(name)
+    me.from_pydata(verts.tolist(), [], faces.reshape(-1, 3).tolist())
+    return finish(me)
+
+
 class Half:
     def __init__(self, side: str, mats):
         self.side, self.mats = side, mats
@@ -357,9 +374,9 @@ class Half:
     def build(self) -> None:
         m, xy, root = self.mats, self.xy, self.root
         opening = mech.plate_outline(self.side).buffer(mech.WALL_CLEARANCE, join_style="round")
-        case = slab(f"{self.side}_case", self.outer.difference(opening), 0.0, ST.case_height,
-                    CASE_EDGE_R, xy, m["case"], root)
-        self._cut_ports(case)
+        for part in ("tray", "frame"):
+            mesh_object(f"{self.side}_{part}", stl_mesh(f"{self.side}_{part}", CASE_DIR / f"case-{self.side}-{part}.stl", xy),
+                        m["case"], root)
         slab(f"{self.side}_cavity", opening.buffer(0.3), ST.floor, ST.plate_bottom - 0.5, 0.0, xy, m["cavity"], root)
 
         outline, cutouts, holes = mech.plate(self.side)
@@ -392,21 +409,6 @@ class Half:
         self._vga_plug()
         if self.side == geo.MAIN_SIDE:
             self._usb_plug()
-
-    def _cut_ports(self, case: bpy.types.Object) -> None:
-        """Booleans for the DE-15 and USB-C openings in the back face, and the tray/frame seam."""
-        xy, root = self.xy, self.root
-        vga, *usb = self.layers["PORTS"]
-        cutters = [slab("cut_vga", vga, VGA_Z - 5.55, VGA_Z + 5.55, 0.0, xy, None, root)]
-        for i, u in enumerate(usb):
-            h = mech.USB_OPENING[1] / 2
-            cutters.append(slab(f"cut_usb{i}", u, USB_Z - h, USB_Z + h, 1.0, xy, None, root))
-        seam = self.outer.buffer(1.0).difference(self.outer.buffer(-0.35))
-        cutters.append(slab("cut_seam", seam, ST.plate_bottom - 0.15, ST.plate_bottom + 0.15, 0.0, xy, None, root))
-        for pad in self.layers.get("TRACKPAD", []):
-            top = ST.case_height
-            cutters.append(slab("cut_trackpad", pad, top - PAD.board_t, top + 1.0, 0.0, xy, None, root))
-        cut(case, cutters)
 
     def _logo(self) -> None:
         """Etched wordmark on the roof over the VGA bay, between the keys and the ports."""
@@ -697,7 +699,20 @@ def main() -> None:
     ap.add_argument("--out", type=Path, default=OUT, help="output directory")
     ap.add_argument("--blend", type=Path, help="also save the scene as a .blend")
     ap.add_argument("--cpu", action="store_true", help="render on the CPU")
+    ap.add_argument("--case", type=Path, help="case STLs to use (default: mesh the CAD now)")
     args = ap.parse_args()
+
+    global CASE_DIR
+    with tempfile.TemporaryDirectory() as tmp:
+        CASE_DIR = args.case or Path(tmp)
+        if not args.case:
+            subprocess.run([str(HERE.parent / ".venv" / "bin" / "python"), "-c",
+                            "import sys; from pathlib import Path; from vgacorne import case3d; "
+                            "case3d.write_meshes(Path(sys.argv[1]))", tmp], cwd=HERE, check=True)
+        render(args)
+
+
+def render(args: argparse.Namespace) -> None:
 
     left, right = build()
     setup_render(args.samples, args.cpu)

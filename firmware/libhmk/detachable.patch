@@ -18,10 +18,20 @@ index fdbeebb..48e6887 100644
 +bool analog_detachable_attached(void);
 +#endif
 diff --git a/scripts/make.py b/scripts/make.py
-index aa5578b..a73fe53 100644
+index aa5578b..dc1b211 100644
 --- a/scripts/make.py
 +++ b/scripts/make.py
-@@ -110,6 +110,17 @@ if kb_json.analog.mux is not None:
+@@ -80,6 +80,9 @@ if kb_json.analog.invert_adc:
+ if kb_json.analog.delay is not None:
+     build_flags.define("ADC_SAMPLE_DELAY", kb_json.analog.delay)
+ 
++if kb_json.analog.sample_cycles is not None:
++    build_flags.define("ADC_NUM_SAMPLE_CYCLES", kb_json.analog.sample_cycles)
++
+ # Raw ADC Input Configuration
+ if kb_json.analog.raw is not None:
+     raw = kb_json.analog.raw
+@@ -110,6 +113,31 @@ if kb_json.analog.mux is not None:
          "ADC_MUX_INPUT_MATRIX", utils.to_c_array(list(map(list, zip(*mux.matrix))))
      )
  
@@ -36,14 +46,35 @@ index aa5578b..a73fe53 100644
 +        build_flags.define("DETACHABLE_DETECT_ACTIVE_LOW")
 +    build_flags.define("DETACHABLE_KEYS", utils.to_c_array(detachable.keys))
 +
++    # The multiplexer each detachable key is read through, to tell a silent part from a working one. A multiplexer
++    # with a single key always looks silent, so that needs at least two keys on each.
++    if kb_json.analog.mux is not None:
++        mux_of = {
++            key - 1: i
++            for i, row in enumerate(kb_json.analog.mux.matrix)
++            for key in row
++            if key > 0
++        }
++        groups = [mux_of.get(key) for key in detachable.keys]
++        if None not in groups and all(groups.count(g) >= 2 for g in groups):
++            build_flags.define("DETACHABLE_KEY_GROUPS", utils.to_c_array(groups))
++            build_flags.define("DETACHABLE_SILENT_SPREAD", detachable.silent_spread)
++
  # Calibration Configuration
  build_flags.define(
      "DEFAULT_CALIBRATION", utils.to_c_struct(kb_json.calibration.model_dump())
 diff --git a/scripts/schema/keyboard.py b/scripts/schema/keyboard.py
-index c688d03..53b7367 100644
+index c688d03..975c7b2 100644
 --- a/scripts/schema/keyboard.py
 +++ b/scripts/schema/keyboard.py
-@@ -78,6 +78,18 @@ class KeyboardAnalog(BaseModel):
+@@ -74,10 +74,28 @@ class KeyboardAnalog(BaseModel):
+     invert_adc: bool = False
+     # Delay in microseconds between ADC scans
+     delay: int | None = None
++    # Sample time of each ADC conversion, as the driver's constant (e.g. `ADC_SAMPLETIME_15CYCLES` on STM32F4). Raise
++    # it if the ADC inputs have more than a few hundred ohms of source impedance. Default to the driver's shortest.
++    sample_cycles: str | None = None
+     raw: KeyboardAnalogRaw | None = None
      mux: KeyboardAnalogMux | None = None
  
  
@@ -57,12 +88,15 @@ index c688d03..53b7367 100644
 +    # Key indices on the detachable part. They are held released while it is detached, and their rest values are
 +    # calibrated afresh when it is attached again.
 +    keys: list[NonNegativeInt]
++    # With analog multiplexers, the part also counts as detached while it is silent: every key on each of its
++    # multiplexers reads within this many ADC counts of the others, as when it is plugged in but has no power.
++    silent_spread: PositiveInt = 24
 +
 +
  # Calibration Configuration
  class KeyboardCalibration(BaseModel):
      # See `include/lib/eeconfig.h`
-@@ -127,6 +139,7 @@ class Keyboard(BaseModel):
+@@ -127,6 +145,7 @@ class Keyboard(BaseModel):
      keyboard: KeyboardKeyboard
      hardware: KeyboardHardware
      analog: KeyboardAnalog
@@ -178,10 +212,10 @@ index 5058a99..5446ab4 100644
  // Interrupt Handlers
  //--------------------------------------------------------------------+
 diff --git a/src/matrix.c b/src/matrix.c
-index 6d4d823..bb5dca3 100644
+index 6d4d823..60f0dff 100644
 --- a/src/matrix.c
 +++ b/src/matrix.c
-@@ -48,7 +48,96 @@ key_state_t key_matrix[NUM_KEYS];
+@@ -48,7 +48,144 @@ key_state_t key_matrix[NUM_KEYS];
  // Bitmap for tracking which keys have Rapid Trigger disabled
  static bitmap_t rapid_trigger_disabled[] = MAKE_BITMAP(NUM_KEYS);
  
@@ -236,16 +270,64 @@ index 6d4d823..bb5dca3 100644
 +static detachable_state_t detachable_state = DETACHABLE_ATTACHED;
 +static uint32_t detachable_attach_time = 0;
 +
++#if defined(DETACHABLE_KEY_GROUPS)
++// The part can be plugged in and still dead, e.g. without power: the detect
++// pin says attached, but nothing drives its lines, so each multiplexer's keys
++// all read the same value whatever channel is selected (and may all look
++// pressed). Working sensors rest tens of ADC counts apart, so a part whose
++// every multiplexer reads flat is silent, and is treated as detached.
++static const uint8_t detachable_groups[] = DETACHABLE_KEY_GROUPS;
++
++_Static_assert(M_ARRAY_SIZE(detachable_groups) ==
++                   M_ARRAY_SIZE(detachable_keys),
++               "DETACHABLE_KEY_GROUPS must have one entry per detachable key");
++
++static bool detachable_silent(void) {
++  uint16_t lo[32], hi[32];
++  uint32_t seen = 0;
++
++  for (uint32_t i = 0; i < M_ARRAY_SIZE(detachable_keys); i++) {
++    const uint32_t g = detachable_groups[i] & 31;
++    const uint16_t value = analog_read(detachable_keys[i]);
++
++    if (!(seen & (1UL << g))) {
++      seen |= 1UL << g;
++      lo[g] = hi[g] = value;
++    } else if (value < lo[g])
++      lo[g] = value;
++    else if (value > hi[g])
++      hi[g] = value;
++
++    if (hi[g] - lo[g] > DETACHABLE_SILENT_SPREAD)
++      return false;
++  }
++
++  return true;
++}
++#endif
++
++// Whether the detachable keys can be read: attached, and not silent
++static bool detachable_present(void) {
++  if (!analog_detachable_attached())
++    return false;
++#if defined(DETACHABLE_KEY_GROUPS)
++  if (detachable_silent())
++    return false;
++#endif
++  return true;
++}
++
 +static void detachable_detach(void) {
 +  detachable_state = DETACHABLE_DETACHED;
 +  for (uint32_t i = 0; i < M_ARRAY_SIZE(detachable_keys); i++)
 +    matrix_reset_key(detachable_keys[i]);
 +}
 +
-+// Follow the detect pin. Detaching takes effect at once; every new attachment
-+// (including contact bounce while plugging in) restarts the calibration.
++// Follow the detect pin and the readings. Detaching takes effect at once; every
++// new attachment (including contact bounce while plugging in) restarts the
++// calibration.
 +static void detachable_task(void) {
-+  if (!analog_detachable_attached()) {
++  if (!detachable_present()) {
 +    if (detachable_state != DETACHABLE_DETACHED)
 +      detachable_detach();
 +  } else if (detachable_state == DETACHABLE_DETACHED) {
@@ -279,7 +361,7 @@ index 6d4d823..bb5dca3 100644
  
  void matrix_recalibrate(bool reset_bottom_out_threshold) {
    if (reset_bottom_out_threshold) {
-@@ -56,16 +145,8 @@ void matrix_recalibrate(bool reset_bottom_out_threshold) {
+@@ -56,16 +193,8 @@ void matrix_recalibrate(bool reset_bottom_out_threshold) {
      EECONFIG_WRITE(bottom_out_threshold, bottom_out_threshold);
    }
  
@@ -298,7 +380,7 @@ index 6d4d823..bb5dca3 100644
  
    // We only calibrate the rest value. The bottom-out value will be updated
    // during the scan process.
-@@ -74,28 +155,31 @@ void matrix_recalibrate(bool reset_bottom_out_threshold) {
+@@ -74,28 +203,31 @@ void matrix_recalibrate(bool reset_bottom_out_threshold) {
      // Run the analog task to possibly update the ADC values
      analog_task();
  
@@ -326,7 +408,7 @@ index 6d4d823..bb5dca3 100644
 +#if defined(DETACHABLE_KEYS)
 +  // The detachable keys were just calibrated if they are attached. Otherwise
 +  // their values are meaningless: hold them until they are attached.
-+  if (analog_detachable_attached())
++  if (detachable_present())
 +    detachable_state = DETACHABLE_ATTACHED;
 +  else
 +    detachable_detach();

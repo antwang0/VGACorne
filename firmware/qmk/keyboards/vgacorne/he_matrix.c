@@ -28,11 +28,27 @@
 #ifndef HE_CALIBRATION_MS
 #    define HE_CALIBRATION_MS 500
 #endif
+#ifndef HE_ADC_SAMPLE
+// Sampling time per input, in ADC clocks (22.5 MHz: 112 is 5 us). The ADC's
+// sampling capacitor arrives holding the previous input's level and pulls this
+// one's 4.7 nF towards it, a step the sensor makes good through its 1 k
+// (4.7 us): at 56 clocks under half of it was gone when sampling ended.
+#    define HE_ADC_SAMPLE ADC_SAMPLE_112
+#endif
 #ifndef HE_FILTER_SHIFT
-// Filter weight 1/4 per scan. One scan is ~0.23 ms (8 x (settle + 6 conversions)),
-// so the time constant is ~0.9 ms: enough to smooth sensor noise without adding
-// noticeable latency (1/16 would be ~5 ms).
+// Filter weight 1/4 per scan. One scan is ~0.34 ms (8 x (settle + 6 conversions
+// of 5.5 us)), so the time constant is ~1.4 ms: enough to smooth sensor noise
+// without adding noticeable latency (1/16 would be ~5 ms).
 #    define HE_FILTER_SHIFT 2
+#endif
+#ifndef HE_DEAD_SPREAD
+// The other half is taken as silent when, on each of its inputs, all eight mux
+// channels read within this many ADC counts of each other: nothing there is
+// switching. That is a half with the cable in but no power (its supply switch
+// tripped, a broken +5 V wire), where the pull resistors alone set the inputs
+// and every key would read pressed or released together. Working sensors rest
+// tens of counts apart, and the encoder's level is far from any key's.
+#    define HE_DEAD_SPREAD 24
 #endif
 #ifndef HE_BOTTOM_EPSILON
 #    define HE_BOTTOM_EPSILON 5 // ADC counts of noise ignored when learning bottom-out
@@ -71,11 +87,12 @@ static he_key_t      keys[HE_INPUT_COUNT][HE_CHANNELS];
 static bool          calibrating[HE_INPUT_COUNT];
 static uint16_t      calibration_start[HE_INPUT_COUNT];
 static he_settings_t settings = HE_DEFAULT_SETTINGS;
-static bool          remote_connected = true;
+static bool          remote_connected = true; // cable in, and the other half answering
+static bool          remote_silent    = false;
 
 static ADCConfig          adc_config;
 static ADCConversionGroup adc_group;
-static adcsample_t        samples[HE_INPUT_COUNT];
+static adcsample_t        samples[HE_CHANNELS][HE_INPUT_COUNT]; // one scan
 
 #ifdef HE_ENCODER_INPUT
 static const uint16_t encoder_levels[4] = HE_ENCODER_LEVELS;
@@ -102,9 +119,9 @@ static void adc_group_init(void) {
     for (uint8_t i = 0; i < HE_INPUT_COUNT; i++) {
         const uint32_t ch = adc_channels[i];
         if (ch < 10) {
-            adc_group.smpr2 |= ADC_SAMPLE_56 << (3 * ch);
+            adc_group.smpr2 |= HE_ADC_SAMPLE << (3 * ch);
         } else {
-            adc_group.smpr1 |= ADC_SAMPLE_56 << (3 * (ch - 10));
+            adc_group.smpr1 |= HE_ADC_SAMPLE << (3 * (ch - 10));
         }
         if (i < 6) {
             adc_group.sqr3 |= ch << (5 * i);
@@ -221,16 +238,36 @@ static bool actuate(he_key_t *k) {
     return k->state == KEY_DOWN;
 }
 
+static bool cable_in(void) {
 #ifdef HE_DET_PIN
+    return !gpio_read_pin(HE_DET_PIN);
+#else
+    return true;
+#endif
+}
+
 static void update_link(void) {
-    const bool connected = !gpio_read_pin(HE_DET_PIN);
+    const bool connected = cable_in() && !remote_silent;
     if (connected == remote_connected) return;
     remote_connected = connected;
-    // Unplugged: hold the other half released. Plugged in: learn fresh rest
-    // values, since the cable path shifts them slightly.
+    // Unplugged or silent: hold the other half released. Back: learn fresh
+    // rest values, since the cable path shifts them slightly.
     he_recalibrate(HE_REMOTE_INPUTS);
 }
-#endif
+
+// The scan just read: is nothing switching on the other half's inputs?
+static bool silent(void) {
+    for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
+        if (!is_remote(in)) continue;
+        adcsample_t lo = samples[0][in], hi = lo;
+        for (uint8_t ch = 1; ch < HE_CHANNELS; ch++) {
+            lo = MIN(lo, samples[ch][in]);
+            hi = MAX(hi, samples[ch][in]);
+        }
+        if (hi - lo > HE_DEAD_SPREAD) return false;
+    }
+    return HE_REMOTE_INPUTS != 0;
+}
 
 // ---------------------------------------------------------------------------
 // QMK custom matrix
@@ -246,8 +283,8 @@ void matrix_init_custom(void) {
     }
 #ifdef HE_DET_PIN
     gpio_set_pin_input(HE_DET_PIN); // pulled up on the main PCB
-    remote_connected = !gpio_read_pin(HE_DET_PIN);
 #endif
+    remote_connected = cable_in();
     adc_group_init();
     adcStart(&ADCD1, &adc_config);
     he_recalibrate(0xFF);
@@ -255,23 +292,27 @@ void matrix_init_custom(void) {
 
 bool matrix_scan_custom(matrix_row_t current_matrix[]) {
     bool changed = false;
-#ifdef HE_DET_PIN
-    update_link();
-#endif
+    // Read everything first: whether the other half is there shows in the
+    // whole scan, and has to be known before any of its keys is judged.
     for (uint8_t ch = 0; ch < HE_CHANNELS; ch++) {
         select_channel(ch);
         wait_us(HE_SETTLE_US);
-        adcConvert(&ADCD1, &adc_group, samples, 1);
+        adcConvert(&ADCD1, &adc_group, samples[ch], 1);
+    }
+    remote_silent = silent();
+    update_link();
 
+    for (uint8_t ch = 0; ch < HE_CHANNELS; ch++) {
         for (uint8_t in = 0; in < HE_INPUT_COUNT; in++) {
+            const adcsample_t sample = samples[ch][in];
 #ifdef HE_ENCODER_INPUT
             if (in == HE_ENCODER_INPUT && ch == HE_ENCODER_CHANNEL) {
-                encoder_update(remote_connected ? samples[in] : ADC_MAX);
+                encoder_update(remote_connected ? sample : ADC_MAX);
             }
 #endif
             if (!((used_mask[in] >> ch) & 1)) continue;
             he_key_t *k = &keys[in][ch];
-            k->value    = (uint16_t)(((uint32_t)k->value * ((1u << HE_FILTER_SHIFT) - 1) + oriented(samples[in])) >> HE_FILTER_SHIFT);
+            k->value    = (uint16_t)(((uint32_t)k->value * ((1u << HE_FILTER_SHIFT) - 1) + oriented(sample)) >> HE_FILTER_SHIFT);
 
             bool pressed = false;
             if (!calibrating[in]) {

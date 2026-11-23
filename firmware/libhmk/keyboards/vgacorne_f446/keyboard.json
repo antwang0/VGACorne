@@ -7,6 +7,8 @@
   "hardware": {"hse_value": 8000000, "driver": "stm32f446xx"},
   "analog": {
     "invert_adc": true,
+    "delay": 8,
+    "sample_cycles": "ADC_SAMPLETIME_15CYCLES",
     "mux": {
       "select": ["C1", "C2", "C3"],
       "input": ["A0", "A1", "A2", "A3", "A4", "A5"],

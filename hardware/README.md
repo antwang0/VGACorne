@@ -136,14 +136,18 @@ number, each found by fitting the EasyEDA footprint onto the KiCad pads, and
 parts not listed fall back to a turn by package (SOT-23 180, SOIC/TSSOP/QFP
 270, anything else 0). Bottom parts get JLC's bottom-side angle, 180 minus
 KiCad's, before the correction. Still look over the hall sensors, the LQFP,
-the USB-C socket J1, the FFC connector J5 and the encoder ENC1 in JLC's
-placement preview before paying.
+the USB-C socket J1, the FFC connector J5, the encoder ENC1 and the modules'
+LED D1 (anode towards the pin-1 edge) in JLC's placement preview
+before paying.
 
 ## Renders
 
-`render.py` builds the assembled keyboard in Blender (the `bpy` module) from
-`geometry.py` and `mechanical.py`, then renders `docs/img/render-{hero,top,port}.jpg`
-with Cycles, on the GPU if one is available. bpy needs Python 3.13, so it gets its own venv:
+`render.py` builds the assembled keyboard in Blender (the `bpy` module) and
+renders `docs/img/render-{hero,top,port}.jpg` with Cycles, on the GPU if one
+is available (`--cpu` otherwise). The case is the CAD itself: it runs
+`case3d.write_meshes` in the KiCad venv for the aluminium build's tray and
+frame (or reads STLs from `--case DIR`); the rest comes from `geometry.py` and
+`mechanical.py`. bpy needs Python 3.13, so it gets its own venv:
 
 ```sh
 uv venv --python 3.13 ../.venv-render

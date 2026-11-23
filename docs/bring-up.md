@@ -67,7 +67,8 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
    plug, so check the pigtail's colour order with a meter.
 4. Leave JP1/JP2 bridged 1–2 (the default) unless your VGA cable lacks pin 9.
    In that case, cut both and bridge 2–3 on **both** boards: +5 V moves to
-   pin 15, and `DET` is tied to GND, so hot-plug detection is lost (see
+   pin 15, and `DET` is tied to GND, so the firmware can only tell an
+   unplugged cable from its flat readings (see
    [architecture](architecture.md#vga-link-pinout)).
 
 ## First power-up (main half alone)
@@ -89,6 +90,37 @@ BOMs: `hardware/bom/*.csv`. Choose R11–R13 or R14–R16 to match `invert_adc`
 3. Hold **BOOT** while plugging in. The factory DFU bootloader (AT32 or STM32)
    should enumerate. SWD (Tag-Connect J2) is the fallback; it needs the bottom
    tray off.
+
+## Test and expansion pads
+
+Bare pads on the main PCB's underside, each labelled in silk. With the case
+assembled they are reachable with the tray off.
+
+| Pad | Net | Expect |
+|---|---|---|
+| `5V` | +5V after the fuse | 4.75–5.25 V |
+| `3V3` | digital 3.3 V (U3) | 3.3 V |
+| `3VA` | analog 3.3 V (U2): sensors, muxes, ADC reference | 3.3 V |
+| `5VL` | +5 V to the satellite, after U8 and D1 | about 0.3–0.4 V under `5V` with the satellite drawing current; 0 V means U8 is off or limiting |
+| `GND` | ground | scope ground clip: solder a wire loop on |
+| `S0` `S1` `S2` | mux select lines at the MCU | 3.3 V square waves, `S0` fastest; all low in reset or DFU |
+| `LA` `LB` `LC` | this half's three mux outputs at the ADC | a staircase of eight levels per scan, each typically 1.1–1.4 V at rest and lower when pressed (higher, if the polarity turns out reversed) |
+| `RA` `RB` `RC` | the satellite's three lines at the ADC, after the 100 Ω | the same; flat at 3.3 V with the cable out |
+| `DET` | cable detect at the MCU | 0.3 V with the cable in, 3.3 V with it out |
+
+To judge the settling delay, trigger a scope on `S0` and watch `LA`–`LC`:
+each step must be flat before the next edge.
+
+**Expansion pads.** Four larger pads in a row by the trackpad connector,
+2.54 mm apart: `SCL`, `SDA`, `3V3`, `GND`. They are the trackpad's I2C bus
+(400 kHz, 4.7 kΩ pull-ups on the board, 3.3 V only) for a display or another
+sensor: solder wires on. Whatever goes there shares the bus with the
+trackpad, so its address must differ, and it needs QMK: libhmk has no I2C
+devices.
+
+**Status LED.** The module's red LED is on PC6 and lights when the pin is
+high. With QMK it follows caps lock, which shows the firmware is running and
+the host is talking to it. libhmk doesn't drive it.
 
 ## Flashing
 
@@ -184,7 +216,8 @@ version (`-2024-`). Check 3.3 V on its FFC pin 12.
 
 | Symptom | Likely cause |
 |---|---|
-| Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or U8 in current limit (a short on `+5V_LINK`) |
+| Left half dead, right fine | no +5 V on VGA pin 9 (cable variant → JP1/JP2), pigtail miswired, or U8 in current limit (a short on `+5V_LINK`): measure the `5VL` test pad. The firmware holds a left half without power released |
+| Left half works, then drops out for half a second now and then | the firmware took it for silent: all its keys read within 24 counts on every line. Check with `HE_DBG` or hmkconf that the sensors really rest that close, then lower `silent_spread` (libhmk) or `HE_DEAD_SPREAD` (QMK) |
 | Left half keys stuck pressed after plugging the cable in late | libhmk built without `detachable.patch`, or `DET` not reaching PC4 (JP2, cable pin 15). Recalibrate in hmkconf or re-plug USB meanwhile |
 | One column on the left dead | a `LINK_A/B/C` coax line: cable or daughterboard solder joint |
 | Keys fine, trackpad dead | FFC reversed or folded the wrong way, the FFC seated after power-up (QMK only looks at boot), or, for a Cirque, an SPI pad with R1 still fitted |

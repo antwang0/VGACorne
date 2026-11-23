@@ -398,6 +398,14 @@ of the 2D plan.
   (1.0 printed) in the 7.25 mm wall. M3 heads needed Ø6.0 and left 0.6 mm,
   which an edge break would cut through. Each screw reaches 3.9 mm into the
   frame.
+- **Outside edges:** modelled, so the STEP files and the renders show them.
+  - *Top:* a 1.5 mm round on the frame. That is the most that keeps the
+    1.6 mm back face and the 1.5 mm roof behind it at full thickness, and it
+    leaves 1.5 mm of flat top beside the trackpad.
+  - *Seam:* a 0.3 mm chamfer on each part, a 0.6 mm groove that hides any
+    step between tray and frame.
+  - *Underside:* a 0.5 mm chamfer, the most the screw counterbores allow
+    (they are 1.1 mm in from the outside).
 - **Mounts:** two 1/4"-20 sockets per half for tripods, tenting heads and desk
   arms (see [Tenting and desk mounting](#tenting-and-desk-mounting)). Each sits
   in a 15.4 mm boss that rises from the floor to 1 mm under the PCB, in a
@@ -449,8 +457,10 @@ would overhang the print bed.
 - **Material:** PLA softens around 55–60 °C, so keep it out of a hot car. ASA or
   ABS is the better everyday choice. For nylon pick PA12: PA6 creeps and
   weakens when it absorbs water.
-- **Edges:** turn on elephant-foot compensation; the bottom edges aren't
-  chamfered.
+- **Edges:** the printed parts have chamfers where the aluminium ones have a
+  round: 1.0 mm round the frame's top (a round on the bed comes out rough),
+  0.3 mm each side of the seam and 0.5 mm round the underside, which takes up
+  most of an elephant foot.
 
 **Aluminium** (`tapped`):
 - **CNC** (JLCCNC, PCBWay, Xometry): none of them reads threads from a STEP
@@ -467,9 +477,9 @@ would overhang the print bed.
   takes thread and Helicoil callouts from the drawing.
 
 Not modelled; tell the machinist or add them later:
-- Edge breaks. The renders show 1.2 mm rounds on the outside edges; at least
-  break all edges. Keep the underside's outside edge to 0.5 mm or less: the
-  screw counterbores are 1.1 mm in from it.
+- The break on the edge round the keys and on the inside edges (0.2–0.5 mm,
+  a note on the drawing). Leave the trackpad counterbore's rim sharp so the
+  overlay's gap stays a hairline.
 - The wordmark on the roof.
 - Rubber feet. `FEET` in the case plan marks a spot near each corner, outside the
   mount zone and clear of the screw counterbores. Use stick-on feet about

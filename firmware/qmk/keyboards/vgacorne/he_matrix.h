@@ -39,5 +39,7 @@ void           he_set_settings(const he_settings_t *settings);
 // the keys for HE_CALIBRATION_MS. 0xFF recalibrates everything.
 void he_recalibrate(uint8_t input_mask);
 
+// The other half's cable is in and its sensors are answering (not just pulled
+// to one level, as when it has no power).
 bool he_remote_connected(void);
 bool he_key_info(uint8_t row, uint8_t col, he_key_info_t *out);

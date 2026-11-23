@@ -10,6 +10,7 @@
 // --- simulated hardware ------------------------------------------------------
 static uint32_t now_ms;
 static bool     cable_plugged = true;
+static bool     remote_powered = true; // false: cable in, but nothing drives its lines
 static uint16_t raw[NUM_KEYS];  // sensor output in ADC counts
 static uint16_t rest[NUM_KEYS]; // this key's sensor output at rest
 
@@ -21,7 +22,13 @@ static void release(int k) { raw[k] = rest[k]; }
 
 void     analog_init(void) {}
 void     analog_task(void) { now_ms++; } // one call per main-loop pass, ~1 ms
-uint16_t analog_read(uint8_t key) { return key >= 4 && !cable_plugged ? 0 : raw[key]; }
+uint16_t analog_read(uint8_t key) {
+    if (key < 4) return raw[key];
+    if (!cable_plugged) return 0;
+    // No power over there: each multiplexer's line sits at one level, with a little noise.
+    if (!remote_powered) return (uint16_t)(480 + 30 * (key / 6) + (now_ms + key) % 4);
+    return raw[key];
+}
 bool     analog_detachable_attached(void) { return cable_plugged; }
 uint32_t timer_read(void) { return now_ms; }
 bool     wear_leveling_write(uint32_t addr, const void *buf, uint32_t len) {
@@ -61,7 +68,7 @@ int main(void) {
     config.calibration = (eeconfig_calibration_t)DEFAULT_CALIBRATION;
     for (int k = 0; k < NUM_KEYS; k++) {
         config.profiles[0].actuation_map[k].actuation_point = 128; // fixed actuation, no rapid trigger
-        rest[k] = (uint16_t)(2400 + 10 * k);
+        rest[k] = (uint16_t)(2400 + 40 * k); // sensors rest tens of counts apart
     }
     settle();
 
@@ -154,6 +161,38 @@ int main(void) {
     presses_seen = 0;
     run(500);
     CHECK(presses_seen == 0, "recalibrated with the cable out: remote keys still held");
+
+    // The remote part loses power with the cable still in: the detect pin
+    // says attached, but its lines read one level each, deep in the pressed range.
+    plug(true);
+    settle();
+    run(MATRIX_CALIBRATION_DURATION + 20);
+    for (int k = 4; k < NUM_KEYS; k++) press(k, 1.0);
+    run(50);
+    CHECK(down(4) && down(7), "powered: every remote key pressed at once still registers");
+    settle();
+    press(6, 1.0);
+    run(50);
+    CHECK(down(6), "powered: remote key held before the power goes");
+    remote_powered = false;
+    presses_seen = 0;
+    run(2000);
+    CHECK(presses_seen == 0, "no power over there: released on the next scan, nothing pressed in 2 s");
+    press(1, 1.0);
+    run(50);
+    CHECK(down(1), "no power over there: local keys still work");
+    release(1);
+    settle();
+    remote_powered = true;
+    presses_seen = 0;
+    run(MATRIX_CALIBRATION_DURATION - 10);
+    CHECK(presses_seen == 0, "power back: remote keys held while they calibrate");
+    run(50);
+    press(5, 1.0);
+    run(50);
+    CHECK(down(5), "power back: remote key works again");
+    release(5);
+    run(50);
 
     printf(failures ? "%d FAILED\n" : "all passed\n", failures);
     return failures != 0;

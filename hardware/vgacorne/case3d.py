@@ -10,6 +10,8 @@ Everything comes from the 2D case plan (:func:`mechanical.case`, the layers of
   opening round the plate, the 1.5 mm roof over the tab, bay and USB ear,
   the trackpad's counterbore and well (open down to the seam), and blind M2.5
   tap holes.
+* Outside edges: a round on the frame's top, a chamfer each side of the seam
+  and one round the underside (``EDGE_*``; chamfers throughout on a print).
 * Both: the DE-15's D cutout and the USB-C opening through the flat back face.
   The jackscrew holes are U-slots in the tray, open to the seam: the frame
   closes them.
@@ -37,7 +39,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from build123d import (Compound, Cylinder, Edge, ExportSVG, Face, Location, Part, Plane, RectangleRounded,
-                       Wire, export_step, export_stl, extrude)
+                       Wire, chamfer, export_step, export_stl, extrude, fillet)
 from shapely import affinity
 from shapely.geometry import MultiPolygon, Point, Polygon, box
 from shapely.geometry.polygon import orient
@@ -73,6 +75,8 @@ class Build:
     mount_hole: tuple[float, float]  # each 1/4"-20 mount: diameter, depth up from the underside
     mount: str
     folder: str                     # output directory under hardware/mechanical
+    top_edge: float                 # the frame's outside top edge
+    rounded: bool                   # top edges: rounds, or 45 degree chamfers
 
 
 # The mounts sit in bosses that stop 1 mm under the PCB, which moves down
@@ -92,11 +96,25 @@ TAPPED = Build("tapped", "aluminium (CNC 6061, or printed AlSi10Mg)", 2.9, (5.0,
                "M2.5 x 0.45-6H: 2.05 drill 5.3 deep, thread mill or bottoming tap, full thread >= 4.5 min",
                0.0, (5.1, 6.0),
                '1/4"-20 UNC-2B: #7 (5.1) hole 6.0 deep FLAT bottom (no drill point: 0.5 left), '
-               'thread mill or bottoming tap, full thread >= 4.5 min', "case-machined")
+               'thread mill or bottoming tap, full thread >= 4.5 min', "case-machined", 1.5, True)
 INSERTS = Build("inserts", "FDM print (PLA, ABS/ASA, nylon)", 3.1, (5.2, 6.5), (4.2, 5.0),
                 "M2.5 x 4.0 heat-set insert (CNC Kitchen M2.5 standard: 4.0 mm hole), flush", 2.0, (8.2, 7.4),
-                '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside', "case-printed")
+                '1/4"-20 x 6.4 heat-set insert (CNC Kitchen or ruthex "short"), flush with the underside', "case-printed", 1.0, False)
 BOSS_TOP = ST.pcb_bottom - 1.0
+
+# Outside edges. The top one is what the hands meet: a 1.5 mm round, the most
+# that keeps the 1.6 mm back face and the 1.5 mm roof behind it at full
+# thickness (the round's centre stays inside the corner they make) and leaves
+# 1.5 mm of flat top beside the trackpad. A print's frame goes top-down on the
+# bed, where a round starts as an overhang and comes out rough, so it gets
+# 45 degree chamfers, 1.0 mm at the back face's corner for the same reason.
+# The edge round the keys isn't modelled (OpenCascade can't follow that loop):
+# the drawing asks for it to be broken.
+# The seam's two chamfers make a 0.6 mm groove that hides any step between the
+# parts. Underneath, 0.5 mm is the most the screw counterbores allow: they are
+# 1.1 mm in from the outside (and it takes up a print's elephant foot).
+EDGE_SEAM = 0.3
+EDGE_BOTTOM = 0.5
 BUILDS = (TAPPED, INSERTS)
 SCREW = "M2.5 x 12 ISO 7380"
 SCREW_EDGE = 1.0                # material between the counterbore and the cavity (and the outside)
@@ -143,11 +161,13 @@ def _circle(a, b, c):
 
 
 def _wire(ring) -> Wire:
+    # 2D booleans leave micron-long segments pointing anywhere: as edges they
+    # look like corners, and no fillet runs past one.
     pts = []
     for q in ring.coords[:-1]:
-        if not pts or math.dist(pts[-1], q) > 1e-4:
+        if not pts or math.dist(pts[-1], q) > _FIT_TOL / 2:
             pts.append(q)
-    if math.dist(pts[0], pts[-1]) <= 1e-4:
+    if math.dist(pts[0], pts[-1]) <= _FIT_TOL / 2:
         pts.pop()
     n = len(pts)
 
@@ -254,6 +274,12 @@ def _through_back_poly(poly: Polygon, y0: float, y1: float) -> Part:
     return extrude(face, amount=(y1 - y0) / 2, both=True).moved(Location((0, -(y0 + y1) / 2, 0)))
 
 
+def _edges_at(part: Part, z: float):
+    """The edges of ``part`` that lie flat at height ``z``."""
+    return part.edges().filter_by(lambda e: abs(e.bounding_box().min.Z - z) < 1e-6 and
+                                  abs(e.bounding_box().max.Z - z) < 1e-6)
+
+
 def _hole(x: float, y: float, d: float, z0: float, z1: float) -> Part:
     return Cylinder(d / 2, z1 - z0).moved(Location((x, -y, (z0 + z1) / 2)))
 
@@ -333,7 +359,10 @@ class Half:
     def tray(self) -> Part:
         b = self.build
         under = -b.bottom
-        part = prism(self.outer, under, SEAM) - prism(self.inner, ST.floor, SEAM + 1)
+        part = prism(self.outer, under, SEAM)
+        part = chamfer(_edges_at(part, under), EDGE_BOTTOM)
+        part = chamfer(_edges_at(part, SEAM), EDGE_SEAM)
+        part = part - prism(self.inner, ST.floor, SEAM + 1)
         part = part + prism(self.layers["MOUNTS"], ST.floor - 1.0, BOSS_TOP)  # overlaps the floor
         cutters = [prism(self.pockets, SEAM - GASKET_SET, SEAM + 1),
                    prism(self.layers.get("FLOOR_ACCESS", []), under - 1, ST.floor + 1),
@@ -346,11 +375,20 @@ class Half:
         return _cut(part, cutters)
 
     def frame(self) -> Part:
-        # The wall ring, plus the roof grown 0.05 mm so it overlaps the walls
+        # The outside is shaped first, while it is one smooth loop. Then the
+        # wall ring, plus the roof grown 0.05 mm so it overlaps the walls
         # rather than meeting them face to face (near-coincident faces break
         # OpenCascade's booleans).
-        part = prism(self.outer.difference(self.inner), SEAM, TOP)
-        part = part + prism(self.roof.buffer(0.05, join_style="mitre"), TOP - ST.roof, TOP)
+        b = self.build
+        ease = fillet if b.rounded else chamfer
+        part = prism(self.outer, SEAM, TOP)
+        part = ease(_edges_at(part, TOP), b.top_edge)
+        part = chamfer(_edges_at(part, SEAM), EDGE_SEAM)
+        part = part - prism(self.inner, SEAM - 1, TOP + 1)
+        # ...into the walls only: grown at its free edge too, it would leave a
+        # 0.05 mm step where that edge runs into a wall.
+        hole = self.inner.difference(self.roof)
+        part = part + prism(self.roof.buffer(0.05, join_style="mitre").difference(hole), TOP - ST.roof, TOP)
         cutters = [prism(self.pockets, SEAM - 1, ST.plate_top + GASKET_SET), *self._ports(slots=False)]
         for pad in self.layers.get("TRACKPAD", []):
             cutters.append(prism(pad, TOP - PAD.board_t, TOP + 1))
@@ -474,7 +512,9 @@ DRAWING_NOTES = [
     f"Gasket pockets: depth +/-0.05 (tray {GASKET_SET:.2f} below the seam; frame to {ST.plate_top + GASKET_SET - SEAM:.2f} above it).",
     f"Trackpad counterbore (frame, right): {PAD.board_t:.1f} +0.1/-0 deep.",
     "Inside corners r >= 1.5 except the port cutouts (r 1.0, through the 1.6 back face).",
-    "Break all sharp edges 0.2-0.5 (outside edges of the underside <= 0.5: the counterbores are 1.1 in).",
+    f"Outside edges as modelled: R{TAPPED.top_edge:g} round the frame's top, {EDGE_SEAM:g} x 45 deg on both parts at the seam,",
+    f"{EDGE_BOTTOM:g} x 45 deg round the underside (no more: the counterbores are 1.1 in).",
+    "Break all other sharp edges 0.2-0.5, the opening round the keys included. Leave the trackpad counterbore's rim sharp.",
     "Bead blast, then anodise.",
     "BARE layer: no anodising (mask, or skim 0.05 after). Chem film per MIL-DTL-5541 Type II Class 3.",
     "Bare areas: the seam face (tray top / frame underside), the DE-15 flange seat inside the back wall",
@@ -596,6 +636,15 @@ def _dxf_entities(path: Path) -> list:
 
 def _stl(part: Part, path: Path) -> None:
     export_stl(part, str(path), tolerance=0.01, angular_tolerance=0.1)
+
+
+def write_meshes(out: Path) -> None:
+    """The aluminium build's four parts as STLs, for render.py (whose Python has no build123d)."""
+    out.mkdir(parents=True, exist_ok=True)
+    for side in (geo.MAIN_SIDE, geo.SATELLITE_SIDE):
+        half = Half(side)
+        _stl(half.tray(), out / f"case-{side}-tray.stl")
+        _stl(half.frame(), out / f"case-{side}-frame.stl")
 
 
 def write(side: str, out: Path) -> tuple[list[Path], list[str]]:

@@ -36,6 +36,7 @@ typedef struct {
 } ADCConversionGroup;
 #define ADC_CR2_SWSTART (1u << 30)
 #define ADC_SAMPLE_56 3u
+#define ADC_SAMPLE_112 5u
 #define ADC_SQR1_NUM_CH(n) (((n) - 1) << 20)
 #define PAL_MODE_INPUT_ANALOG 3
 extern ADCDriver ADCD1;

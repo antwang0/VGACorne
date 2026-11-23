@@ -268,8 +268,40 @@ MCU_SIGNAL_PINS = {
     "24": "DET",  # PC4
     "7": "NRST", "60": "BOOT", "46": "SWDIO", "49": "SWCLK",  # NRST, BOOT0, PA13, PA14
     "58": "I2C_SCL", "59": "I2C_SDA",  # PB6/PB7: I2C1 (AF4 on the STM32, MUX4 on the AT32)
+    "37": "LED",  # PC6 (TIM3_CH1 / TMR3_CH1): the module's status LED, lit when high
 }
 # firmware.py derives libhmk's select/input pin names from these by tracing the netlists.
+
+
+# Bare pads on the main PCB's underside, the side you see with the tray off.
+# 1.0 mm pads to probe: the rails, the three select lines, all six mux outputs
+# as the ADC sees them, and cable detect.
+TEST_POINTS = ["+5V", "+3V3", "+3.3VA", "+5V_LINK", "GND", "MUX_S0", "MUX_S1", "MUX_S2",
+               "ADC_L_A", "ADC_L_B", "ADC_L_C", "ADC_R_A", "ADC_R_B", "ADC_R_C", "DET"]
+# 1.5 mm pads to solder to, in a row 2.54 mm apart and in Qwiic order: the
+# trackpad's I2C bus (MCU side of R24/R25, pulled up by R19/R20) for a display
+# or another sensor.
+EXPANSION = ["GND", "+3V3", "I2C_SDA", "I2C_SCL"]
+
+
+def test_points(block="test") -> list[Part]:
+    def tp(i: int, net: str, d: str, what: str) -> Part:
+        return Part(f"TP{i}", "Connector:TestPoint", net, f"TestPoint:TestPoint_Pad_D{d}mm", {"1": net}, block,
+                    in_bom=False, description=what)
+    n = len(TEST_POINTS)
+    return [tp(i + 1, net, "1.0", "Test pad, underside") for i, net in enumerate(TEST_POINTS)] + \
+           [tp(n + i + 1, net, "1.5", "Expansion pad (I2C, Qwiic order), underside: one of four in a row, 2.54 mm apart")
+            for i, net in enumerate(EXPANSION)]
+
+
+def status_led(block="mcu") -> list[Part]:
+    """On each MCU module: a red LED on PC6 for the firmware (QMK: caps lock).
+    It is under the trackpad once that is fitted, so it is a bring-up aid."""
+    return [
+        R("R4", "1k", "LED", "LED_A", block, description="Status LED: 1.3 mA"),
+        Part("D1", "Device:LED", "red", "LED_SMD:LED_0603_1608Metric", {"A": "LED_A", "K": "GND"}, block,
+             fields={"MPN": "KT-0603R"}, description="Status LED on PC6, lit when the pin is high"),
+    ]
 
 
 def main() -> Circuit:
@@ -380,8 +412,10 @@ def main() -> Circuit:
                       {"A": "ADC_L_A", "B": "ADC_L_B", "C": "ADC_L_C"}, MAIN_SIDE)
     p += standoffs(MAIN_SIDE)
     p += fingers()
+    p += test_points()
     blocks = [
         ("power", "USB-C, protection, regulators", (20.32, 38.1), 260),
+        ("test", "Test and expansion pads (bare, underside)", (20.32, 140.0), 260),
         ("mcu", "MCU module landing pads, boot/reset, SWD", (292.1, 38.1), 290),
         ("link", "Link to the satellite half (VGA daughterboard)", (596.9, 38.1), 225),
         ("trackpad", "Trackpad (optional)", (292.1, 130.0), 290),
@@ -544,6 +578,7 @@ def module_at32() -> Circuit:
         R("R3", "10k", "USART1_RX", "+3V3", "mcu",
           description="Holds the ROM bootloader's USART1 RX (PA10) idle so noise can't select it over USB"),
         C("C9", "100n", "NRST", "GND", "mcu"),
+        *status_led(),
     ]
     return _module("vgacorne-module-at32", "VGACorne MCU module - AT32F405RCT7 (libhmk, USB HS)", mcu, parts,
                    ["libhmk driver at32f405xx, USB high-speed on OTGHS1 (8 kHz polling).",
@@ -577,6 +612,7 @@ def module_f446() -> Circuit:
         R("R3", "10k", "USART1_RX", "+3V3", "mcu",
           description="Holds the bootloader's unused USART1 RX (PA10) idle so noise can't select it (AN2606)"),
         C("C11", "100n", "NRST", "GND", "mcu"),
+        *status_led(),
     ]
     return _module("vgacorne-module-f446", "VGACorne MCU module - STM32F446RET6 (QMK / libhmk, USB FS)", mcu, parts,
                    ["USB full-speed on PA11/PA12 (1 kHz polling).",

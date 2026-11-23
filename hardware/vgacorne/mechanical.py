@@ -425,6 +425,11 @@ def case(side: str, floor_access: bool = True) -> dict[str, list[Polygon]]:
     # opening: over the MCU module, the bay and the USB ear.
     opening = plate_outline(side).buffer(WALL_CLEARANCE, join_style="round")
     roof = inner_wall.difference(opening).buffer(-0.5).buffer(0.5)
+    # Where the roof's rounded edge runs into a wall it leaves a notch a cutter
+    # can't enter (and no edge break can follow): open the hole out to TOOL_R.
+    hole = inner_wall.difference(roof).buffer(-TOOL_R, join_style="round").buffer(TOOL_R, join_style="round")
+    roof = inner_wall.difference(hole)
+    roof = unary_union([p for p in getattr(roof, "geoms", [roof]) if p.area > 0.5])
     layers = {"OUTER_WALL": [outer], "INNER_WALL": [inner_wall], "GASKET_POCKETS": gasket_pockets,
               "PLATE": [outline], "ROOF": list(getattr(roof, "geoms", [roof])), "DAUGHTERBOARD": [db],
               "PORTS": ports, "JACKSCREWS": jackscrews}

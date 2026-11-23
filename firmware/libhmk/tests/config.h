@@ -25,4 +25,6 @@
 
 // Keys 0-3 are local; keys 4-7 come over the cable.
 #define DETACHABLE_KEYS {4, 5, 6, 7}
+#define DETACHABLE_KEY_GROUPS {0, 0, 1, 1} // two multiplexers over the cable, two keys on each
+#define DETACHABLE_SILENT_SPREAD 24
 #define DETACHABLE_DETECT_ACTIVE_LOW

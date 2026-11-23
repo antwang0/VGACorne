@@ -109,6 +109,8 @@ def keyboard_json(w) -> dict:
         "matrix_size": {"rows": len(w.matrix), "cols": len(w.matrix[0])},
         "matrix_pins": {"custom_lite": True},
         "debounce": 0,
+        # The MCU module's status LED (bring-up aid: it sits under the trackpad).
+        **({"indicators": {"caps_lock": w.led_pin}} if w.led_pin else {}),
         # ChibiOS's embedded-flash driver doesn't know the F446, so use QMK's legacy
         # driver on flash sector 1 (config.h), which QMK's F4 linker script keeps free.
         "eeprom": {"driver": "wear_leveling",

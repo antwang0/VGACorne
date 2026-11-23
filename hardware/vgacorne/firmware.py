@@ -32,10 +32,19 @@ KEYBOARDS = REPO / "firmware" / "libhmk" / "keyboards"
 # Per-module libhmk settings. PIDs are pid.codes test IDs: request real ones before distributing.
 MODULES = {
     "module_at32": {"keyboard": "vgacorne_at32", "name": "VGACorne AT32", "driver": "at32f405xx",
-                    "hse_value": 12000000, "port": "hs", "pid": "0x0001"},
+                    "hse_value": 12000000, "port": "hs", "pid": "0x0001", "sample_cycles": None},
     "module_f446": {"keyboard": "vgacorne_f446", "name": "VGACorne F446", "driver": "stm32f446xx",
-                    "hse_value": 8000000, "port": "fs", "pid": "0x0002"},
+                    "hse_value": 8000000, "port": "fs", "pid": "0x0002",
+                    # libhmk's 3 cycles (0.13 us at 22.5 MHz) suit a source of no impedance. ST's rule,
+                    # (k - 0.5) / (f C ln 2^14) - R_ADC with C 4 pF and R_ADC up to 6 k, asks for 6
+                    # cycles even at the 300 ohm of a mux and its series resistor: take the next step.
+                    "sample_cycles": "ADC_SAMPLETIME_15CYCLES"},
 }
+# Microseconds libhmk waits after changing the selects before it converts. Its
+# default of 20 holds an 8 kHz board to ~5 kHz of fresh readings (8 steps of
+# 20 us + conversions); 8 us is 1.7 time constants of a sensor's 1 k and
+# 4.7 nF, which leaves under 0.2 % of the step between neighbouring channels.
+ANALOG_DELAY_US = 8
 
 
 def out_path(module: str) -> Path:
@@ -194,6 +203,7 @@ class Wiring:
     det_pin: str | None             # GPIO that reads the cable-detect line
     i2c_pins: tuple[str, str] | None = None  # (SCL, SDA) GPIOs of the trackpad bus
     encoder: tuple[int, int] | None = None   # (input, mux channel) of the rotary encoder's level
+    led_pin: str | None = None      # GPIO of the module's status LED (lit when high)
 
 
 def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
@@ -259,7 +269,9 @@ def build_matrix(module: Netlist, main: Netlist, sat: Netlist) -> Wiring:
     # --- trackpad I2C: the MCU pins on the module's I2C nets ---------------------------
     i2c = {net.lstrip("/"): g.mcu_gpio(pin) for pin, net in pins if net.lstrip("/") in ("I2C_SCL", "I2C_SDA")}
     i2c_pins = (i2c["I2C_SCL"], i2c["I2C_SDA"]) if len(i2c) == 2 else None
-    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None, i2c_pins, encoder)
+    led = [g.mcu_gpio(pin) for pin, net in pins if net.lstrip("/") == "LED"]
+    return Wiring(select_pins, inputs, matrix, sides, det.pop() if det else None, i2c_pins, encoder,
+                  led[0] if led else None)
 
 
 # ---------------------------------------------------------------------------
@@ -342,6 +354,9 @@ def keyboard_json(module: str, w: Wiring) -> dict:
         "hardware": {"hse_value": m["hse_value"], "driver": m["driver"]},
         "analog": {
             "invert_adc": SENSOR.invert_adc,
+            "delay": ANALOG_DELAY_US,
+            # Needs firmware/libhmk/detachable.patch too (stock libhmk has no such setting).
+            **({"sample_cycles": m["sample_cycles"]} if m["sample_cycles"] else {}),
             "mux": {"select": w.select_pins, "input": w.inputs, "matrix": w.matrix},
         },
         **detachable,

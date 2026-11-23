@@ -75,9 +75,10 @@ cable**. Both halves have female DE-15 ports, like a PC or a monitor.
 "3+6" cables are, but some cheap ones leave out pin 9. Check with a meter. If
 yours has no pin 9, re-jumper **both** daughterboards: cut JP1/JP2 and bridge
 the other side. JP1 then puts +5 V on pin 15, and JP2 ties `LINK_DET` to GND,
-so the main half always sees a satellite attached (cable-detect is lost, and
-unplugging the cable with the board running leaves the left keys at whatever
-the pull resistors read). Never bridge JP1 to pin 15 while JP2 still selects
+so the main half always sees a satellite attached. Cable detect is lost, and
+the firmware falls back on the readings: with the cable out the three lines
+sit flat on their pull resistors, which it treats as unplugged (see
+[signal chain](#signal-chain-details)). Never bridge JP1 to pin 15 while JP2 still selects
 pin 15.
 
 **Plugged into a PC or monitor by mistake:** the analog lines see 75 Ω
@@ -141,9 +142,22 @@ relearn those keys' rest values over 500 ms. libhmk needs
 `firmware/libhmk/detachable.patch` for this
 ([firmware](../firmware/README.md#libhmk)).
 
-**Timing.** libhmk waits `ADC_SAMPLE_DELAY` (20 µs by default) after each
-select change, so a full 8-step scan takes about 0.2 ms. The buffered cable
-settles in about 1 µs, so the delay can be reduced after measuring.
+**Cable in, satellite without power.** `LINK_DET` only needs the cable's
+ground, so it still reads "attached" if the satellite's +5 V is missing (U8 in
+current limit, a broken wire). The pull resistors then set the three analog
+lines on their own, and every left key would read pressed. Both firmwares
+catch it from the readings: with nothing switching over there, all eight
+channels of each line read the same. They treat that as unplugged.
+
+**Timing.** libhmk waits `ADC_SAMPLE_DELAY` after each select change. Its
+default of 20 µs makes a full 8-step scan about 0.2 ms, 5 kHz of fresh
+readings under the AT32's 8 kHz polling, so `keyboard.json` sets 8 µs. The
+buffered cable settles in about 1 µs. The local path is the slow one: a
+mux's output node carries the last channel's level into the next sensor's
+4.7 nF, a step of about 1 % that decays through the sensor's 1 kΩ in 4.7 µs.
+After 8 µs under 0.2 % of the difference between two neighbouring keys is
+left. Check with a scope on the `LA`–`LC` test pads, and raise it if a hard
+press moves the key on the next channel.
 
 ## Power budget (USB 500 mA)
 
@@ -291,10 +305,14 @@ underside. It is a 1.0 mm **4-layer** board:
 - **Underside:** B.Cu is a solid, stitched ground pour with no tracks. Once
   soldered it sits about 0.1 mm above the main board's top-layer tracks, with
   only two solder masks between them, so nothing on the module may run there.
-  The few slow signals that can't stay on F.Cu (NRST, MUX_S0–S2, and DET on
-  the F446) take short tracks on In2 inside the +3V3 pour.
+  The few slow signals that can't stay on F.Cu (NRST, MUX_S0–S2, DET on the
+  F446, and the LED's net on the AT32, whose pin sits inside the USB pair's
+  loop) take short tracks on In2 inside the +3V3 pour.
 - **Marking:** a pin-1 triangle and a "USB-C edge" arrow on top: the 2 × 12
   pattern also fits J4 turned round, which would put +5 V on an ADC pin.
+- **Status LED:** a red 0603 on PC6 through 1 kΩ (1.3 mA), lit when the pin
+  is high. It ends up under the trackpad, so it is for bring-up: QMK uses it
+  as the caps-lock indicator; libhmk leaves it off.
 - **Placement:** each decoupling cap sits beside its supply pin, and the
   crystal at the oscillator pins. It is soldered flat onto the landing pads J4 on top of the main
 PCB's tab, under the trackpad and beside Y/H/N. Solder, a 1.0 mm board and the
@@ -303,6 +321,12 @@ well, so it needs no space of its own in the case. It is larger than the old
 plug-in module because nothing can go on its underside. Everything else stays
 on the carrier: USB-C and its ESD, both regulators, the BOOT/RESET buttons
 (pressed through holes in the case floor) and the SWD pads (bottom tray off).
+
+**Test and expansion pads.** The main PCB's underside has 15 labelled probe
+pads (rails, select lines, all six mux outputs at the ADC, cable detect) and
+a row of four solder pads carrying the trackpad's I2C bus, 3.3 V and ground
+for a display or another sensor. What each should read is in
+[bring-up](bring-up.md#test-and-expansion-pads).
 
 Changing module later means desoldering it with hot air. The main PCB is the
 same for both, so the choice is made per build.
@@ -441,9 +465,11 @@ A host test runs the real matrix code against simulated sensors. VIA support and
 
    Route analog nets (`HE_*`, `ADC_*`, `LINK_A/B/C`, `ENC`) away from the
    select lines.
-2. **Hot-plugging** is handled in both firmwares through `DET` (PC4); libhmk
+2. **Hot-plugging** is handled in both firmwares through `DET` (PC4), and a
+   satellite without power through its flat readings; libhmk
    needs `firmware/libhmk/detachable.patch`. It's tested against simulated
-   sensors only: unplug and re-plug the cable at bring-up
+   sensors only: unplug and re-plug the cable at bring-up, and pull the
+   pigtail's +5 V wire once to see the left half go quiet
    ([bring-up.md](bring-up.md#sensor-polarity-and-calibration)).
 3. **Sensor polarity and calibration.** `invert_adc` and the initial rest
    value are copied from HE60 practice. The initial bottom-out threshold is 400

@@ -16,12 +16,17 @@ in: JLC rotation corrections in the CPL, select-line resistors and finger
 placement for ESD, ground-only module undersides, a pin-1 mark on the modules,
 and machinable case details.
 
+Added since (2026-11-23): outside edge rounds and chamfers in the case CAD;
+test pads, I2C expansion pads and a status LED on the modules; and in both
+firmwares a shorter settling delay (libhmk), longer ADC sampling on the F446,
+and holding a left half that is plugged in but has no power.
+
 - [ ] **Wait for DRV5055A3QDBZR stock** (JLC 2, LCSC 0, TI out of stock on
       2026-11-15, no date): set stock alerts, or a Digi-Key backorder shows
       TI's expected date.
 - [ ] Run `hardware/generate.py fab` and order (see
       [bring-up](docs/bring-up.md#before-ordering)). Check the sensors, LQFPs,
-      USB-C, FFC and encoder in JLC's placement preview.
+      USB-C, FFC, encoder and the modules' LED in JLC's placement preview.
       Costs: [docs/cost.md](docs/cost.md) (about 860-1,030 for one aluminium
       unit, five board sets included).
 - [ ] Before or at bring-up, check one sensor's polarity with your switch
@@ -37,8 +42,7 @@ Details are in the linked docs.
       The grounding plan ([grounding.md](docs/grounding.md)) is in the boards
       and the drawings: order the four spring fingers and ask the shop to mask
       the `BARE` areas.
-      Not modelled yet: edge rounds, a typing angle, lightening under the
-      trackpad.
+      Not modelled yet: a typing angle, lightening under the trackpad.
 - [ ] **QMK:**
   - Move the trackpad reads to their own thread
     ([pointing-devices.md](firmware/pointing-devices.md)).
@@ -48,5 +52,6 @@ Details are in the linked docs.
       ([pointing-devices.md](firmware/pointing-devices.md)).
 - [ ] **USB IDs:** request real PIDs to replace the pid.codes test IDs.
 - [ ] **At bring-up:** confirm sensor polarity and calibration, test
-      hot-plugging the VGA cable, and fit QMK's travel curve to real sensor
+      hot-plugging the VGA cable, check the settling delay on the `LA`–`LC`
+      test pads, and fit QMK's travel curve to real sensor
       data ([bring-up.md](docs/bring-up.md)).

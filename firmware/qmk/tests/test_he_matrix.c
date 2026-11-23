@@ -21,6 +21,7 @@ ADCDriver       ADCD1;
 static uint64_t now_us;
 static int      select_state[64];
 static bool     cable_plugged = true;
+static bool     satellite_powered = true;         // false: cable in, but nothing drives its lines
 static double   travel[MATRIX_ROWS][MATRIX_COLS]; // 0 = rest, 1 = bottomed out
 static int      enc_ab = 3;                       // rotary encoder contacts, A | B << 1, 1 = open
 static int      enc_offset;                       // ADC counts of supply mismatch between the halves
@@ -36,6 +37,8 @@ static double field(double t) {
 static adcsample_t sensor(int row, int col) {
     const bool remote = (HE_REMOTE_INPUTS >> row) & 1;
     if (remote && !cable_plugged) return 4095; // R11-R13 pull the input up
+    // No power over there: each pull-up sinks into a dead buffer, whatever the selects say.
+    if (remote && !satellite_powered) return (adcsample_t)(480 + 30 * row + (now_us / 7) % 5);
 #ifdef HE_ENCODER_INPUT
     if (row == HE_ENCODER_INPUT && col == HE_ENCODER_CHANNEL) {
         const uint16_t levels[] = HE_ENCODER_LEVELS;
@@ -43,7 +46,8 @@ static adcsample_t sensor(int row, int col) {
         return (adcsample_t)(v < 0 ? 0 : v > 4095 ? 4095 : v);
     }
 #endif
-    return (adcsample_t)(2400 + 7 * row + col - 900.0 * field(travel[row][col]));
+    // Sensors rest tens of counts apart (offset and magnet tolerances).
+    return (adcsample_t)(2400 + 13 * ((5 * row + 3 * col) % 8) - 900.0 * field(travel[row][col]));
 }
 
 void adcStart(ADCDriver *d, const ADCConfig *c) { (void)d; (void)c; }
@@ -59,7 +63,7 @@ void adcConvert(ADCDriver *d, const ADCConversionGroup *g, adcsample_t *buf, int
         assert(adc_ch == expect[i]);
         buf[i] = sensor((int)i, ch);
     }
-    now_us += 18;
+    now_us += 33; // 6 x (112 + 12) clocks at 22.5 MHz
 }
 void     palSetLineMode(pin_t pin, int mode) { (void)pin; (void)mode; }
 void     gpio_set_pin_output(pin_t pin) { (void)pin; }
@@ -203,6 +207,41 @@ int main(void) {
           "encoder: cable out reads as a resting encoder");
     cable_plugged = true;
 #endif
+
+    // The other half loses power with the cable still in: DET says connected,
+    // but its inputs sit on the pull resistors. No key over there may register.
+    press_to(4, 1, 0.0);
+    press_to(1, 2, 0.0);
+    scan_ms(600);
+    CHECK(he_remote_connected() && pressed_count() == 0, "powered and idle: the other half counts as connected");
+    for (int r = 3; r < 6; r++)
+        for (int c = 0; c < 8; c++) travel[r][c] = 1.0;
+    scan_ms(5);
+    CHECK(he_remote_connected() && down(3, 0) && down(4, 5), "every remote key pressed at once is not mistaken for a dead half");
+    for (int r = 3; r < 6; r++)
+        for (int c = 0; c < 8; c++) travel[r][c] = 0.0;
+    travel[4][1] = 1.0;
+    scan_ms(5);
+    CHECK(down(4, 1), "remote key held before the power goes");
+    satellite_powered = false;
+    int phantom       = 0;
+    for (int i = 0; i < 3000; i++) {
+        matrix_scan_custom(matrix);
+        phantom += pressed_count();
+    }
+    CHECK(phantom == 0 && !he_remote_connected(), "no power over there: released within the scan, nothing pressed in 1 s");
+    press_to(1, 2, 0.60);
+    CHECK(down(1, 2) && pressed_count() == 1, "no power over there: local keys still work");
+    press_to(1, 2, 0.0);
+    satellite_powered = true;
+    scan_ms(100);
+    he_key_info(4, 1, &k);
+    CHECK(he_remote_connected() && k.calibrating && pressed_count() == 0, "power back: remote rows recalibrate");
+    travel[4][1] = 0.0;
+    scan_ms(600);
+    press_to(4, 1, 0.60);
+    CHECK(down(4, 1), "power back: remote key works again");
+    press_to(4, 1, 0.0);
 
     printf("all passed\n");
     return 0;

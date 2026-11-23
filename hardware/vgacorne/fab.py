@@ -60,6 +60,7 @@ LCSC: dict[str, str] = {
     "AFC07-S06FCA-00": "C262553",  # trackpad FFC connector J5, top side: two-sided assembly
     "PEC12R-4220F-N0024": "C143785",  # encoder ENC1, THT on top; LCSC stock was 0 in 2025, JLC may pre-order
     "TS-1187A-B-A-B": "C318884",  # Basic
+    "KT-0603R": "C2286",  # Basic; red 0603, cathode on pad 1 as in KiCad's footprint
     "AT32F405RCT7": "C47090415",  # 10x10 mm (the -7 suffix is 7x7); low stock
     "STM32F446RET6": "C69336",
     "X322512MOB4SI": "C70565",  # 12 pF load; the Basic C9002 is the 20 pF version

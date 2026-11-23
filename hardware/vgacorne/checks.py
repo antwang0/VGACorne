@@ -106,7 +106,10 @@ def firmware_config() -> bool:
 
             Keyboard.model_validate(fresh)
             # Without detachable.patch the schema has no `detachable` and silently drops it.
-            patched = "detachable" not in fresh or "detachable" in Keyboard.model_fields
+            from keyboard import KeyboardAnalog  # type: ignore
+
+            patched = ("detachable" not in fresh or "detachable" in Keyboard.model_fields) and \
+                      ("sample_cycles" not in fresh["analog"] or "sample_cycles" in KeyboardAnalog.model_fields)
             ok &= patched
             print(f"  {path.parent.name}/keyboard.json validates against libhmk's schema"
                   + ("" if patched else " but LIBHMK lacks firmware/libhmk/detachable.patch"))

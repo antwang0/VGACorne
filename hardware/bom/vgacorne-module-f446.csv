@@ -3,6 +3,8 @@
 "C5,C8","4.7u","","Capacitor_SMD:C_0603_1608Metric","","2",""
 "C7","1u","","Capacitor_SMD:C_0603_1608Metric","","1",""
 "C9,C10","15p","","Capacitor_SMD:C_0402_1005Metric","","2",""
+"D1","red","","LED_SMD:LED_0603_1608Metric","KT-0603R","1",""
 "R1-R3","10k","","Resistor_SMD:R_0402_1005Metric","","3",""
+"R4","1k","","Resistor_SMD:R_0402_1005Metric","","1",""
 "U1","STM32F446RET6","","Package_QFP:LQFP-64_10x10mm_P0.5mm","STM32F446RET6","1",""
 "Y1","8MHz","","Crystal:Crystal_SMD_3225-4Pin_3.2x2.5mm","X32258MOB4SI","1",""

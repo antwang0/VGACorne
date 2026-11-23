@@ -16,6 +16,8 @@
 
 // Overridable scan/calibration tuning, see he_matrix.c:
 // #define HE_SETTLE_US 10
+// #define HE_ADC_SAMPLE ADC_SAMPLE_112
+// #define HE_DEAD_SPREAD 24
 // #define HE_FILTER_SHIFT 2
 // #define HE_CALIBRATION_MS 500
 // #define HE_HYSTERESIS 8

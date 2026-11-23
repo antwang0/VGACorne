@@ -25,6 +25,9 @@
     "custom_lite": true
   },
   "debounce": 0,
+  "indicators": {
+    "caps_lock": "C6"
+  },
   "eeprom": {
     "driver": "wear_leveling",
     "wear_leveling": {
