@@ -22,7 +22,7 @@ symbol/footprint libraries (override the paths with `KICAD10_SYMBOL_DIR` /
 |---|---|---|
 | `lib` | `lib/vgacorne.kicad_sym`, `lib/vgacorne.pretty/` | yes (generated library) |
 | `schematics` | `kicad/*/…kicad_sch`, project files | **only with `--force`** |
-| `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board |
+| `pcbs` | `kicad/*/…kicad_pcb` | **only with `--force`**, and never a routed board: on those it only copies values, fields and DNP flags from `circuits.py` |
 | `firmware` | libhmk `keyboard.json` per module; QMK `keyboard.json`, `he_wiring.h`, `rules.mk` | yes: traced from the schematics |
 | `mechanical` | `mechanical/*.dxf` (+ `.svg` previews), FR4 plate boards | yes |
 | `case` | `mechanical/case-machined/` (STEP + `.dxf` hole drawing per part) and `mechanical/case-printed/` (STEP + `.stl` per part), plus `mechanical/case-*.svg` previews, after a fit check | yes |
@@ -110,9 +110,12 @@ differential pairs: the main board's USB pair was laid by hand afterwards with
 pcbnew (`USB` class, 0.4 mm tracks 0.15 mm apart, a trombone on `USB_DN` to
 match the lengths).
 
-Once a board has tracks, `generate.py --force pcbs` leaves it alone. Take
-circuit changes into KiCad with *Update PCB from Schematic*, or delete the
-board file to regenerate it unrouted.
+Once a board has tracks, `generate.py --force pcbs` never rebuilds it. It
+does bring each footprint's value, fields (MPN) and DNP flag in line with
+`circuits.py`, which is all a sensor swap needs, and stops with an error if a
+part's footprint differs or a part is missing. Take other circuit changes into
+KiCad with *Update PCB from Schematic*, or delete the board file to regenerate
+it unrouted.
 
 ## Ordering from JLC
 

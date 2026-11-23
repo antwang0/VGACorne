@@ -12,9 +12,10 @@
 - [ ] The VGA socket is the Amphenol FCI 10090929-S154XLF (the daughterboard
       footprint has its 1.2 mm pin holes), with Keystone 7229 jackscrews.
       Only 10 at LCSC; Digi-Key has thousands.
-- [ ] Check stock for the DRV5055A3QDBZR. The second source is the
-      MT9102ET; it reads the other way round, so flip `invert_adc`. See
-      [sensors.md](sensors.md) and *Sensor polarity* below.
+- [ ] Check stock for the DRV5055A3QDBZR. If it's short, switch to the
+      MT9102ET (`SENSOR = MT9102ET` in `circuits.py`, then the steps in
+      [sensors.md](sensors.md#changing-the-sensor)); it reads the other way
+      round, which that also takes care of. See *Sensor polarity* below.
 - [ ] Prefer DRV5055s on TI's newer LBC9 process: 2 mA typical instead of
       6 mA, see the [power budget](architecture.md#power-budget-usb-500-ma).
       - From ti.com, their packaging label says "Rev: C" and "CSO: RFAB".

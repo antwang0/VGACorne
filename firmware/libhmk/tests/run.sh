@@ -14,6 +14,13 @@ cp "$LIBHMK/src/matrix.c" "$out/src/"
 if git -C "$LIBHMK" apply --check "$patch" 2>/dev/null; then
     (cd "$out" && git apply --include='include/*' --include='src/matrix.c' "$patch")
 fi
-cc -std=gnu11 -Wall -Wextra -Wno-unused-function -O1 -I"$here" -I"$out/include" \
-    "$here/test_detachable.c" "$out/src/matrix.c" -o "$out/test_detachable"
+build() {
+    cc -std=gnu11 -Wall -Wextra -Wno-unused-function -O1 "$@" -I"$here" -I"$out/include" \
+        "$here/test_detachable.c" "$out/src/matrix.c" -o "$out/test_detachable"
+}
+build
 "$out/test_detachable"
+echo "--- with the sensor polarity flipped (MT9102ET)"
+build -DTEST_SENSOR_RISES
+"$out/test_detachable" > "$out/log" || { cat "$out/log"; exit 1; }
+tail -1 "$out/log"

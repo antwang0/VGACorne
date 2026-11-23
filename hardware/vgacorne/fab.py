@@ -47,6 +47,7 @@ LCSC: dict[str, str] = {
                         "4.7k": "C25900", "5.1k": "C25905", "10k": "C25744", "12k": "C25752",
                         "47k": "C25792", "100k": "C25741"}),
     "DRV5055A3QDBZR": "C266128",  # no die revision listed (sensors.md)
+    "MT9102ET": "C5447698",  # NOVOSENSE (MagnTek), the second-source sensor; Extended
     "SN74LV4051APWR": "C7793",
     "TLV9064IPWR": "C779410",
     "TLV75733PDBVR": "C485517",

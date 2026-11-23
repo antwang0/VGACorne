@@ -4,7 +4,9 @@
     generate.py [--force] [lib|schematics|pcbs|firmware|mechanical|case|bom|fab|check|all ...]
 
 Schematics and PCBs are *scaffolding*: once you start editing them in KiCad
-they are the source of truth, so they are only (re)written with --force.
+they are the source of truth, so they are only (re)written with --force. A
+routed PCB is never rebuilt: ``pcbs`` only copies each part's value, fields
+and DNP flag onto it from circuits.py (a sensor swap, say), layout untouched.
 Firmware config and mechanical outputs are always regenerated -- the libhmk
 mux matrix is read back from the schematics, so it follows any channel swaps
 you make in KiCad.
@@ -62,14 +64,35 @@ def _routed(path: Path) -> bool:
     return path.exists() and re.search(r"^\t\((segment|arc|via)\b", path.read_text(), re.M) is not None
 
 
+def _sync_one(board: str) -> None:
+    """Child process: sync one routed board's fields (pcbnew wants a fresh process per board)."""
+    import os
+    from vgacorne import pcb
+
+    _, path, name = paths(board)
+    try:
+        changed = pcb.sync_fields(circuits.BOARDS[board](), path)
+        if changed:
+            project.write_project(path.parent, name)  # Save() may have rewritten it
+        for line in changed:
+            print(f"    {line}")
+        print(f"  synced {path.relative_to(HERE)}: {len(changed) or 'no'} changes (layout untouched)", flush=True)
+    except Exception as e:  # noqa: BLE001
+        print(f"  {path.relative_to(HERE)}: {e}", flush=True)
+        os._exit(1)
+    os._exit(0)
+
+
 def do_pcbs(force: bool) -> None:
+    import subprocess
     from vgacorne import pcb
 
     for board, fn in circuits.BOARDS.items():
         c = fn()
         _, path, name = paths(board)
         if _routed(path):
-            print(f"  skip {path.relative_to(HERE)} (routed; delete it to regenerate)")
+            # Routed: never rebuilt. Values, fields and DNP still follow circuits.py.
+            subprocess.run([sys.executable, __file__, "--sync-one", board], check=True)
             continue
         if not _guard(path, force):
             continue
@@ -155,10 +178,13 @@ def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("steps", nargs="*", default=["all"], choices=[*STEPS, "all"])
     ap.add_argument("--force", action="store_true", help="overwrite existing schematics/PCBs")
+    ap.add_argument("--sync-one", metavar="BOARD", help=argparse.SUPPRESS)
     args = ap.parse_args()
+    if args.sync_one:
+        _sync_one(args.sync_one)
     steps = list(STEPS) if "all" in args.steps else args.steps
     for s in steps:
-        print(f"[{s}]")
+        print(f"[{s}]", flush=True)
         STEPS[s](args.force)
 
 

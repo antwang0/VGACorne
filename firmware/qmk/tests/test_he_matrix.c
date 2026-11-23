@@ -34,20 +34,24 @@ static double field(double t) {
     const double a = 0.0082, n = HE_LUT_SIZE - 1;
     return (exp(t * log1p(a * n)) - 1) / (a * n);
 }
+// Hall readings are written for a sensor whose output falls as the key is
+// pressed (HE_INVERT_ADC = 1, pull-ups R11-R13 fitted); the other kind (the
+// MT9102ET, pull-downs R14-R16) mirrors them.
+static adcsample_t polarity(double v) { return (adcsample_t)(HE_INVERT_ADC ? v : 4095 - v); }
 static adcsample_t sensor(int row, int col) {
     const bool remote = (HE_REMOTE_INPUTS >> row) & 1;
-    if (remote && !cable_plugged) return 4095; // R11-R13 pull the input up
-    // No power over there: each pull-up sinks into a dead buffer, whatever the selects say.
-    if (remote && !satellite_powered) return (adcsample_t)(480 + 30 * row + (now_us / 7) % 5);
+    if (remote && !cable_plugged) return polarity(4095); // the pulls hold the input at "released"
+    // No power over there: each pull sinks into a dead buffer, whatever the selects say.
+    if (remote && !satellite_powered) return polarity(480 + 30 * row + (now_us / 7) % 5);
 #ifdef HE_ENCODER_INPUT
-    if (row == HE_ENCODER_INPUT && col == HE_ENCODER_CHANNEL) {
+    if (row == HE_ENCODER_INPUT && col == HE_ENCODER_CHANNEL) { // a resistor ladder, same either way
         const uint16_t levels[] = HE_ENCODER_LEVELS;
         const int      v        = levels[enc_ab] + enc_offset;
         return (adcsample_t)(v < 0 ? 0 : v > 4095 ? 4095 : v);
     }
 #endif
     // Sensors rest tens of counts apart (offset and magnet tolerances).
-    return (adcsample_t)(2400 + 13 * ((5 * row + 3 * col) % 8) - 900.0 * field(travel[row][col]));
+    return polarity(2400 + 13 * ((5 * row + 3 * col) % 8) - 900.0 * field(travel[row][col]));
 }
 
 void adcStart(ADCDriver *d, const ADCConfig *c) { (void)d; (void)c; }

@@ -13,10 +13,13 @@ pin 2 OUT, pin 3 GND** (TI's DBZ pinout).
 - It never saturates with any common switch, whichever pole faces it.
 - It draws the least current of the well-documented drop-ins, provided you get
   the new LBC9 silicon ([power budget](architecture.md#power-budget-usb-500-ma)).
-- It is cheap and in stock.
+- It is cheap. Stock is the catch: TI and LCSC ran out in November 2026,
+  hence the ready-made switch to the MT9102ET
+  ([Changing the sensor](#changing-the-sensor)).
 
 The **MT9102ET** is the second source: the HE60 v2 uses it, and libhmk's
-defaults were tuned on it. Researched September 2026; prices and stock are
+defaults were tuned on it; `circuits.py` has it ready as `MT9102ET`.
+Researched September 2026; prices and stock are
 LCSC's on 2026-09-29, per part at 50. **(U)** marks figures not confirmed
 from a manufacturer document.
 
@@ -67,7 +70,7 @@ seating plane. Two readings of the vendor figures give two estimates:
 | **TI DRV5055A3** | Hall, bipolar, ratiometric | Yes | 2 / 4 mA (LBC9 parts); 6 / 10 mA (older LBC8) | 15 mV/mT ±5 %, ±88 mT | 3 mV pk-pk (0.2 mT, 20 kHz) | No capacitor straight on OUT; 1 kΩ first is fine | $0.33 / 5.9k | **Used.** Safe range, best documented |
 | TI DRV5055A2 | same | Yes | same | 30 mV/mT, ±44 mT | 0.2 mT pk-pk | same | $0.49 / 6.8k | Double resolution, but clips with most switches (likely case). Only if measured peaks stay under ~40 mT |
 | TI DRV5056A3 | Hall, **unipolar** (rests at 0.6 V) | Yes | 6 / 10 mA | 30 mV/mT, 0–78 mT | 6 mV pk-pk | same | $0.82 / 65 | About 2× the signal (30–70 % of span, no clipping), but only with N-pole-down switches, and low stock |
-| **MT9102ET** (MagnTek / NOVOSENSE) | Hall, bipolar, ratiometric | Yes | 6.0 / 7.0 mA | 16 mV/mT, ±85 mT | 0.19 µT/√Hz (U: also lists 2.44 mV rms) | ≤ 10 nF directly; ≥ 4.7 kΩ | $0.28 / 5.4k | **Second source.** HE60 v2 and libhmk default. Reads the other way round from the DRV5055 in HE60's tests |
+| **MT9102ET** (MagnTek / NOVOSENSE, LCSC C5447698) | Hall, bipolar, ratiometric | Yes: same pinout (datasheet section 5) | 6.0 / 7.0 mA | 16 mV/mT ±7 %, ±85 mT | 0.19 µT/√Hz (U: also lists 2.44 mV rms) | ≤ 10 nF directly; ≥ 4.7 kΩ | $0.28 / 5.4k | **Second source.** HE60 v2 and libhmk default. Reads the other way round from the DRV5055 in HE60's tests |
 | TI TMAG5253BA3 | Hall, ratiometric; output off when disabled | No: X2SON-4 | 2.6 / 5 mA; 8 nA disabled | 15 mV/mT ±15 %, ±80 mT | 0.17 mT pk-pk | ≤ 1 nF | $0.42 / 10.7k | Future revision: shared ADC lines could replace the muxes |
 | Semiment SC4702 / SC4703 | Hall, ratiometric ("-N" flips polarity) | Yes | 0.7 mA typ, no max | 20 mV/mT, ±72.5 mT / 30 mV/mT, ±48 mT | 6 / 9 mV pk-pk (filtered) | ≤ 470 pF | $0.13 / 2.5k | Very low power, targets magnetic keyboards; a new part with a thin datasheet. Trial only |
 | Melexis MLX90290 (3.3 V trims) | Hall, ratiometric | Yes (TSOT-3) | 5 / 8 mA | 12.4–33 mV/mT | not given | ≤ 10 nF; ≥ 5 kΩ | 0 stock | Good part, not stocked |
@@ -121,10 +124,39 @@ seating plane. Two readings of the vendor figures give two estimates:
   - Peak under ~40 mT: a DRV5055A2 doubles the resolution on the same
     footprint.
   - Peak under ~75 mT with every switch N-pole down: a DRV5056A3 does the same.
-- **Changing the sensor:**
-  1. Edit `SENSOR` (`lib_id`, `mpn`, `invert_adc`, calibration defaults).
-  2. Run `generate.py --force schematics pcbs` and `generate.py firmware bom`.
-  3. Re-fit the QMK travel curve (`travel_curve`) to the new sensor.
+## Changing the sensor
+
+`circuits.py` defines `DRV5055A3` and `MT9102ET` as `SensorChoice`s, and
+`SENSOR` picks one. The two share the SOT-23 pinout (MT9102 datasheet,
+section 5: 1 VCC, 2 OUT, 3 GND), so the boards don't change. Switching to the
+MT9102ET changes:
+
+- the sensors' value and MPN (LCSC C5447698, an Extended part at JLC);
+- `invert_adc`, in both firmwares: it reads the other way round from the
+  DRV5055 in HE60's tests;
+- the cable-unplugged pulls: R14-R16 (to GND) fitted instead of R11-R13
+  (to +3.3VA). That is a DNP flag in the BOM and CPL, not a layout change.
+
+The calibration defaults carry over: its rest and 16 mV/mT sit within the
+DRV5055's margins. Both firmwares' host tests run with either polarity.
+
+To switch:
+
+1. Set `SENSOR = MT9102ET` in `hardware/vgacorne/circuits.py`.
+2. Run `generate.py --force schematics`, then `generate.py pcbs firmware bom
+   fab check`. On the routed boards `pcbs` only updates values, fields and
+   DNP flags; the layout is untouched.
+3. In JLC's placement preview, check the sensors' rotation (C5447698's
+   footprint gets the generic SOT-23 correction, as C266128 does) and that
+   R14-R16 are placed and R11-R13 aren't.
+4. At bring-up, confirm the polarity as for the DRV5055 (*Notes* above).
+   Re-fit the QMK travel curve (`travel_curve`) to the sensor either way.
+
+This exact swap was built and checked on 2026-11-23 on a copy of the repo:
+0 ERC and 0 DRC errors on every board, schematic parity, and both host tests.
+
+For any other sensor, add a `SensorChoice` the same way. A different footprint
+needs a layout change (`pcbs` stops with an error rather than make one).
 
 ## Sources
 
@@ -136,7 +168,9 @@ seating plane. Two readings of the vendor figures give two estimates:
   LBC8/LBC9 current: TI E2E threads
   [1316266](https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/1316266/drv5055-drv5055) and
   [1680901](https://e2e.ti.com/support/sensors-group/sensors/f/sensors-forum/1680901/drv5055-drv5055a1qdbz-supply-current-changes).
-- [MT9102 (NOVOSENSE)](https://www.novosns.com/datasheet/MT9102A/MT9102.pdf);
+- [MT9102 (NOVOSENSE)](https://www.novosns.com/datasheet/MT9102A/MT9102.pdf),
+  [LCSC C5447698](https://www.lcsc.com/product-detail/C5447698.html),
+  [JLC C5447698](https://jlcpcb.com/partdetail/MagnTek-MT9102ET/C5447698);
   [Melexis MLX90290](https://www.melexis.com/-/media/files/documents/datasheets/mlx90290-datasheet-melexis.pdf);
   Allegro [A1315](https://www.allegromicro.com/-/media/files/datasheets/a1315-datasheet.pdf),
   [A1304](https://www.allegromicro.com/-/media/files/datasheets/a1304-datasheet.pdf),

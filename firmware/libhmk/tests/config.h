@@ -21,7 +21,9 @@
 #define ADC_NUM_RAW_INPUTS 8
 #define ADC_RAW_INPUT_CHANNELS {0, 1, 2, 3, 4, 5, 6, 7}
 #define ADC_RAW_INPUT_VECTOR {0, 1, 2, 3, 4, 5, 6, 7}
-#define MATRIX_INVERT_ADC_VALUES // as on VGACorne: pressing lowers the sensor output
+#ifndef TEST_SENSOR_RISES // run.sh builds both: the DRV5055 falls as a key is pressed, the MT9102ET rises
+#define MATRIX_INVERT_ADC_VALUES
+#endif
 
 // Keys 0-3 are local; keys 4-7 come over the cable.
 #define DETACHABLE_KEYS {4, 5, 6, 7}

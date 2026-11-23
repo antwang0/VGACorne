@@ -48,11 +48,13 @@ class SensorChoice:
 
 
 # Options, the field the common switches give and why this one: docs/sensors.md.
-SENSOR = SensorChoice(
+DRV5055A3 = SensorChoice(
     lib_id="Sensor_Magnetic:DRV5055A3xDBZxQ1",
     mpn="DRV5055A3QDBZR",
     invert_adc=True,
-    initial_rest_value=2700,  # only ever lowered by calibration; strong-rest switches sit near 2400
+    # In the firmware's flipped scale (pressing raises it): only ever lowered by
+    # calibration, and every switch rests below it (strong-rest ones near 1700).
+    initial_rest_value=2700,
     # The firmware starts each key's bottom-out this far from rest and extends it
     # the first time the key goes further, so too small is harmless and too big
     # leaves the key short of full travel. HE60 uses 650 counts (~35 mT at
@@ -60,6 +62,21 @@ SENSOR = SensorChoice(
     # here, i.e. ~450 counts.
     initial_bottom_out_threshold=400,
 )
+
+# Second source, same SOT-23 pinout (1 VCC, 2 OUT, 3 GND): 16 mV/mT +-7 % at
+# 3.3 V, +-85 mT, 6 / 7 mA, up to 10 nF on its output. It reads the other way
+# round from the DRV5055 (HE60's tests), so it flips invert_adc and with it the
+# cable-unplugged pulls (R14-R16 fitted instead of R11-R13): a BOM change only.
+# It keeps the DRV5055 symbol, whose pins number the same.
+MT9102ET = SensorChoice(
+    lib_id=DRV5055A3.lib_id,
+    mpn="MT9102ET",
+    invert_adc=False,
+    initial_rest_value=DRV5055A3.initial_rest_value,
+    initial_bottom_out_threshold=DRV5055A3.initial_bottom_out_threshold,
+)
+
+SENSOR = DRV5055A3  # MT9102ET if the DRV5055A3 is out of stock: see docs/sensors.md
 
 # ---------------------------------------------------------------------------
 # Footprints and common parts

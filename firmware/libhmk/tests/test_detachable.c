@@ -17,17 +17,23 @@ static uint16_t rest[NUM_KEYS]; // this key's sensor output at rest
 // A DRV5055 reads ~2400 at rest and falls towards ~1500 as the magnet comes
 // down. With the cable out the remote inputs read whatever they float to: use
 // 0, which looks like every remote key bottomed out.
+// Without MATRIX_INVERT_ADC_VALUES (the MT9102ET) every reading is mirrored.
+#ifdef MATRIX_INVERT_ADC_VALUES
+#define POLARITY(v) (v)
+#else
+#define POLARITY(v) (4095 - (v))
+#endif
 static void press(int k, double travel) { raw[k] = (uint16_t)(rest[k] - 900 * travel); }
 static void release(int k) { raw[k] = rest[k]; }
 
 void     analog_init(void) {}
 void     analog_task(void) { now_ms++; } // one call per main-loop pass, ~1 ms
 uint16_t analog_read(uint8_t key) {
-    if (key < 4) return raw[key];
-    if (!cable_plugged) return 0;
+    if (key < 4) return POLARITY(raw[key]);
+    if (!cable_plugged) return POLARITY(0);
     // No power over there: each multiplexer's line sits at one level, with a little noise.
-    if (!remote_powered) return (uint16_t)(480 + 30 * (key / 6) + (now_ms + key) % 4);
-    return raw[key];
+    if (!remote_powered) return POLARITY((uint16_t)(480 + 30 * (key / 6) + (now_ms + key) % 4));
+    return POLARITY(raw[key]);
 }
 bool     analog_detachable_attached(void) { return cable_plugged; }
 uint32_t timer_read(void) { return now_ms; }
@@ -56,7 +62,7 @@ static void run(int ms) {
     }
 }
 static bool down(int k) { return key_matrix[k].is_pressed; }
-// The learned rest value (in inverted counts) is within the calibration epsilon of the true one.
+// The learned rest value (in pressing-raises counts) is within the calibration epsilon of the true one.
 static bool near_rest(int k) {
     const int want = 4095 - rest[k], got = key_matrix[k].adc_rest_value;
     return got >= want && got <= want + MATRIX_CALIBRATION_EPSILON;

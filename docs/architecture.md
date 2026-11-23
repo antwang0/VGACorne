@@ -166,13 +166,15 @@ Two figures where the DRV5055's process matters (LBC9 / older LBC8 parts):
 | Load | Typical | Worst case |
 |---|---|---|
 | 44 × DRV5055 at 3.3 V | 88 / 264 mA | 176 / 440 mA |
+| (44 × MT9102ET instead, the second source) | (264 mA) | (308 mA) |
 | AT32F405 at 216 MHz, USB HS PHY on (57 mA + ~30 mA for the PHY) | ~65–87 mA | ~100 mA |
 | 6 × SN74LV4051A, TLV9064 | ~3 mA | ~5 mA |
 | Trackpad (optional) | 2–4 mA | 5 mA |
 | **Total** | **≈ 180 / 360 mA** | **≈ 290 / 550 mA** |
 
 - **USB:** only a board of LBC8 parts with every part at its maximum goes past
-  the 500 mA a USB 2.0 port must supply. F1 is a 750 mA-hold PTC so it
+  the 500 mA a USB 2.0 port must supply. MT9102ETs come to about 360 mA
+  typical and 420 mA worst case in total, like LBC8 parts at typical. F1 is a 750 mA-hold PTC so it
   doesn't trip at the LBC8 typical figure in a warm case.
 - **Satellite:** it takes 50–140 mA typ, 95–235 mA max through VGA pin 9. U8, a
   TPS2051C power switch, feeds it: it soft-starts in 0.55 ms and limits at
@@ -484,7 +486,10 @@ A host test runs the real matrix code against simulated sensors. VIA support and
      TI** with no restock date. Order once it's back (or via JLC's global
      sourcing). Low but enough: AT32F405RCT7 195, STM32F446RET6 338, PEC12R 76.
    - Which DRV5055 process you'll get (see [signal chain](#signal-chain-details)).
-   - Second-source sensor: MT9102ET ([sensors.md](sensors.md)).
+   - Second-source sensor: MT9102ET (LCSC C5447698, in JLC's library as an
+     Extended part; ~7,500-8,900 at LCSC in cached listings on 2026-11-23).
+     It is set up in `circuits.py` and the swap was built and checked on
+     2026-11-23 ([sensors.md](sensors.md#changing-the-sensor)).
 5. **USB IDs.** `0x1209:0x0001` (AT32, libhmk), `:0x0002` (F446, libhmk) and
    `:0x0003` (F446, QMK) are pid.codes test IDs. Request real PIDs before sharing boards.
 6. **QMK:** add VIA, per-key actuation and DKS/SOCD, and fit the travel curve to real

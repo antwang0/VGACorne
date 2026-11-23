@@ -541,3 +541,33 @@ def build_module(c: Circuit, pcb_path: Path) -> Builder:
 
 BUILDERS = {"main": build_main, "satellite": build_satellite, "link": build_link,
             "module_at32": build_module, "module_f446": build_module}
+
+
+def sync_fields(c: Circuit, pcb_path: Path) -> list[str]:
+    """Bring a routed board's footprint values, fields and DNP flags in line with
+    circuits.py, as KiCad's Update PCB from Schematic would, leaving the layout
+    alone. Saves only if something changed; returns what did."""
+    board = pcbnew.LoadBoard(str(pcb_path))
+    fps = {fp.GetReference(): fp for fp in board.GetFootprints()}
+    changed = []
+    for part in c.parts:
+        fp = fps.get(part.ref)
+        if fp is None:
+            raise ValueError(f"{pcb_path.name}: {part.ref} is in circuits.py but not on the board")
+        if fp.GetFPIDAsString() != part.footprint:
+            raise ValueError(f"{pcb_path.name}: {part.ref} is a {fp.GetFPIDAsString()} on the board, "
+                             f"{part.footprint} in circuits.py: that needs a layout change")
+        if fp.GetValue() != part.value:
+            changed.append(f"{part.ref} value {fp.GetValue()} -> {part.value}")
+            fp.SetValue(part.value)
+        for k, v in part.fields.items():
+            if not fp.HasField(k) or fp.GetFieldText(k) != v:
+                changed.append(f"{part.ref} {k} -> {v}")
+                fp.SetField(k, v)
+                fp.GetField(k).SetVisible(False)
+        if fp.IsDNP() != bool(part.dnp):
+            changed.append(f"{part.ref} {'DNP' if part.dnp else 'fitted'}")
+            fp.SetDNP(bool(part.dnp))
+    if changed:
+        board.Save(str(pcb_path))
+    return changed

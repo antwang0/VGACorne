@@ -21,9 +21,13 @@ test pads, I2C expansion pads and a status LED on the modules; and in both
 firmwares a shorter settling delay (libhmk), longer ADC sampling on the F446,
 and holding a left half that is plugged in but has no power.
 
-- [ ] **Wait for DRV5055A3QDBZR stock** (JLC 2, LCSC 0, TI out of stock on
-      2026-11-15, no date): set stock alerts, or a Digi-Key backorder shows
-      TI's expected date.
+- [ ] **DRV5055A3QDBZR stock** (JLC 2, LCSC 0, TI out of stock on
+      2026-11-15). On 2026-11-23 search listings disagreed (LCSC 1,244;
+      Digi-Key backorder, possibly ~3,000 due 1 Dec 2026), and the live pages
+      gave no figure: check JLC's part page for C266128 before ordering. If
+      it's short, switch to the MT9102ET (C5447698): one line in
+      `circuits.py`, already built and checked
+      ([sensors.md](docs/sensors.md#changing-the-sensor)).
 - [ ] Run `hardware/generate.py fab` and order (see
       [bring-up](docs/bring-up.md#before-ordering)). Check the sensors, LQFPs,
       USB-C, FFC, encoder and the modules' LED in JLC's placement preview.
